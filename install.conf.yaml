@@ -1,0 +1,14 @@
+- defaults:
+    link:
+      relink: true
+
+- clean: ['~']
+
+- link:
+    ~/.dotfiles: ''
+    ~/.config/fish/config.fish: 
+      force: true
+      path: config.fish
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
