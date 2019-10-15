@@ -1,3 +1,3 @@
 function manpdf
-    man -t "$argv" | open -f -a /Applications/Preview.app/
+    man -t "$argv" | open -f -a /System/Applications/Preview.app/
 end
