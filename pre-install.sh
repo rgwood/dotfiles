@@ -40,3 +40,5 @@ else
 		echo "already installed"
 	fi	
 fi
+echo "changing default shell to fish"
+chsh -s /usr/bin/fish
