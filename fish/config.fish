@@ -2,6 +2,7 @@ set PATH /Users/reillywood/.npm-global/bin $PATH
 set PATH $HOME/.cargo/bin $PATH
 set PATH $HOME/.jenv/bin $PATH
 status --is-interactive; and source (jenv init -|psub)
+# Bash binding for editing current buffer
 bind \cx\ce edit_command_buffer
 
 switch (uname)
