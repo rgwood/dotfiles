@@ -1,8 +1,10 @@
 set PATH /Users/reillywood/.npm-global/bin $PATH
 set PATH $HOME/.cargo/bin $PATH
 
-# Bash binding for editing current buffer
-bind \cx\ce edit_command_buffer
+# Bash binding for editing current buffer in VS Code
+# Ideally this would use the builtin edit_command_buffer but it
+# chokes on arguments to `code`
+bind \cx\ce edit_command_buffer_in_vs_code
 
 # Make VS Code the default editor
 set -Ux EDITOR code --wait --new-window
