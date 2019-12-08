@@ -10,6 +10,7 @@
       force: true
       path: fish/config.fish
     ~/.config/fish/functions: fish/functions
+    ~/.vimrc: vimrc
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
