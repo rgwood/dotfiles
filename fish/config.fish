@@ -6,16 +6,15 @@ set PATH $HOME/.cargo/bin $PATH
 # chokes on arguments to `code`
 bind \cx\ce edit_command_buffer_in_vs_code
 
-# Make VS Code the default editor
-set -Ux EDITOR code --wait --new-window
-set -Ux VISUAL code --wait --new-window
-
 # OS-specific stuff
 switch (uname)
-    # case Linux
+    case Linux
     #     echo Hi Tux! This is config.fish speaking
+       set -Ux VISUAL /usr/bin/vim
     case Darwin
 #     echo Hi macOS! This is config.fish speaking
         set PATH $HOME/.jenv/bin $PATH
         status --is-interactive; and source (jenv init -|psub)
+        # Make VS Code the default editor
+        set -Ux VISUAL code --wait --new-window
 end
