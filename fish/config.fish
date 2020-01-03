@@ -1,5 +1,7 @@
 set PATH $HOME/.npm-global/bin $PATH
 set PATH $HOME/.cargo/bin $PATH
+# dotnet puts ~/.dotnet/tools in the path but Fish doesn't expand the tilde
+set PATH $HOME/.dotnet/tools $PATH
 
 # Bash binding for editing current buffer in VS Code
 # Ideally this would use the builtin edit_command_buffer but it
