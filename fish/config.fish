@@ -1,4 +1,4 @@
-set PATH /Users/reillywood/.npm-global/bin $PATH
+set PATH $HOME/.npm-global/bin $PATH
 set PATH $HOME/.cargo/bin $PATH
 
 # Bash binding for editing current buffer in VS Code
@@ -16,5 +16,5 @@ switch (uname)
         set PATH $HOME/.jenv/bin $PATH
         status --is-interactive; and source (jenv init -|psub)
         # Make VS Code the default editor
-        set -Ux VISUAL code --wait --new-window
+        # set -Ux VISUAL code --wait --new-window
 end
