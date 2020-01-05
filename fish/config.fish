@@ -12,7 +12,9 @@ bind \cx\ce edit_command_buffer_in_vs_code
 switch (uname)
     case Linux
     #     echo Hi Tux! This is config.fish speaking
-       set -Ux VISUAL /usr/bin/vim
+       set VISUAL /usr/bin/vim
+       set DOTNET_ROOT $HOME/dotnet
+       set PATH $HOME/dotnet $PATH
     case Darwin
 #     echo Hi macOS! This is config.fish speaking
         set PATH $HOME/.jenv/bin $PATH
