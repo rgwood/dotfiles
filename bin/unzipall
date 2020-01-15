@@ -1,0 +1,5 @@
+#!/bin/bash
+for filename in ./*.zip; do
+    unzip -qu $(basename $filename) -d $(basename $filename .zip)
+    echo Unzipped $(basename $filename)
+done

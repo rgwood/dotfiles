@@ -4,6 +4,9 @@
 
 - clean: ['~']
 
+- create:
+  - ~/bin
+
 - link:
     ~/.dotfiles: ''
     ~/.config/fish/config.fish: 
@@ -11,6 +14,7 @@
       path: fish/config.fish
     ~/.config/fish/functions: fish/functions
     ~/.vimrc: vimrc
+    ~/bin/unzipall: bin/unzipall
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
