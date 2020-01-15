@@ -23,3 +23,5 @@ switch (uname)
         # Make VS Code the default editor
         # set -Ux VISUAL code --wait --new-window
 end
+test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
