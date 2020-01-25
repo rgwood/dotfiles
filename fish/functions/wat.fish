@@ -1,6 +1,6 @@
 function wat
     if type --quiet tldr
-        tldr -t ocean "$argv"
+        tldr "$argv"
     else
         curl cht.sh/"$argv"
     end
