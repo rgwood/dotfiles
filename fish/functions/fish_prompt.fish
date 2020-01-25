@@ -21,5 +21,10 @@ function fish_prompt --description 'Write out the prompt'
             set suffix '>'
     end
 
-    echo -n -s "$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
+    if set -q ANONYMOUS_PROMPT 
+        echo -n -s (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
+    else
+        echo -n -s "$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd) (set_color normal) "$suffix "
+    end
+    
 end
