@@ -9,6 +9,7 @@
     ~/.config/fish/config.fish: 
       force: true
       path: fish/config.fish
+    ~/.config/fish/fish_variables: fish/fish_variables
     ~/.config/fish/functions: fish/functions
     ~/.vimrc: vimrc
     ~/bin: bin
