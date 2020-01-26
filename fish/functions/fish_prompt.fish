@@ -23,7 +23,7 @@ function fish_prompt --description 'Write out the prompt'
 
     if set -q ANONYMOUS_PROMPT
         echo -s (set_color $color_cwd) (prompt_pwd)
-    else if test $TERM_PROGRAM != iTerm.app # iTerm integration means we don't need to display this info in the prompt
+    else if not set -q TERM_PROGRAM; or test $TERM_PROGRAM != iTerm.app # iTerm integration means we don't need to display this info in the prompt
         echo -s (set_color $fish_color_comment) "$USER" @ (prompt_hostname) ' ' (set_color $color_cwd) (prompt_pwd)
     end
     echo -n -s (set_color --bold cyan) "$suffix "
