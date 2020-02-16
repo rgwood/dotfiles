@@ -33,3 +33,4 @@ SETUVAR fish_pager_color_completion:B3A06D
 SETUVAR fish_pager_color_description:B3A06D
 SETUVAR fish_pager_color_prefix:cyan\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
+SETUVAR DOTNET_CLI_TELEMETRY_OPTOUT:1

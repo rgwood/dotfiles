@@ -25,3 +25,4 @@ switch (uname)
 end
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
+alias py3="python3"
