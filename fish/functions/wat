@@ -1,0 +1,26 @@
+#! /usr/local/bin/python3
+import os.path as path
+import sys
+import sh
+
+def main():
+    command = sys.argv[1]
+    file_path = f"../../notes/{command}.md"
+
+    notes_exist = path.exists(file_path)
+
+    if notes_exist:
+        print("  " + "Notes:")
+        print(sh.mdcat(file_path))
+    
+    if is_installed('tldr'):
+        print("tldr installed")
+    else:
+        sh.curl(f"cht.sh/{command}")
+    
+    print(is_installed("lsc"))
+
+def is_installed(name):
+    return sh.which(name) is not None
+
+main();
