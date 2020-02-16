@@ -1,0 +1,1 @@
+watchexec "fish --command=\"watdev watchexec\" ./watdev.fish"
