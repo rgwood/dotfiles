@@ -21,7 +21,7 @@ def main():
 
     notes_exist = path.exists(file_path)
     if notes_exist:
-        print(f"  {Colors.HEADER}Notes:{Colors.ENDC}\n")
+        print(f"  {Colors.HEADER}Notes{Colors.ENDC}")
         if is_installed('mdcat'):
             print(indent_stdout(sh.mdcat(file_path)))
         else:
@@ -44,7 +44,7 @@ def main():
 
 def indent_stdout(command):
     return "\n".join(
-        map(lambda line: "  " + str(line, 'utf-8'), command.stdout.splitlines())
+        map(lambda line: "    " + str(line, 'utf-8'), command.stdout.splitlines())
     )
 
 
