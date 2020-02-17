@@ -1,5 +1,3 @@
-## Vim
-
 Larry Tesler was right about modes...
 
 ### Common command-mode actions to remember

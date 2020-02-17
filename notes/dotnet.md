@@ -1,5 +1,3 @@
-# .NET Core notes
-
 ## Linux
 
 ### Services
