@@ -21,7 +21,7 @@ def main():
 
     notes_exist = path.exists(file_path)
     if notes_exist:
-        print(f"  {Colors.HEADER}Notes:{Colors.ENDC}")
+        print(f"  {Colors.HEADER}Notes:{Colors.ENDC}\n")
         if is_installed('mdcat'):
             print(indent_stdout(sh.mdcat(file_path)))
         else:
@@ -32,6 +32,10 @@ def main():
         try:
             print(sh.tldr(command), end='')
         except sh.ErrorReturnCode as e:
+            # hide the "tldr page not found" error if a note exists
+            if notes_exist and e.exit_code == 1:
+                return
+            
             print(f"  {Colors.HEADER}TLDR:{Colors.ENDC}")
             print(indent_stdout(e))
     else:
