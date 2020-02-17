@@ -13,6 +13,7 @@
     ~/.config/fish/functions: fish/functions
     ~/.vimrc: vimrc
     ~/bin: bin
+    ~/notes: notes
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
