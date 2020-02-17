@@ -1,1 +1,1 @@
-watchexec "fish --command=\"watdev watchexec\" ./watdev.fish"
+Test a Fish function: `watchexec "fish --command=\"wat foo\" ./wat.fish"`
