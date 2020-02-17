@@ -17,7 +17,7 @@ class BColors:
 
 def main():
     command = sys.argv[1]
-    file_path = f"../../notes/{command}.md"
+    file_path = path.expanduser(f"~/notes/{command}.md")
 
     notes_exist = path.exists(file_path)
     if notes_exist:
