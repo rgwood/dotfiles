@@ -1,0 +1,46 @@
+#! /usr/bin/env python3
+import os.path as path
+import sys
+import sh
+
+
+class BColors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+def main():
+    command = sys.argv[1]
+    file_path = path.expanduser(f"~/notes/{command}.md")
+
+    notes_exist = path.exists(file_path)
+    if notes_exist:
+        if is_installed('mdcat'):
+            print(f"  {BColors.HEADER}Notes:{BColors.ENDC}")
+
+            # indent mdcat output
+            for line in sh.mdcat(file_path).stdout.splitlines():
+                print("  " + str(line, 'utf-8'))
+                
+        else:
+            print("Error: note found but mdcat dependency not installed")
+
+    if is_installed('tldr'):
+        try:
+            print(sh.tldr(command), end='')
+        except:
+            pass
+    else:
+        sh.curl(f"cht.sh/{command}")
+
+
+def is_installed(name):
+    return sh.which(name) is not None
+
+main()
