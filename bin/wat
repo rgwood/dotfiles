@@ -39,7 +39,7 @@ def main():
 
 
 def indent_stdout(command):
-    return "".join(
+    return "\n".join(
         map(lambda line: "  " + str(line, 'utf-8'), command.stdout.splitlines())
     )
 
