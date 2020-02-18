@@ -1,6 +1,6 @@
 Larry Tesler was right about modes...
 
-### Common command-mode actions to remember
+## Common command-mode actions
 
 - `ctrl-b` and `ctrl-f`: page up and page down
 - `:w`: save (write) file
