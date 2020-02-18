@@ -1,5 +1,3 @@
-# Apache Spark
-
 ## Quick Start
 
 https://spark.apache.org/docs/latest/quick-start.html

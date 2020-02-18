@@ -1,6 +1,4 @@
-# Postgres Cheat Sheet
-
-`psql|pgcli -d database_name -U user_name -h host_name`
+Connect: `psql|pgcli -d database_name -U user_name -h host_name`
 
 
 ## Install (Ubuntu)

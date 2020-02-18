@@ -1,5 +1,3 @@
-# pgbench
-
 pgbench runs a variation of [TPC-B](http://www.tpc.org/tpcb/default.asp), which is mostly intended to stress CPU, memory, disk/IO.
 
 [Useful "pgbench basics" article](https://blog.codeship.com/tuning-postgresql-with-pgbench/).

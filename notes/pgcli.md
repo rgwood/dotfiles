@@ -1,5 +1,3 @@
-# pgcli
-
 ## Edit statement in editor
 
 `\e` opens the previous statement in $EDITOR
