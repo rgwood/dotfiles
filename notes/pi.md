@@ -27,3 +27,5 @@ then
 
 Can automatically decrypt LUKS disk on startup by editing crypttab https://www.golinuxcloud.com/mount-luks-encrypted-disk-partition-linux/
 Then the usual in /etc/fstab to mount it
+
+View disk I/O: `sudo iotop`
