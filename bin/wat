@@ -29,7 +29,7 @@ def main():
             print(indent_stdout(e))
             print()
     else:
-        sh.curl(f"cht.sh/{command}")
+        print(sh.curl(f"cht.sh/{command}"))
     
     if notes_exist:
         print(f"  {Colors.HEADER}Notes{Colors.ENDC}\n")
