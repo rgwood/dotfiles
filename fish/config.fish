@@ -4,6 +4,9 @@ set PATH $HOME/.cargo/bin $PATH
 set PATH $HOME/.dotnet/tools $PATH
 set PATH $HOME/bin $PATH
 
+# fd works better than find, less likely to get stuck in deep directories
+set FZF_ALT_C_COMMAND "fd --type directory --hidden --follow"
+
 # Bash binding for editing current buffer in VS Code
 # Ideally this would use the builtin edit_command_buffer but it
 # chokes on arguments to `code`
