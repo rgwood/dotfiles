@@ -1,4 +1,6 @@
-Note: this is all from my initial experiments with DigitalOcean
+
+#### Build and name an image using the Dockerfile in the current directory
+`docker build -t <name:tag> .`
 
 #### Deploy+start containers or stop+remove them:
 `docker-compose up -d`
