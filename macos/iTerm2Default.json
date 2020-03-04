@@ -221,6 +221,10 @@
       "Action" : 10,
       "Text" : "[1;2D"
     },
+    "0xf703-0x280000" : {
+      "Action" : 10,
+      "Text" : "f"
+    },
     "0xf700-0x240000" : {
       "Action" : 10,
       "Text" : "[1;5A"
@@ -248,6 +252,10 @@
     "0xf701-0x260000" : {
       "Action" : 10,
       "Text" : "[1;6B"
+    },
+    "0xf702-0x280000" : {
+      "Action" : 10,
+      "Text" : "b"
     },
     "0xf72b-0x20000" : {
       "Action" : 10,
@@ -376,7 +384,7 @@
     "Red Component" : 0,
     "Blue Component" : 0.62018769979476929
   },
-  "Name" : "Default",
+  "Name" : "Reilly",
   "Cursor Text Color" : {
     "Green Component" : 0.15575926005840302,
     "Red Component" : 0,
