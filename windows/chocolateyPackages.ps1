@@ -1,3 +1,1 @@
-choco install powertoys
-choco install sysinternals
-choco install filezilla
+choco install powertoys sysinternals filezilla git autohotkey
