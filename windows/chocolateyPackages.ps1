@@ -1,1 +1,1 @@
-choco install powertoys sysinternals filezilla git autohotkey
+choco install powertoys sysinternals filezilla git autohotkey hugo
