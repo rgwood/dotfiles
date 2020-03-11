@@ -8,11 +8,13 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ; Press both shift keys together to toggle Capslock
 
 *Capslock::
-    Send {Blind}{LControl down}
+    SetKeyDelay -1
+    Send {Blind}{Ctrl DownTemp}
     return
 
 *Capslock up::
-    Send {Blind}{LControl up}
+    SetKeyDelay -1
+    Send {Blind}{Ctrl Up}
     ; Tooltip, %A_PRIORKEY%
     ; SetTimer, RemoveTooltip, 1000
     if A_PRIORKEY = CapsLock
@@ -37,4 +39,20 @@ ToggleCaps(){
 LShift & RShift::ToggleCaps()
 RShift & LShift::ToggleCaps()
 
-; ^!r::Reload
+;  Move window to next monitor
+Insert::Send #+{Left}
+
+; fullscreen
+#^+!f::WinMaximize A
+
+; snap left/right
+#^+!Left::SendEvent {LWin down}{Left down}{LWin up}{Left up}
+#^+!Right::SendEvent {LWin down}{Right down}{LWin up}{Right up}
+
+; For internal Surface Book keyboard
+; Having trouble reliably mapping CapsLock to a modifier, so this works instead
+CapsLock & Left::SendEvent {LWin down}{Left down}{LWin up}{Left up}
+CapsLock & Right::SendEvent {LWin down}{Right down}{LWin up}{Right up}
+CapsLock & f::WinMaximize A
+
+ ; ^!r::Reload
