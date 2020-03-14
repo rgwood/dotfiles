@@ -19,3 +19,5 @@ function Get-DetailedHelp ($command) {
     Get-Help $command -Detailed | less
 }
 Set-Alias ghd Get-DetailedHelp
+
+Invoke-Expression (&starship init powershell)

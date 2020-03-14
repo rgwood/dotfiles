@@ -12,7 +12,8 @@
         {
           "colorScheme": "Solarized Dark Higher Contrast",
           "useAcrylic": false,
-          "cursorShape": "emptyBox"
+          "cursorShape": "emptyBox",
+          "fontFace": "Consolas NF"
         },
         "list":   [
           {
