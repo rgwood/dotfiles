@@ -1,9 +1,8 @@
+# Aliases
 Set-Alias -Name which -Value where.exe
 
 Function Touch-File ($fileName) { New-Item -ItemType file $fileName }
 Set-Alias -Name touch -Value Touch-File
-
-Import-Module PSFzf -ArgumentList 'Ctrl+t','Ctrl+r'
 
 function Get-HelpCustom ($command) {
     Get-Help $command | less
@@ -20,4 +19,12 @@ function Get-DetailedHelp ($command) {
 }
 Set-Alias ghd Get-DetailedHelp
 
+
+# Keybindings
+Set-PSReadLineKeyHandler -key Tab -Function MenuComplete
+
+# Imports
+Import-Module PSFzf -ArgumentList 'Ctrl+t','Ctrl+r'
+
+# Starship prompt
 Invoke-Expression (&starship init powershell)
