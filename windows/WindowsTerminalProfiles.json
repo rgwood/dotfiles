@@ -22,6 +22,13 @@
               "name": "PowerShell 7",
               "source": "Windows.Terminal.PowershellCore"
             },
+            {
+              "guid": "{2c4de342-38b7-51cf-b940-2309a097f519}",
+              "hidden": false,
+              "name": "NuShell",
+              "commandline": "nu",
+              "startingDirectory": "~"
+          },
           {
             // Make changes here to the powershell.exe profile
             "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
