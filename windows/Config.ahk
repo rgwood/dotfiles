@@ -1,11 +1,10 @@
 ﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
+#Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-; Map Capslock to Control
+; Map Capslock to Hyper
 ; Map press & release of Capslock with no other key to Esc
-; Press both shift keys together to toggle Capslock
 
 *Capslock::
     SetKeyDelay -1
@@ -15,29 +14,12 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 *Capslock up::
     SetKeyDelay -1
     Send {Blind}{Ctrl Up}
-    ; Tooltip, %A_PRIORKEY%
-    ; SetTimer, RemoveTooltip, 1000
     if A_PRIORKEY = CapsLock
     {
         	Send {Esc}
     }
     return
 
-RemoveTooltip(){
-    SetTimer, RemoveTooltip, Off
-    Tooltip
-    return
-}
-
-ToggleCaps(){
-    ; this is needed because by default, AHK turns CapsLock off before doing Send
-    SetStoreCapsLockMode, Off
-    Send {CapsLock}
-    SetStoreCapsLockMode, On
-    return
-}
-LShift & RShift::ToggleCaps()
-RShift & LShift::ToggleCaps()
 
 ;  Move window to next monitor
 Insert::Send #+{Left}
@@ -55,4 +37,11 @@ CapsLock & Left::SendEvent {LWin down}{Left down}{LWin up}{Left up}
 CapsLock & Right::SendEvent {LWin down}{Right down}{LWin up}{Right up}
 CapsLock & f::WinMaximize A
 
- ; ^!r::Reload
+
+; Approximate macOS window closing
+!w::WinClose A
+!q::WinClose A
+^q::WinClose A
+
+
+; ^!r::Reload
