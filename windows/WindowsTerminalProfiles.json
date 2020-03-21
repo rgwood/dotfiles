@@ -90,6 +90,7 @@
           { "command": "closePane", "keys": [ "ctrl+w" ] },
           { "command": "newTab", "keys": [ "ctrl+n" ] },
           { "command": "unbound", "keys": [ "alt+left" ] },
-          { "command": "unbound", "keys": [ "alt+right" ] }
+          { "command": "unbound", "keys": [ "alt+right" ] },
+          { "command": "paste", "keys": [ "ctrl+v" ] }
       ]
 }
