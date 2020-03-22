@@ -44,4 +44,8 @@ CapsLock & f::WinMaximize A
 ^q::WinClose A
 
 
-; ^!r::Reload
+; macOS screenshots
+!+4::Send {PrintScreen}
+
+^!r::Reload
+
