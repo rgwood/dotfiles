@@ -1,28 +1,15 @@
 # Aliases
 Set-Alias -Name which -Value where.exe
 
-Function Touch-File ($fileName) { New-Item -ItemType file $fileName }
-Set-Alias -Name touch -Value Touch-File
+function touch ($fileName) { New-Item -ItemType file $fileName }
 
-function Get-HelpCustom ($command) {
-    Get-Help $command | less
-}
-Set-Alias gh Get-HelpCustom
+function gh ($command) { Get-Help $command | less }
+function ghe ($command) { Get-Help $command -Examples | less }
+function ghd ($command) { Get-Help $command -Detailed | less}
 
-function Get-Examples ($command) {
-    Get-Help $command -Examples | less
-}
-Set-Alias ghe Get-Examples
+function mkd ($dirName) { mkdir $dirName | Out-Null; cd $dirName;}
 
-function Get-DetailedHelp ($command) {
-    Get-Help $command -Detailed | less
-}
-Set-Alias ghd Get-DetailedHelp
-
-function MakeAndOpenDir ($dirName) {
-    mkdir $dirName | Out-Null; cd $dirName;
-}
-Set-Alias mkd MakeAndOpenDir
+function gs(){git status}
 
 # Keybindings
 Set-PSReadLineKeyHandler -key Tab -Function MenuComplete
