@@ -19,6 +19,10 @@ function Get-DetailedHelp ($command) {
 }
 Set-Alias ghd Get-DetailedHelp
 
+function MakeAndOpenDir ($dirName) {
+    mkdir $dirName | Out-Null; cd $dirName;
+}
+Set-Alias mkd MakeAndOpenDir
 
 # Keybindings
 Set-PSReadLineKeyHandler -key Tab -Function MenuComplete
