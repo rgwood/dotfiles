@@ -48,5 +48,12 @@ CapsLock & f::WinMaximize A
 ; macOS screenshots
 !+4::Send {PrintScreen}
 
-^!r::Reload
+^!r::
+    TrayTip, Reloading Config.ask, Config.ask is reloading
+    Sleep 3000
+    Reload
+
+; Outlook
+#IfWinActive, ahk_class rctrl_renwnd32
+^f::Send {F3}
 
