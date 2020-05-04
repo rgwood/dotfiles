@@ -19,3 +19,12 @@ Windows Registry Editor Version 5.00
 ; Remove Send To. Can be reenabled by setting to 7BA4C740-9E81-11CF-99D3-00AA004AE837
 [HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo]
 @=""
+
+; Removes the Edit with Paint 3D context menu entry
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.bmp\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.gif\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.jpg\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.jpeg\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.png\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.tif\Shell\3D Edit]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\.tiff\Shell\3D Edit]
