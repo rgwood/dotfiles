@@ -12,3 +12,5 @@ New-Item -ItemType HardLink -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsT
 New-Item -ItemType symboliclink -Path "$HOME\.config\starship.toml" -Value "$HOME\dotfiles\starship.toml" -Force
 
 New-Item -ItemType symboliclink -Path "$HOME\bin" -Value "$HOME\dotfiles\bin" -Force
+
+New-Item -ItemType symboliclink -Path "$HOME\notes" -Value "$HOME\dotfiles\notes" -Force
