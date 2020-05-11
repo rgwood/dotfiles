@@ -9,6 +9,8 @@ function ghd ($command) { Get-Help $command -Detailed | less}
 
 function mkd ($dirName) { mkdir $dirName | Out-Null; cd $dirName;}
 
+# macOS open command
+function open(){explorer}
 function gs(){git status}
 function gitlog(){git log --oneline --graph}
 
