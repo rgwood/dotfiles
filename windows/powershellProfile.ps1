@@ -22,3 +22,6 @@ Import-Module PSFzf -ArgumentList 'Ctrl+t','Ctrl+r'
 
 # Starship prompt
 Invoke-Expression (&starship init powershell)
+
+$scriptDir = (Resolve-Path "~/dotfiles/windows")
+New-Alias -Name wat -Value $scriptDir\wat.ps1
