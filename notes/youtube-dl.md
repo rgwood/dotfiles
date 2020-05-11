@@ -12,3 +12,6 @@
 
 # Best m4a audio
 --format 'm4a'
+
+# Convert audio to mp3
+--extract-audio --audio-format mp3
