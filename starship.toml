@@ -13,3 +13,6 @@ symbol = " "
 
 [directory]
 truncate_to_repo = false
+
+[aws]
+disabled = true
