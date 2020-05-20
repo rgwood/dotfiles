@@ -41,7 +41,6 @@ CapsLock & f::WinMaximize A
 ; Approximate macOS window closing
 !w::WinClose A
 !q::WinClose A
-^q::WinClose A
 
 !h::WinMinimize A
 
