@@ -13,6 +13,7 @@ function mkd ($dirName) { mkdir $dirName | Out-Null; cd $dirName;}
 function open(){explorer}
 function gs(){git status}
 function gitlog(){git log --oneline --graph}
+function lg(){lazygit}
 
 # Keybindings
 Set-PSReadLineKeyHandler -key Tab -Function MenuComplete
