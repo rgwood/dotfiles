@@ -1,0 +1,1 @@
+wt.exe --maximized --title Toolkit -p "PowerShell" -d "C:\Users\reill\src\toolkit"; new-tab --title CsUtilities -p "PowerShell" -d "C:\Users\reill\src\cs-utilities"; new-tab --title XlInterfaces -p "PowerShell" -d "C:\Users\reill\src\xl-interfaces"; focus-tab -t 0
