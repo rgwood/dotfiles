@@ -104,5 +104,17 @@
           { "command": "unbound", "keys": [ "alt+left" ] },
           { "command": "unbound", "keys": [ "alt+right" ] },
           { "command": "paste", "keys": [ "ctrl+v" ] }
-      ]
+      ],
+
+      // think this might replace the keybindings array, not 100% sure
+    "actions" : [
+      {
+        "command": {
+          "action": "wt",
+          "commandline": "new-tab --title XlInterfaces -p \"PowerShell\" --startingDirectory c:/Users/reill/src/xl-interfaces/ ; new-tab --title CsUtilities -p \"PowerShell\" --startingDirectory c:/Users/reill/src/cs-utilities/ ; new-tab --title Toolkit -p \"PowerShell\" --startingDirectory c:/Users/reill/src/toolkit/"
+        },
+        "name": "Open Work Repos"
+      }
+
+    ]
 }
