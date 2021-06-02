@@ -28,3 +28,6 @@ Windows Registry Editor Version 5.00
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.png\Shell\3D Edit]
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.tif\Shell\3D Edit]
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.tiff\Shell\3D Edit]
+
+; Delete Share with Skype
+[-HKEY_CLASSES_ROOT\PackagedCom\ClassIndex\{776DBC8D-7347-478C-8D71-791E12EF49D8}] 
