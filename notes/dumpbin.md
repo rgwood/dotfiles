@@ -1,0 +1,1 @@
+`dumpbin -imports foo.exe` to see imported DLLs+functions 
