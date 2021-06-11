@@ -1,0 +1,1 @@
+`--write-metadata` to save file metadata in JSON
