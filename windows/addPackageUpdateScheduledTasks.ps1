@@ -19,3 +19,13 @@ If(TaskExists($scoopTaskName)) {
     $trigger = New-ScheduledTaskTrigger -Daily -At 4am -RandomDelay (New-TimeSpan -Hours 1)
     Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $scoopTaskName
 }
+
+
+$scoopTaskName = "Update tldr"
+If(TaskExists($scoopTaskName)) {
+    echo "Task '${scoopTaskName}' already exists, not creating"
+} else {
+    $action = New-ScheduledTaskAction -Execute (which tldr) -Argument '--update'
+    $trigger = New-ScheduledTaskTrigger -Daily -At 4am -RandomDelay (New-TimeSpan -Hours 1)
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $scoopTaskName
+}
