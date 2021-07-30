@@ -28,3 +28,24 @@ Windows Registry Editor Version 5.00
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.png\Shell\3D Edit]
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.tif\Shell\3D Edit]
 [-HKEY_CLASSES_ROOT\SystemFileAssociations\.tiff\Shell\3D Edit]
+
+; Delete Share with Skype
+[-HKEY_CLASSES_ROOT\PackagedCom\ClassIndex\{776DBC8D-7347-478C-8D71-791E12EF49D8}] 
+
+; Remove "add to Windows Media Player" context menu
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\audio\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\Directory.Audio\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\SystemFileAssociations\Directory.Image\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP.DVR-MSFile\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP.WTVFile\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.ADTS\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.AIFF\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.ASF\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.ASX\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.AU\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.MIDI\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.MK3D\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.MP3\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.MPEG\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.WAX\shell\Enqueue]
+[-HKEY_CLASSES_ROOT\WMP11.AssocFile.WVX\shell\Enqueue]

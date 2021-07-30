@@ -3,6 +3,7 @@ set PATH $HOME/.cargo/bin $PATH
 # dotnet puts ~/.dotnet/tools in the path but Fish doesn't expand the tilde
 set PATH $HOME/.dotnet/tools $PATH
 set PATH $HOME/bin $PATH
+set PATH $HOME/localbin $PATH
 
 # fd works better than find, less likely to get stuck in deep directories
 set FZF_ALT_C_COMMAND "fd --type directory --hidden --follow"
@@ -30,3 +31,6 @@ end
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
 alias py3="python3"
+alias lg="lazygit"
+alias ytdl="youtube-dl"
+alias gdl="gallery-dl"

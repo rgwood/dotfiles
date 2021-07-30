@@ -20,7 +20,7 @@ function DependencyInstalledCheck([string] $command)
 
 function NoteExists([string] $name)
 {
-    Test-Path "~/notes/$name.md"
+    Test-Path "~/dotfiles/notes/$name.md"
 }
 
 $command = $args[0]
@@ -35,5 +35,5 @@ else {
 if(NoteExists($command))
 {
     DependencyInstalledCheck("mdcat")
-    & "mdcat" (Resolve-Path "~/notes/$command.md")
+    & "mdcat" (Resolve-Path "~/dotfiles/notes/$command.md")
 }

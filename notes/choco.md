@@ -1,0 +1,1 @@
+Local only: `choco list --local-only` or `clist -l`

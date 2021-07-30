@@ -1,0 +1,1 @@
+`watchexec --exts "cpp,h" --on-busy-update restart "cl /std:c++latest /EHsc /W4 /nologo *.cpp && .\main || echo Failed ($LASTEXITCODE)"`

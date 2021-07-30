@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-cargo install bat broot du-dust tealdeer mdcat cargo-update fd-find watchexec
+cargo install bat broot cargo-update du-dust exa fd-find tealdeer watchexec-cli 

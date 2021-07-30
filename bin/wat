@@ -33,11 +33,11 @@ def main():
     
     if notes_exist:
         print(f"  {Colors.HEADER}Notes{Colors.ENDC}\n")
-        if is_installed('mdcat'):
-            print(indent_stdout(sh.mdcat(file_path)))
-            print()
+        if is_installed('bat'):
+            print(indent_stdout(sh.bat(file_path, "--style", "plain")))
+            print("")
         else:
-            print(f"  {Colors.FAIL}Error: mdcat dependency not installed{Colors.ENDC}")
+            print(f"  {Colors.FAIL}Error: bat dependency not installed{Colors.ENDC}")
             print(indent_stdout(sh.cat(file_path)))
 
 
