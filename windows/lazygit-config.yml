@@ -1,0 +1,8 @@
+# Workaround for text highlighting bug in Windows Terminal
+# https://github.com/jesseduffield/lazygit/issues/1271
+gui:
+  theme:
+    selectedLineBgColor:
+      - reverse
+    selectedRangeBgColor:
+      - reverse
