@@ -6,11 +6,12 @@ New-Item -ItemType symboliclink -Path "$Env:Userprofile\.npmrc" -Value "$Env:Use
 
 # Hardlink b/c Windows Terminal settings don't auto-reload with symlinks
 # https://github.com/microsoft/terminal/issues/1812
-New-Item -ItemType HardLink -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json"  -Value "$HOME\dotfiles\windows\WindowsTerminalProfiles.json" -Confirm -Force
-
+# New-Item -ItemType HardLink -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\profiles.json"  -Value "$HOME\dotfiles\windows\WindowsTerminalProfiles.json" -Confirm -Force
 
 New-Item -ItemType symboliclink -Path "$HOME\.config\starship.toml" -Value "$HOME\dotfiles\starship.toml" -Force
 
 New-Item -ItemType symboliclink -Path "$HOME\bin" -Value "$HOME\dotfiles\bin" -Force
 
 New-Item -ItemType symboliclink -Path "$HOME\notes" -Value "$HOME\dotfiles\notes" -Force
+
+New-Item -ItemType symboliclink -Path "$env:AppData\lazygit\config.yml" -Value "$HOME\dotfiles\Windows\lazygit-config.yml" -Force

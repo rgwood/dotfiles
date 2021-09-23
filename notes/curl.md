@@ -1,0 +1,1 @@
+Download file, following redirects: `curl --location -O url`
