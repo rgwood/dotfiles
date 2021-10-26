@@ -1,0 +1,1 @@
+git config --global core.sshcommand "C:/Windows/System32/OpenSSH/ssh.exe"
