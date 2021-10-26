@@ -1,4 +1,4 @@
-﻿AddToUserPath_Idemopotent(@"%USERPROFILE%\scripts");
+﻿AddToUserPath_Idemopotent(Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\bin"));
 
 void AddToUserPath_Idemopotent(string directoryPath)
 {
