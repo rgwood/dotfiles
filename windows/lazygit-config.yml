@@ -6,3 +6,4 @@ gui:
       - reverse
     selectedRangeBgColor:
       - reverse
+  showCommandLog: false
