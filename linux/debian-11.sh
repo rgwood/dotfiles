@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # essentials
-sudo apt install git zsh rsync micro fzf
+sudo apt install git zsh rsync micro fzf curl wget -y
 
 # nice to haves
 sudo apt install mosh iotop python3-pip -y
