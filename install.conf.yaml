@@ -9,6 +9,8 @@
     ~/.vimrc: vimrc
     ~/scripts: scripts/linux
     ~/notes: notes
+    ~/.oh-my-zsh: .oh-my-zsh
+    ~/.powerlevel10k: powerlevel10k
 # sort out zsh customization later, some open questions
 #    ~/.zshrc: zshrc
 
