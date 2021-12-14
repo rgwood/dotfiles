@@ -6,17 +6,15 @@
 
 - link:
     ~/.dotfiles: ''
-    ~/.config/fish/config.fish: 
-      force: true
-      path: fish/config.fish
-    ~/.config/fish/fish_variables: 
-      force: true
-      path: fish/fish_variables
-    ~/.config/fish/functions: fish/functions
     ~/.vimrc: vimrc
-    ~/bin: bin
+    ~/scripts: scripts/linux
     ~/notes: notes
-    ~/.config/powershell: powershell
+# sort out zsh customization later, some open questions
+#    ~/.zshrc: zshrc
+
+- create:
+    - ~/downloads
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
+  - [chsh -s $(which zsh), Making zsh the default shell]
