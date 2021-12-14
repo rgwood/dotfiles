@@ -14,12 +14,10 @@
     ~/notes: notes
     ~/.oh-my-zsh: oh-my-zsh
     ~/.powerlevel10k: powerlevel10k
-# sort out zsh customization later, some open questions
-#    ~/.zshrc: zshrc
+    ~/.zshrc: zsh/zshrc
 
 - create:
     - ~/downloads
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
   - [sudo chsh -s $(which zsh), Making zsh the default shell]
