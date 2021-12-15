@@ -110,10 +110,7 @@ source $ZSH/oh-my-zsh.sh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# WSL stuff
-# TODO: script this so it only runs if ssh-agent-relay is present
-# https://github.com/anaisbetts/ssh-agent-relay
-# eval $(ssh-agent-relay)
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -125,3 +122,13 @@ alias lg=lazygit
 mkd() {
 	mkdir $1 && cd $1
 }
+
+exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# WSL stuff
+# https://github.com/anaisbetts/ssh-agent-relay
+if exists ssh-agent-relay; then
+  eval $(ssh-agent-relay)
+fi
