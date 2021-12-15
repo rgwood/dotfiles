@@ -6,7 +6,6 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
-  - [fzf/install --all, Installing fzf]
 
 - link:
     ~/.dotfiles: ''
@@ -21,4 +20,5 @@
     - ~/downloads
 
 - shell:
+  - [fzf/install --all, Installing fzf]
   - [sudo chsh -s $(which zsh), Making zsh the default shell]
