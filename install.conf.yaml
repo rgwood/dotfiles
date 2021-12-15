@@ -15,6 +15,7 @@
     ~/.oh-my-zsh: oh-my-zsh
     ~/.powerlevel10k: powerlevel10k
     ~/.zshrc: zsh/zshrc
+    ~/.p10k.zsh: zsh/p10k.zsh
 
 - create:
     - ~/downloads
