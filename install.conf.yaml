@@ -19,6 +19,7 @@
 
 - create:
     - ~/downloads
+    - ~/bin
 
 - shell:
   - [fzf/install --all, Installing fzf]
