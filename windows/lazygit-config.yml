@@ -6,3 +6,5 @@ gui:
       - reverse
     selectedRangeBgColor:
       - reverse
+os:
+  editCommand: 'code'
