@@ -24,7 +24,6 @@ Import-Module PSFzf -ArgumentList 'Ctrl+t','Ctrl+r'
 # Starship prompt
 Invoke-Expression (&starship init powershell)
 
-$scriptDir = (Resolve-Path "~/dotfiles/windows")
-New-Alias -Name wat -Value $scriptDir\wat.ps1
+Set-Alias -Name wat -Value wat.ps1
 
-$env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
+# $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1

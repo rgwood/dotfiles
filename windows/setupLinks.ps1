@@ -10,8 +10,6 @@ New-Item -ItemType symboliclink -Path "$Env:Userprofile\.npmrc" -Value "$Env:Use
 
 New-Item -ItemType symboliclink -Path "$HOME\.config\starship.toml" -Value "$HOME\dotfiles\starship.toml" -Force
 
-New-Item -ItemType symboliclink -Path "$HOME\bin" -Value "$HOME\dotfiles\bin" -Force
-
-New-Item -ItemType symboliclink -Path "$HOME\notes" -Value "$HOME\dotfiles\notes" -Force
+New-Item -ItemType symboliclink -Path "$HOME\scripts" -Value "$HOME\dotfiles\scripts\win" -Force
 
 New-Item -ItemType symboliclink -Path "$env:AppData\lazygit\config.yml" -Value "$HOME\dotfiles\Windows\lazygit-config.yml" -Force

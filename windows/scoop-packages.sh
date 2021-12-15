@@ -1,1 +1,0 @@
-scoop install 7zip bat dust fd ffmpeg fzf lazygit less make mdcat nu perl starship ripgrep tokei vcredist2010 watchexec yarn youtube-dl
