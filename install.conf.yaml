@@ -25,4 +25,3 @@
 
 - shell:
   - [fzf/install --all, Installing fzf]
-  - [chsh -s $(which zsh), Making zsh the default shell]
