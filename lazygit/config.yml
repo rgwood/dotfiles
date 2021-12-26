@@ -1,0 +1,10 @@
+gui:
+  # make selection more obvious (change background colour instead of just making text bold)
+  # https://github.com/jesseduffield/lazygit/issues/1271#issuecomment-819302799
+  theme:
+    selectedLineBgColor:
+      - reverse
+    selectedRangeBgColor:
+      - reverse
+  # command log takes up way too much space to have on by default
+  showCommandLog: false

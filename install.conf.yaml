@@ -17,6 +17,7 @@
     ~/.zshrc: zsh/zshrc
     ~/.p10k.zsh: zsh/p10k.zsh
     ~/.config/micro/settings.json: micro/settings.json
+    ~/.config/lazygit/config.yml: lazygit/config.yml
 
 - create:
     - ~/downloads
