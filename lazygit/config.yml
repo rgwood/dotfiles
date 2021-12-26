@@ -8,3 +8,7 @@ gui:
       - reverse
   # command log takes up way too much space to have on by default
   showCommandLog: false
+os:
+  editCommand: 'micro'
+  # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#recommended-config-values
+  openCommand: 'code -rg {{filename}}'
