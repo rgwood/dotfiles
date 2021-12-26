@@ -16,6 +16,7 @@
     ~/.powerlevel10k: powerlevel10k
     ~/.zshrc: zsh/zshrc
     ~/.p10k.zsh: zsh/p10k.zsh
+    ~/.config/micro/settings.json: micro/settings.json
 
 - create:
     - ~/downloads
