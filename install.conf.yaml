@@ -7,6 +7,10 @@
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
 
+- defaults:
+    link:
+      create: true # create directories if needed
+
 - link:
     ~/.dotfiles: ''
     ~/.vimrc: vimrc
@@ -16,7 +20,9 @@
     ~/.powerlevel10k: powerlevel10k
     ~/.zshrc: zsh/zshrc
     ~/.p10k.zsh: zsh/p10k.zsh
-    ~/.config/micro/settings.json: micro/settings.json
+    ~/.config/micro/settings.json:
+      force: true
+      path: micro/settings.json
     ~/.config/lazygit/config.yml: lazygit/config.yml
 
 - create:
