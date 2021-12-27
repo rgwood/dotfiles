@@ -5,6 +5,10 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 # disable ZSH beeping like mad
 unsetopt beep;
 
@@ -125,12 +129,12 @@ source $ZSH/oh-my-zsh.sh
 alias lg=lazygit
 alias mi=micro
 
+if exists exa; then
+  alias ls=exa
+fi
+
 mkd() {
 	mkdir $1 && cd $1
-}
-
-exists() {
-  command -v "$1" >/dev/null 2>&1
 }
 
 # WSL stuff
