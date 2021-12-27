@@ -20,8 +20,11 @@
     ~/.config/lazygit/config.yml: lazygit/config.yml
 
 - create:
-    - ~/downloads
     - ~/bin
+    - ~/downloads
+    - ~/scratch
+    - ~/src # a shortlist of commonly used projects
+    - ~/source # everything under the sun
 
 - shell:
   - [fzf/install --all, Installing fzf]
