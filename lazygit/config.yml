@@ -12,3 +12,5 @@ os:
   editCommand: 'micro'
   # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#recommended-config-values
   openCommand: 'code -rg {{filename}}'
+# to skip without creating a new repo
+notARepository: 'skip'
