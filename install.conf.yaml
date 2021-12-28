@@ -30,7 +30,7 @@
     - ~/bin
     - ~/downloads
     - ~/scratch
-    - ~/src # a shortlist of commonly used projects
+    - ~/src # shortlist of commonly used projects
     - ~/source # everything under the sun
 
 - shell:
