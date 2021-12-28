@@ -21,6 +21,8 @@ export PATH=$PATH:$HOME/scripts
 export PATH=$PATH:$HOME/.pulumi/bin
 
 export ZSH=$HOME/.oh-my-zsh
+export VISUAL=micro
+export EDITOR=micro
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
