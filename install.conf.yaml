@@ -25,6 +25,7 @@
       path: micro/settings.json
     ~/.config/lazygit/config.yml: lazygit/config.yml
     ~/.config/nu/config.toml: nushell/config.toml
+    ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
 
 - create:
     - ~/bin

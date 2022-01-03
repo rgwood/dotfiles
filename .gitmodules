@@ -11,3 +11,6 @@
 [submodule "powerlevel10k"]
 	path = powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k
+[submodule "zsh-autosuggestions"]
+	path = zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
