@@ -1,0 +1,4 @@
+startup = [
+    "alias lg = lazygit",
+    "def nuver [] {version | pivot key value}",
+    ]

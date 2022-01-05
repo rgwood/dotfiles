@@ -3,9 +3,6 @@
 
 sudo apt install fish mosh iotop python3-pip
 
-# not always available...
-sudo apt install fzf
-
 # gcc etc, needed for cargo
 sudo apt install build-essential
 

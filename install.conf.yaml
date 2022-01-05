@@ -5,7 +5,14 @@
 - clean: ['~']
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
+  -
+    command: git submodule update --init --recursive
+    description: Installing submodules
+    stderr: true
+
+- defaults:
+    link:
+      create: true # create directories if needed
 
 - link:
     ~/.dotfiles: ''
@@ -16,11 +23,20 @@
     ~/.powerlevel10k: powerlevel10k
     ~/.zshrc: zsh/zshrc
     ~/.p10k.zsh: zsh/p10k.zsh
+    ~/.config/micro/settings.json:
+      force: true
+      path: micro/settings.json
+    ~/.config/lazygit/config.yml: lazygit/config.yml
+    ~/.config/nu/config.toml: nushell/config.toml
+    ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
 
 - create:
-    - ~/downloads
     - ~/bin
+    - ~/downloads
+    - ~/scratch
+    - ~/src # shortlist of commonly used projects
+    - ~/source # everything under the sun
 
 - shell:
   - [fzf/install --all, Installing fzf]
-  - [chsh -s $(which zsh), Making zsh the default shell]
+  - git config --global core.editor micro
