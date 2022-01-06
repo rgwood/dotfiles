@@ -4,7 +4,7 @@
 sudo apt install git zsh rsync micro curl fzf wget -y
 
 # nice to haves
-sudo apt install mosh iotop python3-pip sh -y
+sudo apt install mosh iotop python3-pip -y
 
 # needed for some Cargo packages
 sudo apt install build-essential llvm libclang-dev libssl-dev pkg-config -y
