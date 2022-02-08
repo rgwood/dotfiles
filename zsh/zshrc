@@ -19,6 +19,7 @@ export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$PATH:$HOME/scripts
 export PATH=$PATH:$HOME/dotnet
+export PATH=$PATH:$HOME/.dotnet/tools
 export PATH=$PATH:$HOME/cs-scripts/compiled
 export PATH=$PATH:$HOME/.pulumi/bin
 
