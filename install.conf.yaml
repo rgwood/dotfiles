@@ -37,6 +37,7 @@
     - ~/scratch
     - ~/src # shortlist of commonly used projects
     - ~/source # everything under the sun
+    - ~/github
 
 - shell:
   - [fzf/install --all, Installing fzf]

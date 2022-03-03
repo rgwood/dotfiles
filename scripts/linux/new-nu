@@ -1,0 +1,7 @@
+#!/usr/bin/env nu
+
+def main [name] {
+    $"#!/usr/bin/env nu(char nl)def main [arg1] { $arg1 }(char nl)" | save $name
+    chmod +x $name
+    $"Created `($name)` Nu script"
+}
