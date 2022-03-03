@@ -12,6 +12,9 @@ exists() {
 # disable ZSH beeping like mad
 unsetopt beep;
 
+# Disable automatic escaping of pasted URLs
+DISABLE_MAGIC_FUNCTIONS=true
+
 # PATH Stuff
 
 export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
