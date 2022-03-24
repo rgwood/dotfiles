@@ -27,6 +27,9 @@ export PATH=$PATH:$HOME/cs-scripts/compiled
 export PATH=$PATH:$HOME/.pulumi/bin
 export PATH=$PATH:$HOME/github/nushell/target/debug
 export PATH=$PATH:/usr/local/go/bin
+# annoying workaround for Nu WSL performance issue https://github.com/nushell/nushell/issues/4914
+export PATH=$PATH:/mnt/c/windows/system32
+export PATH=$PATH:"/mnt/c/Users/reill/AppData/Local/Programs/Microsoft VS Code/bin"
 
 export ZSH=$HOME/.oh-my-zsh
 
