@@ -13,3 +13,5 @@ New-Item -ItemType symboliclink -Path "$HOME\.config\starship.toml" -Value "$HOM
 New-Item -ItemType symboliclink -Path "$HOME\scripts" -Value "$HOME\dotfiles\scripts\win" -Force
 
 New-Item -ItemType symboliclink -Path "$env:AppData\lazygit\config.yml" -Value "$HOME\dotfiles\Windows\lazygit-config.yml" -Force
+
+New-Item -ItemType symboliclink -Path "$env:AppData\nushell\config.nu" -Value "$HOME\dotfiles\nu\config.nu" -Force
