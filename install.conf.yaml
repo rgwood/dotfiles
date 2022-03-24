@@ -16,6 +16,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.config/nushell/config.nu: nu/config.nu
     ~/.vimrc: vimrc
     ~/scripts: scripts/linux
     ~/notes: notes
@@ -27,7 +28,6 @@
       force: true
       path: micro/settings.json
     ~/.config/lazygit/config.yml: lazygit/config.yml
-    ~/.config/nu/config.toml: nushell/config.toml
     ~/.sqliterc: sqliterc
     ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
 
