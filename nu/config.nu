@@ -2,6 +2,8 @@
 
 alias lg = lazygit
 
+def-env mkd [dir:string] { mkdir $dir; cd $dir }
+
 def create_left_prompt [] {
     let path_segment = ($env.PWD)
 
