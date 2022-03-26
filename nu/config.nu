@@ -278,7 +278,15 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project { dotnet build } else if in-rust-project { cargo build } else if in-node-project { npm run build } else {'Not sure what to do in this folder.'}"
+        cmd: "if in-dotnet-project {
+                  dotnet build
+              } else if in-rust-project {
+                  cargo build
+              } else if in-node-project {
+                  npm run build
+              } else {
+                  'Not sure how to build in this folder.'
+              }"
       }
     }
     {
@@ -288,7 +296,15 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project { dotnet run } else if in-rust-project { cargo run } else if in-node-project { npm run start } else {'Not sure what to do in this folder.'}"
+        cmd: "if in-dotnet-project {
+                  dotnet run
+              } else if in-rust-project {
+                  cargo run
+              } else if in-node-project {
+                  npm run start
+              } else {
+                  'Not sure how to run code in this folder.'
+              }"
       }
     }
   ]
