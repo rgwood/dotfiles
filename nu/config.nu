@@ -4,6 +4,10 @@ alias lg = lazygit
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 
+
+def in-dotnet-project-folder [] { (ls | where ($it.name | str ends-with .csproj) | length) > 0 }
+
+
 def create_left_prompt [] {
     let path_segment = ($env.PWD)
 
@@ -253,6 +257,36 @@ let $config = {
           { send: menupageprevious }
           { edit: undo }
         ]
+      }
+    }
+    {
+      name: reload_config
+      modifier: none
+      keycode: f5
+      mode: emacs
+      event: {
+        send: executehostcommand,
+        cmd: $"source '($nu.config-path)'"
+      }
+    }
+    {
+      name: build
+      modifier: control
+      keycode: char_b
+      mode: emacs
+      event: {
+        send: executehostcommand,
+        cmd: "if in-dotnet-project-folder { dotnet build } else {'Not sure what to do in this folder.'}"
+      }
+    }
+    {
+      name: run
+      modifier: control
+      keycode: char_r
+      mode: emacs
+      event: {
+        send: executehostcommand,
+        cmd: "if in-dotnet-project-folder { dotnet run } else {'Not sure what to do in this folder.'}"
       }
     }
   ]
