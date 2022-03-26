@@ -4,9 +4,11 @@ alias lg = lazygit
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 
+def any [] { length | $in >= 1 }
 
-def in-dotnet-project-folder [] { (ls | where ($it.name | str ends-with .csproj) | length) > 0 }
-
+def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
+def in-rust-project [] { ls | where name == Cargo.toml | any }
+def in-node-project [] { ls | where name == package.json | any }
 
 def create_left_prompt [] {
     let path_segment = ($env.PWD)
@@ -276,7 +278,7 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project-folder { dotnet build } else {'Not sure what to do in this folder.'}"
+        cmd: "if in-dotnet-project { dotnet build } else if in-rust-project { cargo build } else if in-node-project { npm run build } else {'Not sure what to do in this folder.'}"
       }
     }
     {
@@ -286,7 +288,7 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project-folder { dotnet run } else {'Not sure what to do in this folder.'}"
+        cmd: "if in-dotnet-project { dotnet run } else if in-rust-project { cargo run } else if in-node-project { npm run start } else {'Not sure what to do in this folder.'}"
       }
     }
   ]
