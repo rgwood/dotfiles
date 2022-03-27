@@ -9,6 +9,63 @@ def any [] { length | $in >= 1 }
 def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
 def in-rust-project [] { ls | where name == Cargo.toml | any }
 def in-node-project [] { ls | where name == package.json | any }
+def in-go-project [] { ls | where name == go.mod | any }
+
+def build-current-project [] {
+  if in-dotnet-project {
+      dotnet build
+  } else if in-rust-project {
+      cargo build
+  } else if in-node-project {
+      npm run build # TODO: figure out a way to pick+cache an NPM script per directory
+  } else {
+      'Not sure how to build in this folder.'
+  }
+}
+
+def run-current-project [] {
+  if in-dotnet-project {
+      dotnet run
+  } else if in-rust-project {
+      cargo run
+  } else if in-node-project {
+      npm run start
+  } else {
+      'Not sure how to run code in this folder.'
+  }
+}
+
+# from https://github.com/nushell/nu_scripts/tree/main/custom-completions/npm
+module npm-completions {
+  export extern "npm" [
+    command: string@"nu-complete npm"
+  ]
+  def "nu-complete npm" [] {
+    ^npm -l
+    |lines
+    |find 'Run "'
+    |str trim
+    |split column -c ' '
+    |get column4
+    |str find-replace '"' ''
+  }
+
+  def "nu-complete npm run" [] {
+    open ./package.json
+    |get scripts
+    |columns
+  }
+  export extern "npm run" [
+    command: string@"nu-complete npm run"
+    --workspace(-w)
+    --include-workspace-root
+    --if-present
+    --ignore-scripts
+    --script-shell
+  ]
+}
+
+use npm-completions *
 
 def create_left_prompt [] {
     let path_segment = ($env.PWD)
@@ -278,15 +335,7 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project {
-                  dotnet build
-              } else if in-rust-project {
-                  cargo build
-              } else if in-node-project {
-                  npm run build
-              } else {
-                  'Not sure how to build in this folder.'
-              }"
+        cmd: "build-current-project"
       }
     }
     {
@@ -296,15 +345,7 @@ let $config = {
       mode: emacs
       event: {
         send: executehostcommand,
-        cmd: "if in-dotnet-project {
-                  dotnet run
-              } else if in-rust-project {
-                  cargo run
-              } else if in-node-project {
-                  npm run start
-              } else {
-                  'Not sure how to run code in this folder.'
-              }"
+        cmd: "run-current-project"
       }
     }
   ]
