@@ -35,6 +35,51 @@ def run-current-project [] {
   }
 }
 
+def wat [...split_name:string] {
+    tldr $split_name
+
+    let name = ($split_name | str collect " ");
+
+    let md = $"($name).md"
+
+    let solarized = {
+        "Black": "0x002b36",
+        "DarkGray": "0x073642",
+        "DarkGreen": "0x586e75",
+        "DarkYellow": "0x657b83",
+        "DarkBlue": "0x839496",
+        "DarkCyan": "0x93a1a1",
+        "Gray": "0xeee8d5",
+        "White": "0xfdf6e3",
+        "Red": "0xdc322f",
+        "DarkRed": "0xcb4b16",
+        "Yellow": "0xb58900",
+        "Green": "0x859900",
+        "Cyan": "0x2aa198",
+        "Blue": "0x268bd2",
+        "Magenta": "0x6c71c4",
+        "DarkMagenta": "0xd33682"
+    }
+
+    cd ~/dotfiles/notes
+    let notePath = ($nu.home-path | path join $"dotfiles/notes/($name).md");
+
+    if ( $notePath | path exists ) {
+
+        # echo "Local Notes" | ansi gradient --fgstart 0x40c9ff --fgend 0xe81cff
+        # echo "Local Notes" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Magenta
+        # echo "Local Notes" | ansi gradient --fgstart $solarized.Cyan --fgend $solarized.Magenta
+        # echo "Local Notes" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.DarkMagenta
+        # echo "Local Notes:" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Yellow
+
+        echo "📘 Local Notes 📘" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Green
+
+        echo ""
+        mdcat $notePath
+    }
+}
+
+
 # from https://github.com/nushell/nu_scripts/tree/main/custom-completions/npm
 module npm-completions {
   export extern "npm" [
