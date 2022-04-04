@@ -24,10 +24,10 @@ def build-current-project [] {
 }
 
 def run-current-project [] {
-  if in-dotnet-project {
-      dotnet run
-  } else if in-rust-project {
+  if in-rust-project {
       cargo run
+  } else if in-dotnet-project {
+      dotnet run
   } else if in-node-project {
       npm run start
   } else {
