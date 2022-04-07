@@ -92,7 +92,7 @@ module npm-completions {
     |str trim
     |split column -c ' '
     |get column4
-    |str find-replace '"' ''
+    |str replace '"' ''
   }
 
   def "nu-complete npm run" [] {
@@ -173,7 +173,7 @@ module completions {
   #
   # This is a simplified version of completions for git branches and git remotes
   def "nu-complete git branches" [] {
-    ^git branch | lines | each { |line| $line | str find-replace '[\*\+] ' '' | str trim }
+    ^git branch | lines | each { |line| $line | str replace '[\*\+] ' '' | str trim }
   }
 
   def "nu-complete git remotes" [] {
