@@ -4,7 +4,7 @@ alias lg = lazygit
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 
-def any [] { length | $in >= 1 }
+def any [] { ($in | length) >= 1 }
 
 def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
 def in-rust-project [] { ls | where name == Cargo.toml | any }
