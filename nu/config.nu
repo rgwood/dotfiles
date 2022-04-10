@@ -452,7 +452,7 @@ let $config = {
     {
       name: history_menu
       modifier: control
-      keycode: char_x
+      keycode: char_r
       mode: emacs
       event: {
         until: [
@@ -494,14 +494,18 @@ let $config = {
       }
     }
     {
-name: run
-modifier: control
-keycode: char_r
-mode: emacs
-event: {
-      send: executehostcommand,
-      cmd: "run-current-project"
-}
+      name: run
+      modifier: control
+      keycode: enter
+      mode: emacs
+      event: { send: executehostcommand, cmd: "run-current-project" }
+    }
+    {
+      name: run
+      modifier: alt
+      keycode: enter
+      mode: emacs
+      event: { send: executehostcommand, cmd: "run-current-project" }
     }
     # Keybindings used to trigger the user defined menus
     {
