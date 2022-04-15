@@ -15,7 +15,7 @@
       create: true # create directories if needed
 
 - link:
-    ~/.dotfiles: ''
+    ~/dotfiles: ''
     ~/.config/nushell/config.nu: nu/config.nu
     ~/.vimrc: vimrc
     ~/scripts: scripts/linux
