@@ -3,8 +3,12 @@
 alias lg = lazygit
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
-
 def any [] { ($in | length) >= 1 }
+
+# PATH stuff
+
+let-env PATH = ($env.PATH | append /home/linuxbrew/.linuxbrew/bin)
+let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
 
 def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
 def in-rust-project [] { ls | where name == Cargo.toml | any }
