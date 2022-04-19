@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # general system utils
-sudo dnf install -y zsh bat fzf micro tealdeer htop ripgrep python3-pip gnome-tweaks
+sudo dnf install -y zsh bat fzf micro tealdeer htop ripgrep python3-pip gnome-tweaks xclip
 
 # for chsh
 sudo dnf install -y util-linux-user

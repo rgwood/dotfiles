@@ -2,6 +2,8 @@
 
 alias lg = lazygit
 alias start = xdg-open
+# TODO: make this alias Linux-only
+alias clip = xclip -sel clip
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 def any [] { ($in | length) >= 1 }
