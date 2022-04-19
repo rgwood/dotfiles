@@ -30,6 +30,7 @@
     ~/.config/lazygit/config.yml: lazygit/config.yml
     ~/.sqliterc: sqliterc
     ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
+    ~/.editorconfig: .editorconfig
 
 - create:
     - ~/bin
