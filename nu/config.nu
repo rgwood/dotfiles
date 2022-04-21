@@ -5,6 +5,11 @@ alias start = xdg-open
 # TODO: make this alias Linux-only
 alias clip = xclip -sel clip
 
+def-env presentation-mode [] {
+  let-env PROMPT_COMMAND = { "" }
+  let-env PROMPT_COMMAND_RIGHT = { "" }
+}
+
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 def any [] { ($in | length) >= 1 }
 
