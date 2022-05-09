@@ -2,6 +2,9 @@
 [*]
 end_of_line = lf
 insert_final_newline = true
-
-[*.{rs,cs}]
 trim_trailing_whitespace = true
+
+
+[*.md]
+# can be significant for newlines
+trim_trailing_whitespace = false
