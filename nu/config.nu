@@ -1,7 +1,6 @@
 # Nushell Config File
 
 alias lg = lazygit
-alias start = xdg-open
 # TODO: make this alias Linux-only
 alias clip = xclip -sel clip
 
@@ -19,6 +18,17 @@ def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
 def in-rust-project [] { ls | where name == Cargo.toml | any }
 def in-node-project [] { ls | where name == package.json | any }
 def in-go-project [] { ls | where name == go.mod | any }
+
+def start [path] {
+  if $nu.os-info.name == "windows" {
+    ^start $path
+  }
+  if $nu.os-info.name == "macos" {
+    ^open $path
+  } else {
+    xdg-open $path
+  }
+}
 
 def build-current-project [] {
   if in-dotnet-project {
