@@ -22,8 +22,7 @@ def in-go-project [] { ls | where name == go.mod | any }
 def start [path] {
   if $nu.os-info.name == "windows" {
     ^start $path
-  }
-  if $nu.os-info.name == "macos" {
+  } else if $nu.os-info.name == "macos" {
     ^open $path
   } else {
     xdg-open $path
