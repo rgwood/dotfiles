@@ -1,0 +1,4 @@
+set shell := ["nu", "-c"]
+
+hello:
+    "Hello world!"
