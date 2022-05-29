@@ -1,4 +1,5 @@
 ﻿AddToUserPath_Idemopotent(Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\bin"));
+AddToUserPath_Idemopotent(Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\github\nushell\target\debug"));
 
 void AddToUserPath_Idemopotent(string directoryPath)
 {
