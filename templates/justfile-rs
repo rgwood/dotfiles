@@ -16,6 +16,11 @@ test:
 watch-tests:
     watch . { cargo tests } --glob=**/*.rs
 
-publish:
+expected_filename := if os_family() == "windows" { "{{current_dir_name}}.exe" } else { "{{current_dir_name}}" }
+
+build-release:
     cargo build --release
-    @$"Build size: (ls target/release/{{ current_dir_name }} | get size)"
+    @$"Build size: (ls target/release/\{{expected_filename}} | get size)"
+
+publish-to-local-bin: build-release
+    cp target/release/\{{expected_filename}} ~/bin/
