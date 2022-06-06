@@ -1,0 +1,26 @@
+- defaults:
+    link:
+      relink: true
+
+- clean: ['~']
+
+- defaults:
+    link:
+      create: true # create directories if needed
+
+- link:
+    ~/dotfiles: ''
+    ~/AppData/Roaming/nushell/config.nu: nu\config.nu
+    ~/AppData/Roaming/nushell/env.nu: nu\env.nu
+    ~/AppData/Roaming/starship.toml: starship.toml
+    ~/AppData/Roaming/lazygit/config.yml: lazygit\config-windows.yml
+    ~/notes: notes
+    ~/.sqliterc: sqliterc
+    ~/.editorconfig: .editorconfig
+
+- create:
+    - ~/bin
+    - ~/scratch
+    - ~/src # shortlist of commonly used projects
+    - ~/source # everything under the sun
+    - ~/github
