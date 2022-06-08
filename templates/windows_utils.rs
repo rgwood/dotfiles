@@ -19,7 +19,6 @@ pub fn to_windows_wide_string(string: &str) -> Vec<u16> {
         .collect()
 }
 
-
 pub fn unix_time_from_filetime(ft: &windows::Win32::Foundation::FILETIME) -> i64 {
     /// January 1, 1970 as Windows file time
     const EPOCH_AS_FILETIME: u64 = 116444736000000000;
