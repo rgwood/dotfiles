@@ -1,3 +1,4 @@
+# templater.filename = justfile
 set shell := ["nu", "-c"]
 
 watch:
