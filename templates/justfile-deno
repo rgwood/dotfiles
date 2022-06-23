@@ -16,6 +16,3 @@ run:
 
 test:
     deno check index.ts; deno test index.ts
-
-watch-tests:
-    watch . --glob=*.ts { deno check index.ts; deno test index.ts }
