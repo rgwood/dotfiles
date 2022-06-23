@@ -1,0 +1,20 @@
+set shell := ["nu", "-c"]
+
+watch:
+    watch . --glob=*.ts { deno check index.ts; deno run index.ts }
+
+watch-tests:
+    watch . --glob=*.ts { deno check index.ts; deno test index.ts }
+
+run:
+    deno check index.ts; deno run index.ts
+
+# Deno tests:
+# import { assertEquals } from "https://deno.land/std@0.144.0/testing/asserts.ts";
+# Deno.test("foo", () => { assertEquals("bar", "baz");});
+
+test:
+    deno check index.ts; deno test index.ts
+
+watch-tests:
+    watch . --glob=*.ts { deno check index.ts; deno test index.ts }
