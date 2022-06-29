@@ -1,0 +1,12 @@
+set shell := ["nu", "-c"]
+
+# TODO: add support for Windows
+
+build-nix:
+    g++ main.cpp -o main
+
+run-nix: build-nix
+    ./main
+
+watch-nix:
+    watch . { just run-nix } --glob=**/*.cpp
