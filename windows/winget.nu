@@ -6,3 +6,4 @@ winget install windirstat
 winget install icloud
 winget install OBSProject.OBSStudio
 winget install RandyRants.SharpKeys
+winget install windbg
