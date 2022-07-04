@@ -1,12 +1,22 @@
 set shell := ["nu", "-c"]
 
-# TODO: add support for Windows
-
-build-nix:
+build:
+    just build-{{ os_family() }}
+build-unix:
     g++ main.cpp -o main
+build-windows:
+    cl /EHsc /W4 /nologo main.cpp
 
-run-nix: build-nix
+run:
+    just run-{{ os_family() }}
+run-unix: build-unix
+    ./main
+run-windows: build-windows
     ./main
 
-watch-nix:
+watch:
+    just watch-{{ os_family() }}
+watch-unix:
     watch . { just run-nix } --glob=**/*.cpp
+watch-windows:
+    watch . { just run-windows } --glob=**/*.cpp
