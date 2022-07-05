@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install packages that are commonly available via APT in the distros I use
 
-sudo apt install fish mosh iotop python3-pip
+sudo apt install micro iotop python3-pip
 
 # gcc etc, needed for cargo
 sudo apt install build-essential
