@@ -62,3 +62,4 @@ let-env EDITOR = "/usr/bin/micro"
 let-env PATH = ($env.PATH | append $"($env.HOME)/bin" )
 let-env PATH = ($env.PATH | append /home/linuxbrew/.linuxbrew/bin)
 let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
+let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin" )
