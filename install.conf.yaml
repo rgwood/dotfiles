@@ -1,46 +1,46 @@
 - defaults:
-    link:
-      relink: true
+      link:
+          relink: true
 
-- clean: ['~']
+- clean: ["~"]
 
 - shell:
-  -
-    command: git submodule update --init --recursive
-    description: Installing submodules
-    stderr: true
+      - command: git submodule update --init --recursive
+        description: Installing submodules
+        stderr: true
 
 - defaults:
-    link:
-      create: true # create directories if needed
+      link:
+          create: true # create directories if needed
 
 - link:
-    ~/dotfiles: ''
-    ~/.config/nushell/config.nu: nu/config.nu
-    ~/.config/nushell/env.nu: nu/env.nu
-    ~/.vimrc: vimrc
-    ~/scripts: scripts/linux
-    ~/notes: notes
-    ~/.oh-my-zsh: oh-my-zsh
-    ~/.powerlevel10k: powerlevel10k
-    ~/.zshrc: zsh/zshrc
-    ~/.p10k.zsh: zsh/p10k.zsh
-    ~/.config/micro/settings.json:
-      force: true
-      path: micro/settings.json
-    ~/.config/lazygit/config.yml: lazygit/config.yml
-    ~/.sqliterc: sqliterc
-    ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
-    ~/.editorconfig: .editorconfig
+      ~/dotfiles: ""
+      ~/.config/nushell/config.nu: nu/config.nu
+      ~/.config/nushell/env.nu: nu/env.nu
+      ~/.vimrc: vimrc
+      ~/scripts: scripts/linux
+      ~/notes: notes
+      ~/.oh-my-zsh: oh-my-zsh
+      ~/.powerlevel10k: powerlevel10k
+      ~/.zshrc: zsh/zshrc
+      ~/.p10k.zsh: zsh/p10k.zsh
+      ~/.config/micro/settings.json:
+          force: true
+          path: micro/settings.json
+      ~/.config/lazygit/config.yml: lazygit/config.yml
+      ~/.sqliterc: sqliterc
+      ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
+      ~/.editorconfig: .editorconfig
+      ~/.gitignore: git/personal-gitignore
 
 - create:
-    - ~/bin
-    - ~/downloads
-    - ~/scratch
-    - ~/src # shortlist of commonly used projects
-    - ~/source # everything under the sun
-    - ~/github
+      - ~/bin
+      - ~/downloads
+      - ~/scratch
+      - ~/src # shortlist of commonly used projects
+      - ~/source # everything under the sun
+      - ~/github
 
 - shell:
-  - [fzf/install --all, Installing fzf]
-  - git config --global core.editor micro
+      - [fzf/install --all, Installing fzf]
+      - git config --global core.editor micro
