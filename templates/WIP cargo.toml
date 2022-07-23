@@ -1,9 +1,8 @@
 # Things to add to cargo toml. Need to add an append feature to Templater
 
 [profile.release]
-opt-level = 'z'   # Optimize for size.
-lto = true        # Enable Link Time Optimization
-codegen-units = 1 # Reduce number of codegen units to increase optimizations.
-panic = 'abort'   # Abort on panic
-# strip trims a LOT of weight away but I'd rather have the nice stack traces usually
-# strip = true      # Strip symbols from binary*
+lto = true      # Enable Link Time Optimization
+opt-level = 'z' # Optimize for size.
+panic = 'abort' # Abort on panic
+# codegen-units = 1 # Set low to increase optimizations. Kills compile time though
+# strip = true        # Strip symbols from binary. Big gains but idk if it's worth bad stack traces
