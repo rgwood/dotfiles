@@ -19,6 +19,12 @@ def in-rust-project [] { ls | where name == Cargo.toml | any }
 def in-node-project [] { ls | where name == package.json | any }
 def in-go-project [] { ls | where name == go.mod | any }
 
+# A wrapper to fix `code ~/foo` on Windows (bug where that opens a new file named foo)
+def code [path] {
+    cd $path
+    ^code .
+}
+
 def start [path] {
   if $nu.os-info.name == "windows" {
     ^start $path
@@ -471,16 +477,6 @@ let-env config = {
           { send: menupageprevious }
           { edit: undo }
         ]
-      }
-    }
-    {
-      name: reload_config
-      modifier: none
-      keycode: f5
-      mode: emacs
-      event: {
-        send: executehostcommand,
-        cmd: $"source '($nu.config-path)'"
       }
     }
     {
