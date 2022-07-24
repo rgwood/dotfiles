@@ -1,8 +1,17 @@
 # Nushell Config File
 
 alias lg = lazygit
-# TODO: make this alias Linux-only
-alias clip = xclip -sel clip
+
+def exists [executable] { not (which $executable | empty?) }
+def clip [ --help (-h) ] {
+    let input = $in;
+
+    if exists clip.exe {
+        $input | clip.exe
+    } else {
+        $input | xclip -sel clip
+    }
+}
 
 def-env presentation-mode [] {
   let-env PROMPT_COMMAND = { "" }
