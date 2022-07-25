@@ -3,7 +3,7 @@
 alias lg = lazygit
 
 def exists [executable] { not (which $executable | empty?) }
-def clip [ --help (-h) ] {
+def clip [] {
     let input = $in;
 
     if exists clip.exe {
