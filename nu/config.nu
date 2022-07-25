@@ -1,6 +1,7 @@
 # Nushell Config File
 
 alias lg = lazygit
+alias sn = templater snippet
 
 def exists [executable] { not (which $executable | empty?) }
 def clip [] {
