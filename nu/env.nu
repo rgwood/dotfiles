@@ -59,6 +59,9 @@ let-env EDITOR = "/usr/bin/micro"
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # let-env PATH = ($env.PATH | prepend '/some/path')
 
+# for https://github.com/arquivolta/wsl-use-windows-openssh
+let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
+
 let-env PATH = ($env.PATH | append $"($env.HOME)/bin" )
 let-env PATH = ($env.PATH | append /home/linuxbrew/.linuxbrew/bin)
 let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
