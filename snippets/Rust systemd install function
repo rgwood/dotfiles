@@ -1,4 +1,6 @@
 fn install() -> Result<()> {
+    use duct::cmd;
+
     let my_full_path = std::env::current_exe()?;
     let my_name = my_full_path.file_name().expect("could not get file name");
     println!("Installing '{}' as a service...", my_name.to_string_lossy());
@@ -10,6 +12,7 @@ fn install() -> Result<()> {
     println!("Creating directory '{}'...", exec_dir.to_string_lossy());
     fs::create_dir_all(&exec_dir)?;
 
+    let _ = cmd!("systemctl", "stop", my_name).run();
     let dest = exec_dir.join(my_name);
     println!("Copying self to '{}'...", dest.to_string_lossy());
     fs::copy(&my_full_path, &dest)?;
@@ -35,8 +38,6 @@ WantedBy=multi-user.target
     fs::write(&unit_file_path, unit_file_contents)?;
 
     println!("Install complete! Now enabling+starting service...");
-
-    use duct::cmd;
     cmd!("systemctl", "daemon-reload").run()?;
     cmd!("systemctl", "enable", my_name).run()?;
     cmd!("systemctl", "restart", my_name).run()?;
