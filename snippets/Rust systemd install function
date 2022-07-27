@@ -1,0 +1,47 @@
+fn install() -> Result<()> {
+    let my_full_path = std::env::current_exe()?;
+    let my_name = my_full_path.file_name().expect("could not get file name");
+    println!("Installing '{}' as a service...", my_name.to_string_lossy());
+
+    // copy self to /opt/NAME/NAME
+    // I don't like the redundancy but the Linux FHS says not to put exes directly in /opt
+    let exec_dir = Path::new("/opt").join(&my_name);
+
+    println!("Creating directory '{}'...", exec_dir.to_string_lossy());
+    fs::create_dir_all(&exec_dir)?;
+
+    let dest = exec_dir.join(my_name);
+    println!("Copying self to '{}'...", dest.to_string_lossy());
+    fs::copy(&my_full_path, &dest)?;
+
+    // Install as service (basically, write unit file to /etc/systemd/system/foo.service)
+
+    let unit_file_contents = format!(
+        r#"[Unit]
+Description=another great service by Reilly Wood
+
+[Service]
+Type=simple
+ExecStart={}
+
+[Install]
+WantedBy=multi-user.target
+"#,
+        dest.to_string_lossy()
+    );
+
+    let unit_file_path = format!("/etc/systemd/system/{}.service", my_name.to_string_lossy());
+    println!("Writing unit file to '{}'...", &unit_file_path);
+    fs::write(&unit_file_path, unit_file_contents)?;
+
+    println!("Install complete! Now enabling+starting service...");
+
+    use duct::cmd;
+    cmd!("systemctl", "daemon-reload").run()?;
+    cmd!("systemctl", "enable", my_name).run()?;
+    cmd!("systemctl", "restart", my_name).run()?;
+
+    println!("Done!");
+
+    Ok(())
+}

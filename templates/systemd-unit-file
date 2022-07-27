@@ -1,2 +1,9 @@
-# templater.output_dir = ~/scratch
-# templater.filename = foo TODO need templating or something here?
+[Unit]
+Description=another great service by Reilly Wood
+
+[Service]
+Type=simple
+ExecStart= PATH GOES HERE
+
+[Install]
+WantedBy=multi-user.target
