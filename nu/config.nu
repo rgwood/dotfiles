@@ -14,6 +14,15 @@ def clip [] {
     }
 }
 
+def publish-to-rpm [ path:string --help (-h) ] {
+	if $nu.os-info == "windows" {
+		# christ I wish rsync was available on Windows
+		scp $path potato-pi:/mnt/QNAP1/rpm/dropbox/
+	} else {
+		rsync --progress $path potato-pi:/mnt/QNAP1/rpm/dropbox/
+	}
+}
+
 def-env presentation-mode [] {
   let-env PROMPT_COMMAND = { "" }
   let-env PROMPT_COMMAND_RIGHT = { "" }
@@ -30,6 +39,7 @@ def in-node-project [] { ls | where name == package.json | any }
 def in-go-project [] { ls | where name == go.mod | any }
 
 # A wrapper to fix `code ~/foo` on Windows (bug where that opens a new file named foo)
+# TODO: this is buggy, doesn't work for individual files. also doesn't handle -n etc
 def code [path] {
     cd $path
     ^code .
