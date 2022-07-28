@@ -15,7 +15,7 @@ def clip [] {
 }
 
 def publish-to-rpm [ path:string --help (-h) ] {
-	if $nu.os-info == "windows" {
+	if $nu.os-info.name == "windows" {
 		# christ I wish rsync was available on Windows
 		scp $path potato-pi:/mnt/QNAP1/rpm/dropbox/
 	} else {
