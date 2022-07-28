@@ -7,14 +7,19 @@ watch:
 watch-tests:
     watch . { dotnet test } --glob=**/*.cs
 
-publish:
-    dotnet publish {{ main_project_name }}/{{ main_project_name }}.csproj \
-    --runtime linux-arm64 \
-    --output publish/ \
-    --configuration Release --self-contained true -p:PublishSingleFile=true -p:DebugType=embedded -p:IncludeNativeLibrariesForSelfExtract=true
+build-release-all:
+    just build-release win-x64
+    just build-release win-arm64
+    just build-release linux-x64
+    just build-release linux-arm64
 
-# upload: publish
-#     rsync -r publish/ SERVER_NAME:services/PROJECT_NAME_new
+build-release arch:
+    dotnet publish CliRunner.csproj \
+    --runtime {{arch}} \
+    --output publish/{{arch}}/ \
+    --configuration Release --self-contained true \
+    -p:PublishTrimmed=true \
+    -p:PublishSingleFile=true -p:DebugType=embedded -p:IncludeNativeLibrariesForSelfExtract=true
 
 # Razor tooling fails on this stupid bug: https://github.com/dotnet/razor-tooling/issues/6241
 workaround-razor-bug:
