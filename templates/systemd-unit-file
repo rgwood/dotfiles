@@ -1,8 +1,11 @@
+# copy to /etc/systemd/system/foo.service to install
+
 [Unit]
 Description=another great service by Reilly Wood
 
 [Service]
 Type=simple
+# typically put 3rd party services in their own folder in /opt
 ExecStart= PATH GOES HERE
 
 [Install]
