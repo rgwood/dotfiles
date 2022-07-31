@@ -1,3 +1,4 @@
+{{{{raw}}}}
 set shell := ["nu", "-c"]
 
 build:
@@ -20,3 +21,4 @@ watch-unix:
     watch . { just run-nix } --glob=**/*.cpp
 watch-windows:
     watch . { just run-windows } --glob=**/*.cpp
+{{{{/raw}}}}
