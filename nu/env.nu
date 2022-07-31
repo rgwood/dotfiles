@@ -1,5 +1,7 @@
 # Nushell Environment Config File
 
+let-env RUST_BACKTRACE = 1
+
 def create_left_prompt [] {
     let path_segment = ($env.PWD)
 
@@ -61,8 +63,9 @@ let-env EDITOR = "/usr/bin/micro"
 
 # for https://github.com/arquivolta/wsl-use-windows-openssh
 let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
+# prepend linuxbrew so it takes priority over Windows paths on WSL
+let-env PATH = ($env.PATH | prepend /home/linuxbrew/.linuxbrew/bin)
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/bin" )
-let-env PATH = ($env.PATH | append /home/linuxbrew/.linuxbrew/bin)
 let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
 let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin" )
