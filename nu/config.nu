@@ -31,6 +31,8 @@ def-env presentation-mode [] {
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 def any [] { ($in | length) >= 1 }
 
+
+
 def is-sqlite-db [$path: path] {(open --raw $path | first 16) == ($"SQLite format 3(char -i 0)" | into binary)}
 
 def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
@@ -46,6 +48,7 @@ def code [path] {
 }
 
 def start [path] {
+  # TODO handle WSL
   if $nu.os-info.name == "windows" {
     ^start $path
   } else if $nu.os-info.name == "macos" {
@@ -53,6 +56,11 @@ def start [path] {
   } else {
     xdg-open $path
   }
+}
+
+def dl-music [ url:string ] {
+    cd /mnt/QNAP1/Downloads/Music;
+    sqlite3 downloadQueue.db $"insert into queue\(Url, Type\) values\('($url)', 'Audio'\);"
 }
 
 def build-current-project [] {
