@@ -42,10 +42,10 @@ def in-go-project [] { ls | where name == go.mod | any }
 
 # A wrapper to fix `code ~/foo` on Windows (bug where that opens a new file named foo)
 # TODO: this is buggy, doesn't work for individual files. also doesn't handle -n etc
-def code [path] {
-    cd $path
-    ^code .
-}
+# def code [path: string, ...] {
+#     cd $path
+#     ^code .
+# }
 
 def start [path] {
   # TODO handle WSL
