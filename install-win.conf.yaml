@@ -11,7 +11,7 @@
 - link:
       ~/dotfiles: ""
       ~/AppData/Roaming/nushell/config.nu: nu\config.nu
-      ~/AppData/Roaming/nushell/env.nu: nu\env.nu
+      ~/AppData/Roaming/nushell/env.nu: nu\env-windows.nu
       ~/AppData/Roaming/starship.toml: starship.toml
       ~/AppData/Roaming/lazygit/config.yml: lazygit\config-windows.yml
       ~/notes: notes
