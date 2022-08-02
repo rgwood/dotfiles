@@ -67,5 +67,6 @@ let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
 let-env PATH = ($env.PATH | prepend /home/linuxbrew/.linuxbrew/bin)
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/bin" )
+let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/release" )
 let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
 let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin" )
