@@ -14,6 +14,8 @@ def clip [] {
     }
 }
 
+# Commands for RPM (Reilly's Package Manager)
+
 def publish-to-rpm [ path:string --help (-h) ] {
 	if $nu.os-info.name == "windows" {
 		# christ I wish rsync was available on Windows
@@ -21,6 +23,44 @@ def publish-to-rpm [ path:string --help (-h) ] {
 	} else {
 		rsync --progress $path potato-pi:/mnt/QNAP1/rpm/dropbox/
 	}
+}
+
+def os-arch-string [] {
+    let os = if $nu.os-info.name == "linux" {
+        "linux"
+    } else if $nu.os-info.name == "windows" {
+        "win"
+    } else if $nu.os-info.name == "macos" {
+        "mac"
+    } else {
+        error make {msg: "unsupported os"}
+    }
+
+    let arch = if $nu.os-info.arch == "x86_64" {
+        "x64"
+    } else if $nu.os-info.arch == "aarch64" {
+        "arm64"
+    } else {
+        error make {msg: "unsupported arch"}
+    }
+
+    $"($os)-($arch)"
+}
+
+def upgrade-rpm [] {
+    cd ~/bin;
+
+    let zip_file_name = $"(os-arch-string).zip"
+
+    curl --location -O $"https://rpm.reillywood.com/($zip_file_name)"
+
+    if $nu.os-info.name == "linux" {
+        unzip -o $zip_file_name
+    } else if $nu.os-info.name == "windows" {
+        7z x -aoa $zip_file_name
+    } else if $nu.os-info.name == "macos" {
+        unzip -o $zip_file_name
+    }
 }
 
 def-env presentation-mode [] {
