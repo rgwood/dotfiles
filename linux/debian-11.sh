@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # essentials
-sudo apt install git zsh rsync micro curl wget -y
+sudo apt install git zsh rsync micro curl wget unrar -y
 
 # nice to haves
 sudo apt install mosh iotop python3-pip -y
