@@ -1,0 +1,9 @@
+# only show `open`/`read`/`write` calls
+```
+strace -e open ...
+strace -e read ...
+strace -e write ...
+```
+
+# "follow" subprocesses+threads
+`strace -f ...`
