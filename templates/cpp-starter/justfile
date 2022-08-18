@@ -18,7 +18,7 @@ run-windows: build-windows
 watch:
     just watch-{{ os_family() }}
 watch-unix:
-    watch . { just run-nix } --glob=**/*.cpp
+    watch . { just run-unix } --glob=**/*.cpp
 watch-windows:
     watch . { just run-windows } --glob=**/*.cpp
 {{{{/raw}}}}
