@@ -1,0 +1,24 @@
+{{{{raw}}}}
+set shell := ["nu", "-c"]
+
+build:
+    just build-{{ os_family() }}
+build-unix:
+    gcc main.c -o main
+build-windows:
+    cl /EHsc /W4 /nologo main.c
+
+run:
+    just run-{{ os_family() }}
+run-unix: build-unix
+    ./main
+run-windows: build-windows
+    ./main
+
+watch:
+    just watch-{{ os_family() }}
+watch-unix:
+    watch . { just run-unix } --glob=**/*.c
+watch-windows:
+    watch . { just run-windows } --glob=**/*.c
+{{{{/raw}}}}
