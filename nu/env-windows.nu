@@ -61,6 +61,8 @@ let-env NU_PLUGIN_DIRS = [
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # let-env PATH = ($env.PATH | prepend '/some/path')
 
+let-env Path = ($env.Path | prepend 'C:/Program Files (x86)/Meld')
+
 # for https://github.com/arquivolta/wsl-use-windows-openssh
 # let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
 # prepend linuxbrew so it takes priority over Windows paths on WSL
