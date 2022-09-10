@@ -63,6 +63,10 @@ let-env EDITOR = "/usr/bin/micro"
 
 # for https://github.com/arquivolta/wsl-use-windows-openssh
 let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
+
+# macOS ARM64 / Apple Silicon
+let-env PATH = ($env.PATH | prepend '/opt/homebrew/bin')
+
 # prepend linuxbrew so it takes priority over Windows paths on WSL
 let-env PATH = ($env.PATH | prepend /home/linuxbrew/.linuxbrew/bin)
 
