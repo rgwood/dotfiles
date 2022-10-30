@@ -69,16 +69,14 @@ def-env presentation-mode [] {
 }
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
-def any [] { ($in | length) >= 1 }
-
-
+def is-not-empty [] { ($in | length) >= 1 }
 
 def is-sqlite-db [$path: path] {(open --raw $path | first 16) == ($"SQLite format 3(char -i 0)" | into binary)}
 
-def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | any }
-def in-rust-project [] { ls | where name == Cargo.toml | any }
-def in-node-project [] { ls | where name == package.json | any }
-def in-go-project [] { ls | where name == go.mod | any }
+def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | is-not-empty }
+def in-rust-project [] { ls | where name == Cargo.toml | is-not-empty }
+def in-node-project [] { ls | where name == package.json | is-not-empty }
+def in-go-project [] { ls | where name == go.mod | is-not-empty }
 
 # A wrapper to fix `code ~/foo` on Windows (bug where that opens a new file named foo)
 # TODO: this is buggy, doesn't work for individual files. also doesn't handle -n etc
