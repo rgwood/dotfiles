@@ -71,7 +71,7 @@ def-env presentation-mode [] {
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
 def is-not-empty [] { ($in | length) >= 1 }
 
-def is-sqlite-db [$path: path] {(open --raw $path | first 16) == ($"SQLite format 3(char -i 0)" | into binary)}
+def is-sqlite-db [$path: path] {(open --raw $path | take 16) == ($"SQLite format 3(char -i 0)" | into binary)}
 
 def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | is-not-empty }
 def in-rust-project [] { ls | where name == Cargo.toml | is-not-empty }
