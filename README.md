@@ -1,4 +1,1 @@
-# dotfiles
-My dotfiles+tools. Mostly [Fish Shell](https://fishshell.com/) setup and a custom documentation tool named `wat`.
-
-`wat COMMAND` shows succinct example pages from `tldr` or `cht.sh`, plus any of my notes for COMMAND in the notes folder.
+This place is not a place of honor. No highly esteemed deed is commemorated here; nothing valued is here. What is here was dangerous and repulsive to us. This message is a warning about danger. The danger is in a particular location, it increases towards a center, the center of danger is here, of a particular size and shape, and below us.
