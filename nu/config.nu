@@ -3,7 +3,7 @@
 alias lg = lazygit
 alias sn = templater snippet
 
-def exists [executable] { not (which $executable | empty?) }
+def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
     let input = $in;
 
