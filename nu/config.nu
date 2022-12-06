@@ -47,6 +47,9 @@ def os-arch-string [] {
     $"($os)-($arch)"
 }
 
+
+alias rpm-upgrade = upgrade-rpm
+
 def upgrade-rpm [] {
     cd ~/bin;
 
