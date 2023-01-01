@@ -59,19 +59,21 @@ let-env NU_PLUGIN_DIRS = [
 let-env EDITOR = "/usr/bin/micro"
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# let-env PATH = ($env.PATH | prepend '/some/path')
+# let-env PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
+
+
 
 # for https://github.com/arquivolta/wsl-use-windows-openssh
-let-env PATH = ($env.PATH | prepend /usr/lib/wsl-ssh )
+let-env PATH = ($env.PATH | split row (char esep) | prepend /usr/lib/wsl-ssh )
 
 # macOS ARM64 / Apple Silicon
-let-env PATH = ($env.PATH | prepend '/opt/homebrew/bin')
+let-env PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 
 # prepend linuxbrew so it takes priority over Windows paths on WSL
-let-env PATH = ($env.PATH | prepend /home/linuxbrew/.linuxbrew/bin)
+let-env PATH = ($env.PATH | split row (char esep) | prepend /home/linuxbrew/.linuxbrew/bin)
 
-let-env PATH = ($env.PATH | append $"($env.HOME)/bin" )
-let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/release" )
-let-env PATH = ($env.PATH | append $"($env.HOME)/github/nushell/target/debug" )
-let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin" )
-let-env PATH = ($env.PATH | append "/snap/bin" )
+let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
+# let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/release" )
+# let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
+let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
+let-env PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
