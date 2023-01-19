@@ -1,9 +1,14 @@
 # Nushell Environment Config File
 
+let-env EDITOR = "/usr/bin/micro"
 let-env RUST_BACKTRACE = 1
 
 def create_left_prompt [] {
-    let path_segment = ($env.PWD)
+    let path_segment = if (is-admin) {
+        $"(ansi red_bold)($env.PWD)"
+    } else {
+        $"(ansi green_bold)($env.PWD)"
+    }
 
     $path_segment
 }
@@ -11,7 +16,7 @@ def create_left_prompt [] {
 def create_right_prompt [] {
     let time_segment = ([
         (date now | date format '%m/%d/%Y %r')
-    ] | str collect)
+    ] | str join)
 
     $time_segment
 }
@@ -33,12 +38,12 @@ let-env PROMPT_MULTILINE_INDICATOR = { "::: " }
 # Note: The conversions happen *after* config.nu is loaded
 let-env ENV_CONVERSIONS = {
   "PATH": {
-    from_string: { |s| $s | split row (char esep) }
-    to_string: { |v| $v | str collect (char esep) }
+    from_string: { |s| $s | split row (char esep) | path expand -n }
+    to_string: { |v| $v | path expand -n | str join (char esep) }
   }
   "Path": {
-    from_string: { |s| $s | split row (char esep) }
-    to_string: { |v| $v | str collect (char esep) }
+    from_string: { |s| $s | split row (char esep) | path expand -n }
+    to_string: { |v| $v | path expand -n | str join (char esep) }
   }
 }
 
@@ -56,12 +61,10 @@ let-env NU_PLUGIN_DIRS = [
     ($nu.config-path | path dirname | path join 'plugins')
 ]
 
-let-env EDITOR = "/usr/bin/micro"
+
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # let-env PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
-
-
 
 # for https://github.com/arquivolta/wsl-use-windows-openssh
 let-env PATH = ($env.PATH | split row (char esep) | prepend /usr/lib/wsl-ssh )
