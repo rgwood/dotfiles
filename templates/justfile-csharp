@@ -33,7 +33,3 @@ build-nativeaot arch:
 
 publish arch:
     scp publish/{{arch}}/* potato-pi:/mnt/QNAP1/rpm/dropbox/
-
-# Razor tooling fails on this stupid bug: https://github.com/dotnet/razor-tooling/issues/6241
-workaround-razor-bug:
-    bash -c "export CLR_OPENSSL_VERSION_OVERRIDE=1.1; code ."
