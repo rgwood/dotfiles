@@ -25,7 +25,6 @@ export PATH=$PATH:$HOME/dotnet
 export PATH=$PATH:$HOME/.dotnet/tools
 export PATH=$PATH:$HOME/cs-scripts/compiled
 export PATH=$PATH:$HOME/.pulumi/bin
-export PATH=$PATH:$HOME/github/nushell/target/debug
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:/home/linuxbrew/.linuxbrew/bin
 
