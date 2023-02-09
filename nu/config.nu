@@ -180,11 +180,35 @@ let dark_theme = {
     leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
     header: green_bold
     empty: blue
-    bool: white
+    # Closures can be used to choose colors for specific values.
+    # The value (in this case, a bool) is piped into the closure.
+    bool: { if $in { 'light_cyan' } else { 'light_gray' } }
     int: white
-    filesize: white
+    filesize: {|e|
+      if $e == 0b {
+        'white'
+      } else if $e < 1mb {
+        'cyan'
+      } else { 'blue' }
+    }
     duration: white
-    date: white
+    date: { (date now) - $in |
+      if $in < 1hr {
+        '#e61919'
+      } else if $in < 6hr {
+        '#e68019'
+      } else if $in < 1day {
+        '#e5e619'
+      } else if $in < 3day {
+        '#80e619'
+      } else if $in < 1wk {
+        '#19e619'
+      } else if $in < 6wk {
+        '#19e5e6'
+      } else if $in < 52wk {
+        '#197fe6'
+      } else { 'light_gray' }
+    }
     range: white
     float: white
     string: white
@@ -197,34 +221,38 @@ let dark_theme = {
     block: white
     hints: dark_gray
 
-    # shapes are used to change the cli syntax highlighting
-    shape_garbage: { fg: "#FFFFFF" bg: "#FF0000" attr: b}
+    shape_and: purple_bold
     shape_binary: purple_bold
+    shape_block: blue_bold
     shape_bool: light_cyan
-    shape_int: purple_bold
-    shape_float: purple_bold
-    shape_range: yellow_bold
-    shape_internalcall: cyan_bold
+    shape_custom: green
+    shape_datetime: cyan_bold
+    shape_directory: cyan
     shape_external: cyan
     shape_externalarg: green_bold
+    shape_filepath: cyan
+    shape_flag: blue_bold
+    shape_float: purple_bold
+    # shapes are used to change the cli syntax highlighting
+    shape_garbage: { fg: "#FFFFFF" bg: "#FF0000" attr: b}
+    shape_globpattern: cyan_bold
+    shape_int: purple_bold
+    shape_internalcall: cyan_bold
+    shape_list: cyan_bold
     shape_literal: blue
+    shape_matching_brackets: { attr: u }
+    shape_nothing: light_cyan
     shape_operator: yellow
+    shape_or: purple_bold
+    shape_pipe: purple_bold
+    shape_range: yellow_bold
+    shape_record: cyan_bold
+    shape_redirection: purple_bold
     shape_signature: green_bold
     shape_string: green
     shape_string_interpolation: cyan_bold
-    shape_datetime: cyan_bold
-    shape_list: cyan_bold
     shape_table: blue_bold
-    shape_record: cyan_bold
-    shape_block: blue_bold
-    shape_filepath: cyan
-    shape_directory: cyan
-    shape_globpattern: cyan_bold
     shape_variable: purple
-    shape_flag: blue_bold
-    shape_custom: green
-    shape_nothing: light_cyan
-    shape_matching_brackets: { attr: u }
 }
 
 let light_theme = {
@@ -233,11 +261,35 @@ let light_theme = {
     leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
     header: green_bold
     empty: blue
-    bool: dark_gray
+    # Closures can be used to choose colors for specific values.
+    # The value (in this case, a bool) is piped into the closure.
+    bool: { if $in { 'dark_cyan' } else { 'dark_gray' } }
     int: dark_gray
-    filesize: dark_gray
+    filesize: {|e|
+      if $e == 0b {
+        'dark_gray'
+      } else if $e < 1mb {
+        'cyan_bold'
+      } else { 'blue_bold' }
+    }
     duration: dark_gray
-    date: dark_gray
+  date: { (date now) - $in |
+    if $in < 1hr {
+      'red3b'
+    } else if $in < 6hr {
+      'orange3'
+    } else if $in < 1day {
+      'yellow3b'
+    } else if $in < 3day {
+      'chartreuse2b'
+    } else if $in < 1wk {
+      'green3b'
+    } else if $in < 6wk {
+      'darkturquoise'
+    } else if $in < 52wk {
+      'deepskyblue3b'
+    } else { 'dark_gray' }
+  }
     range: dark_gray
     float: dark_gray
     string: dark_gray
@@ -250,34 +302,38 @@ let light_theme = {
     block: white
     hints: dark_gray
 
-    # shapes are used to change the cli syntax highlighting
-    shape_garbage: { fg: "#FFFFFF" bg: "#FF0000" attr: b}
+    shape_and: purple_bold
     shape_binary: purple_bold
+    shape_block: blue_bold
     shape_bool: light_cyan
-    shape_int: purple_bold
-    shape_float: purple_bold
-    shape_range: yellow_bold
-    shape_internalcall: cyan_bold
+    shape_custom: green
+    shape_datetime: cyan_bold
+    shape_directory: cyan
     shape_external: cyan
     shape_externalarg: green_bold
+    shape_filepath: cyan
+    shape_flag: blue_bold
+    shape_float: purple_bold
+    # shapes are used to change the cli syntax highlighting
+    shape_garbage: { fg: "#FFFFFF" bg: "#FF0000" attr: b}
+    shape_globpattern: cyan_bold
+    shape_int: purple_bold
+    shape_internalcall: cyan_bold
+    shape_list: cyan_bold
     shape_literal: blue
+    shape_matching_brackets: { attr: u }
+    shape_nothing: light_cyan
     shape_operator: yellow
+    shape_or: purple_bold
+    shape_pipe: purple_bold
+    shape_range: yellow_bold
+    shape_record: cyan_bold
+    shape_redirection: purple_bold
     shape_signature: green_bold
     shape_string: green
     shape_string_interpolation: cyan_bold
-    shape_datetime: cyan_bold
-    shape_list: cyan_bold
     shape_table: blue_bold
-    shape_record: cyan_bold
-    shape_block: blue_bold
-    shape_filepath: cyan
-    shape_directory: cyan
-    shape_globpattern: cyan_bold
     shape_variable: purple
-    shape_flag: blue_bold
-    shape_custom: green
-    shape_nothing: light_cyan
-    shape_matching_brackets: { attr: u }
 }
 
 # External completer example
@@ -354,9 +410,9 @@ let-env config = {
         $nothing  # replace with source code to run if the PWD environment is different since the last repl input
       }]
     }
-    display_output: {
-      if (term size).columns >= 100 { table -e } else { table }
-    }
+    # display_output: {
+    #   if (term size).columns >= 100 { table -e } else { table }
+    # }
   }
   menus: [
       # Configuration for default nushell menus
@@ -429,8 +485,8 @@ let-env config = {
         }
         source: { |buffer, position|
             $nu.scope.commands
-            | where command =~ $buffer
-            | each { |it| {value: $it.command description: $it.usage} }
+            | where name =~ $buffer
+            | each { |it| {value: $it.name description: $it.usage} }
         }
       }
       {
