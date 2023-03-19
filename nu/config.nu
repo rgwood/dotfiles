@@ -67,8 +67,8 @@ def upgrade-rpm [] {
 }
 
 def-env presentation-mode [] {
-  let-env PROMPT_COMMAND = { "" }
-  let-env PROMPT_COMMAND_RIGHT = { "" }
+  let-env PROMPT_COMMAND = { || "" }
+  let-env PROMPT_COMMAND_RIGHT = { || "" }
 }
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
@@ -182,7 +182,7 @@ let dark_theme = {
     empty: blue
     # Closures can be used to choose colors for specific values.
     # The value (in this case, a bool) is piped into the closure.
-    bool: { if $in { 'light_cyan' } else { 'light_gray' } }
+    bool: {|| if $in { 'light_cyan' } else { 'light_gray' } }
     int: white
     filesize: {|e|
       if $e == 0b {
@@ -192,23 +192,23 @@ let dark_theme = {
       } else { 'blue' }
     }
     duration: white
-    date: { (date now) - $in |
+    date: {|| (date now) - $in |
       if $in < 1hr {
-        '#e61919'
+        'red3b'
       } else if $in < 6hr {
-        '#e68019'
+        'orange3'
       } else if $in < 1day {
-        '#e5e619'
+        'yellow3b'
       } else if $in < 3day {
-        '#80e619'
+        'chartreuse2b'
       } else if $in < 1wk {
-        '#19e619'
+        'green3b'
       } else if $in < 6wk {
-        '#19e5e6'
+        'darkturquoise'
       } else if $in < 52wk {
-        '#197fe6'
-      } else { 'light_gray' }
-    }
+        'deepskyblue3b'
+      } else { 'dark_gray' }
+    }    
     range: white
     float: white
     string: white
@@ -263,7 +263,7 @@ let light_theme = {
     empty: blue
     # Closures can be used to choose colors for specific values.
     # The value (in this case, a bool) is piped into the closure.
-    bool: { if $in { 'dark_cyan' } else { 'dark_gray' } }
+    bool: {|| if $in { 'dark_cyan' } else { 'dark_gray' } }
     int: dark_gray
     filesize: {|e|
       if $e == 0b {
@@ -273,7 +273,7 @@ let light_theme = {
       } else { 'blue_bold' }
     }
     duration: dark_gray
-  date: { (date now) - $in |
+  date: {|| (date now) - $in |
     if $in < 1hr {
       'red3b'
     } else if $in < 6hr {
@@ -337,7 +337,7 @@ let light_theme = {
 }
 
 # External completer example
-# let carapace_completer = {|spans| 
+# let carapace_completer = {|spans|
 #     carapace $spans.0 nushell $spans | from json
 # }
 
@@ -396,18 +396,20 @@ let-env config = {
   use_ansi_coloring: true
   edit_mode: emacs # emacs, vi
   shell_integration: true # enables terminal markers and a workaround to arrow keys stop working issue
-  show_banner: true # true or false to enable or disable the banner
+  # true or false to enable or disable the welcome banner at startup
+  show_banner: true
   render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+
   hooks: {
-    pre_prompt: [{
-      $nothing  # replace with source code to run before the prompt is shown
+    pre_prompt: [{||
+      null  # replace with source code to run before the prompt is shown
     }]
-    pre_execution: [{
-      $nothing  # replace with source code to run before the repl input is run
+    pre_execution: [{||
+      null  # replace with source code to run before the repl input is run
     }]
     env_change: {
       PWD: [{|before, after|
-        $nothing  # replace with source code to run if the PWD environment is different since the last repl input
+        null  # replace with source code to run if the PWD environment is different since the last repl input
       }]
     }
     # display_output: {
@@ -416,7 +418,7 @@ let-env config = {
   }
   menus: [
       # Configuration for default nushell menus
-      # Note the lack of souce parameter
+      # Note the lack of source parameter
       {
         name: completion_menu
         only_buffer_difference: false
@@ -528,8 +530,8 @@ let-env config = {
         }
         source: { |buffer, position|
             $nu.scope.commands
-            | where command =~ $buffer
-            | each { |it| {value: $it.command description: $it.usage} }
+            | where name =~ $buffer
+            | each { |it| {value: $it.name description: $it.usage} }
         }
       }
   ]
