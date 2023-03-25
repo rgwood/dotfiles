@@ -7,7 +7,7 @@ def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
     let input = $in;
 
-    if exists clip.exe {
+    if (exists clip.exe) {
         $input | clip.exe
     } else {
         $input | xclip -sel clip
@@ -26,22 +26,17 @@ def publish-to-rpm [ path:string --help (-h) ] {
 }
 
 def os-arch-string [] {
-    let os = if $nu.os-info.name == "linux" {
-        "linux"
-    } else if $nu.os-info.name == "windows" {
-        "win"
-    } else if $nu.os-info.name == "macos" {
-        "mac"
-    } else {
-        error make {msg: "unsupported os"}
+    let os = match $nu.os-info.name {
+      "linux" => "linux",
+      "windows" => "win",
+      "macos" => "mac",
+      _ => (error make {msg: "unsupported os"})
     }
 
-    let arch = if $nu.os-info.arch == "x86_64" {
-        "x64"
-    } else if $nu.os-info.arch == "aarch64" {
-        "arm64"
-    } else {
-        error make {msg: "unsupported arch"}
+    let arch = match $nu.os-info.arch {
+      "x86_64" => "x64",
+      "aarch64" => "arm64",
+      _ => (error make {msg: "unsupported arch"})
     }
 
     $"($os)-($arch)"
@@ -80,24 +75,6 @@ def in-dotnet-project [] { ls | where ($it.name | str ends-with .csproj) | is-no
 def in-rust-project [] { ls | where name == Cargo.toml | is-not-empty }
 def in-node-project [] { ls | where name == package.json | is-not-empty }
 def in-go-project [] { ls | where name == go.mod | is-not-empty }
-
-# A wrapper to fix `code ~/foo` on Windows (bug where that opens a new file named foo)
-# TODO: this is buggy, doesn't work for individual files. also doesn't handle -n etc
-# def code [path: string, ...] {
-#     cd $path
-#     ^code .
-# }
-
-def start [path] {
-  # TODO handle WSL
-  if $nu.os-info.name == "windows" {
-    ^start $path
-  } else if $nu.os-info.name == "macos" {
-    ^open $path
-  } else {
-    xdg-open $path
-  }
-}
 
 def dl-music [ url:string ] {
     cd /mnt/QNAP1/Downloads/Music;
