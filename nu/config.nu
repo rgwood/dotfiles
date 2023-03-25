@@ -52,12 +52,10 @@ def upgrade-rpm [] {
 
     curl --location -O $"https://rpm.reillywood.com/($zip_file_name)"
 
-    if $nu.os-info.name == "linux" {
-        unzip -o $zip_file_name
-    } else if $nu.os-info.name == "windows" {
-        7z x -aoa $zip_file_name
-    } else if $nu.os-info.name == "macos" {
-        unzip -o $zip_file_name
+    match $nu.os-info.name {
+      "linux" => (unzip -o $zip_file_name),
+      "windows" => (7z x -aoa $zip_file_name),
+      "macos" => (unzip -o $zip_file_name),
     }
 }
 
