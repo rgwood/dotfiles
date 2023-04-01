@@ -95,3 +95,9 @@ let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
 # let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
 let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
 let-env PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
+
+# Reilly's private env vars
+
+try {
+    open ~/dotfiles/private/env-vars.nuon | load-env
+}
