@@ -42,7 +42,6 @@ def os-arch-string [] {
     $"($os)-($arch)"
 }
 
-
 alias rpm-upgrade = upgrade-rpm
 
 def upgrade-rpm [] {
@@ -106,7 +105,7 @@ def run-current-project [] {
 def wat [...split_name:string] {
     tldr $split_name
 
-    let name = ($split_name | str collect " ");
+    let name = ($split_name | str join " ");
 
     let md = $"($name).md"
 
