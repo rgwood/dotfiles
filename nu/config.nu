@@ -603,3 +603,21 @@ let-env config = {
     }
   ]
 }
+
+module openai {
+
+  export def ask [question:string] {
+    let key = $env.R_OPENAPI_KEY
+    let body = {
+      model: "gpt-3.5-turbo",
+      messages: [{"role": "user", content: $question}]
+    }
+
+    let result = (http post -t 'application/json' -H ["Authorization" $"Bearer ($key)"] https://api.openai.com/v1/chat/completions $body)
+
+    $result.choices.message.0.content
+  }
+
+}
+
+use openai;
