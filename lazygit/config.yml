@@ -9,8 +9,8 @@ gui:
   # command log takes up way too much space to have on by default
   showCommandLog: false
 os:
-  editCommand: 'micro'
+  Edit: 'micro'
   # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#recommended-config-values
-  openCommand: 'code -rg {{filename}}'
+  Open: 'code -rg {{filename}}'
 # to skip without creating a new repo
 notARepository: 'skip'
