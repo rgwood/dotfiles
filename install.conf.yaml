@@ -32,6 +32,7 @@
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore
+      ~/.config/starship.toml: starship.toml
 
 - create:
       - ~/bin

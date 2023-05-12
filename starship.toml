@@ -1,18 +1,1 @@
-[git_branch]
-symbol = " "
-
-[nodejs]
-symbol = " "
-
-[package]
-symbol = " "
-style = "bold green"
-
-[rust]
-symbol = " "
-
-[directory]
-truncate_to_repo = false
-
-[aws]
-disabled = true
+add_newline = false
