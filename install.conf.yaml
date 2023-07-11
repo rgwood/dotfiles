@@ -16,7 +16,9 @@
 - link:
       ~/dotfiles: ""
       ~/.config/nushell/config.nu: nu/config.nu
+      ~/Library/Application Support/nushell/config.nu: nu/config.nu
       ~/.config/nushell/env.nu: nu/env.nu
+      ~/Library/Application Support/nushell/env.nu: nu/env.nu
       ~/.vimrc: vimrc
       ~/scripts: scripts/linux
       ~/notes: notes
