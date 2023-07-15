@@ -24,7 +24,6 @@
             path: nu/env.nu
             if: '[[ "$(uname)" == "Darwin" ]]'
       ~/.vimrc: vimrc
-      ~/scripts: scripts/linux
       ~/notes: notes
       ~/.oh-my-zsh: oh-my-zsh
       ~/.powerlevel10k: powerlevel10k
