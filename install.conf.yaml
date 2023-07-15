@@ -16,9 +16,13 @@
 - link:
       ~/dotfiles: ""
       ~/.config/nushell/config.nu: nu/config.nu
-      ~/Library/Application Support/nushell/config.nu: nu/config.nu
       ~/.config/nushell/env.nu: nu/env.nu
-      ~/Library/Application Support/nushell/env.nu: nu/env.nu
+      ~/Library/Application Support/nushell/config.nu:
+            path: nu/config.nu
+            if: '[[ "$(uname)" == "Darwin" ]]'
+      ~/Library/Application Support/nushell/env.nu:
+            path: nu/env.nu
+            if: '[[ "$(uname)" == "Darwin" ]]'
       ~/.vimrc: vimrc
       ~/scripts: scripts/linux
       ~/notes: notes
