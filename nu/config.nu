@@ -59,8 +59,8 @@ def upgrade-rpm [] {
 }
 
 def-env presentation-mode [] {
-  let-env PROMPT_COMMAND = { || "" }
-  let-env PROMPT_COMMAND_RIGHT = { || "" }
+  $env.PROMPT_COMMAND = { || "" }
+  $env.PROMPT_COMMAND_RIGHT = { || "" }
 }
 
 def-env mkd [dir:string] { mkdir $dir; cd $dir }
@@ -132,15 +132,7 @@ def wat [...split_name:string] {
     let notePath = ($nu.home-path | path join $"dotfiles/notes/($name).md");
 
     if ( $notePath | path exists ) {
-
-        # echo "Local Notes" | ansi gradient --fgstart 0x40c9ff --fgend 0xe81cff
-        # echo "Local Notes" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Magenta
-        # echo "Local Notes" | ansi gradient --fgstart $solarized.Cyan --fgend $solarized.Magenta
-        # echo "Local Notes" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.DarkMagenta
-        # echo "Local Notes:" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Yellow
-
-        echo "📘 Local Notes 📘" | ansi gradient --fgstart $solarized.Blue --fgend $solarized.Green
-
+        echo "📘 Local Notes 📘"
         echo ""
         mdcat $notePath
     }
@@ -317,7 +309,7 @@ let light_theme = {
 
 
 # The default config record. This is where much of your global configuration is setup.
-let-env config = {
+$env.config = {
   ls: {
     use_ls_colors: true # use the LS_COLORS environment variable to colorize output
     clickable_links: true # enable or disable clickable links. Your terminal has to support links.

@@ -1,7 +1,7 @@
 # Nushell Environment Config File
 
-let-env EDITOR = "/usr/bin/micro"
-let-env RUST_BACKTRACE = 1
+$env.EDITOR = "/usr/bin/micro"
+$env.RUST_BACKTRACE = 1
 
 def create_left_prompt [] {
     mut home = ""
@@ -36,21 +36,21 @@ def create_right_prompt [] {
 }
 
 # Use nushell functions to define your right and left prompt
-let-env PROMPT_COMMAND = {|| create_left_prompt }
-let-env PROMPT_COMMAND_RIGHT = {|| create_right_prompt }
+$env.PROMPT_COMMAND = {|| create_left_prompt }
+$env.PROMPT_COMMAND_RIGHT = {|| create_right_prompt }
 
 # The prompt indicators are environmental variables that represent
 # the state of the prompt
-let-env PROMPT_INDICATOR = {|| "> " }
-let-env PROMPT_INDICATOR_VI_INSERT = {|| ": " }
-let-env PROMPT_INDICATOR_VI_NORMAL = {|| "> " }
-let-env PROMPT_MULTILINE_INDICATOR = {|| "::: " }
+$env.PROMPT_INDICATOR = {|| "> " }
+$env.PROMPT_INDICATOR_VI_INSERT = {|| ": " }
+$env.PROMPT_INDICATOR_VI_NORMAL = {|| "> " }
+$env.PROMPT_MULTILINE_INDICATOR = {|| "::: " }
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
 # - converted from a value back to a string when running external commands (to_string)
 # Note: The conversions happen *after* config.nu is loaded
-let-env ENV_CONVERSIONS = {
+$env.ENV_CONVERSIONS = {
   "PATH": {
     from_string: { |s| $s | split row (char esep) | path expand -n }
     to_string: { |v| $v | path expand -n | str join (char esep) }
@@ -64,37 +64,37 @@ let-env ENV_CONVERSIONS = {
 # Directories to search for scripts when calling source or use
 #
 # By default, <nushell-config-dir>/scripts is added
-let-env NU_LIB_DIRS = [
+$env.NU_LIB_DIRS = [
     ($nu.config-path | path dirname | path join 'scripts')
 ]
 
 # Directories to search for plugin binaries when calling register
 #
 # By default, <nushell-config-dir>/plugins is added
-let-env NU_PLUGIN_DIRS = [
+$env.NU_PLUGIN_DIRS = [
     ($nu.config-path | path dirname | path join 'plugins')
 ]
 
 # *nix locale
-let-env LC_ALL = "en_US.UTF-8"
+$env.LC_ALL = "en_US.UTF-8"
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# let-env PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
+# $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 # for https://github.com/arquivolta/wsl-use-windows-openssh
-let-env PATH = ($env.PATH | split row (char esep) | prepend /usr/lib/wsl-ssh )
+$env.PATH = ($env.PATH | split row (char esep) | prepend /usr/lib/wsl-ssh )
 
 # macOS ARM64 / Apple Silicon
-let-env PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
+$env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 
 # prepend linuxbrew so it takes priority over Windows paths on WSL
-let-env PATH = ($env.PATH | split row (char esep) | prepend /home/linuxbrew/.linuxbrew/bin)
+$env.PATH = ($env.PATH | split row (char esep) | prepend /home/linuxbrew/.linuxbrew/bin)
 
-let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
-# let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/release" )
-# let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
-let-env PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
-let-env PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
+$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
+# $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/release" )
+# $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
+$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
+$env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
 
 # Reilly's private env vars
 
