@@ -38,6 +38,7 @@
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore
       ~/.config/starship.toml: starship.toml
+      ~/.wezterm.lua: wezterm/wezterm.lua
 
 - create:
       - ~/bin
