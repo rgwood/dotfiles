@@ -143,6 +143,7 @@ source ~/.zsh-plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 alias lg=lazygit
 alias mi=micro
+alias ddb="duckdb :memory:"
 
 if exists exa; then
   alias ls=exa
@@ -156,4 +157,9 @@ mkd() {
 # https://github.com/anaisbetts/ssh-agent-relay
 if exists ssh-agent-relay; then
   eval $(ssh-agent-relay)
+fi
+
+# source .zshrc-ul if it exists
+if [ -f ~/.zshrc-ul ]; then
+  source ~/.zshrc-ul
 fi
