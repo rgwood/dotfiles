@@ -95,6 +95,8 @@ $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
 # $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
 $env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
+# useful on macOS
+$env.PATH = ($env.PATH | split row (char esep) | append "/usr/local/bin" )
 
 # Reilly's private env vars
 
