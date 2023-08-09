@@ -12,7 +12,7 @@ config.color_scheme = 'Solarized Dark Higher Contrast'
 
 
 config.font = wezterm.font 'Consolas NF'
-config.font_size = 14.0
+config.font_size = 16.0
 
 -- if on linux use linuxbrew, if on mac use homebrew
 if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
