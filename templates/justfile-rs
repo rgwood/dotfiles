@@ -14,7 +14,7 @@ test:
     cargo test
 
 watch-tests:
-    watch . { cargo test } --glob=**/*.rs
+    watchexec --exts=rs -- cargo test
 
 expected_filename := if os_family() == "windows" { "{{current_dir_name}}.exe" } else { "{{current_dir_name}}" }
 
