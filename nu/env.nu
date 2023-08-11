@@ -3,6 +3,11 @@
 $env.EDITOR = "/usr/bin/micro"
 $env.RUST_BACKTRACE = 1
 
+if $nu.os-info.name == "linux" {
+    $env.DOTNET_ROOT = "/home/linuxbrew/.linuxbrew/opt/dotnet/libexec"
+}
+
+
 def create_left_prompt [] {
     mut home = ""
     try {
