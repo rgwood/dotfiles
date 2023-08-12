@@ -4,7 +4,9 @@ $env.EDITOR = "/usr/bin/micro"
 $env.RUST_BACKTRACE = 1
 
 if (sys | get host.hostname) == "framework-fry" {
-    $env.DOTNET_ROOT = "/home/linuxbrew/.linuxbrew/opt/dotnet/libexec"
+    # $env.DOTNET_ROOT = "/home/linuxbrew/.linuxbrew/opt/dotnet/libexec"
+
+    $env.DOTNET_ROOT = "/home/reilly/.dotnet/"
 }
 
 
@@ -102,6 +104,8 @@ $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin
 $env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
 # useful on macOS
 $env.PATH = ($env.PATH | split row (char esep) | append "/usr/local/bin" )
+
+$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.dotnet" )
 
 # Reilly's private env vars
 
