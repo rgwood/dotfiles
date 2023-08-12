@@ -323,7 +323,7 @@ $env.config = {
   table: {
     mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
     header_on_separator: true
-    padding: {left: 0 right: 0}
+    # padding: {left: 0 right: 0}
     index_mode: always # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
     trim: {
       methodology: wrapping # wrapping or truncating
