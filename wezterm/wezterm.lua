@@ -16,7 +16,7 @@ config.font_size = 16.0
 
 -- if on linux use linuxbrew, if on mac use homebrew
 if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
-    config.default_prog = {'/home/linuxbrew/.linuxbrew/bin/nu'}
+    config.default_prog = {'/home/reilly/bin/nu'}
 elseif string.find(wezterm.target_triple, 'apple%-darwin') then
     config.default_prog = {'/opt/homebrew/bin/nu'}
 end
