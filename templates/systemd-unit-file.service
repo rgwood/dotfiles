@@ -6,7 +6,11 @@ Description=another great service by Reilly Wood
 [Service]
 Type=simple
 # typically put 3rd party services in their own folder in /opt
-ExecStart= PATH GOES HERE
+ExecStart= PATH TO EXECUTABLE GOES HERE
+WorkingDirectory= PATH GOES HERE
+# Can run it as yourself instead of root
+# User=reilly
+# Group=reilly
 
 [Install]
 WantedBy=multi-user.target
