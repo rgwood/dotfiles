@@ -1,0 +1,24 @@
+#! /home/reilly/bin/nu
+
+use std clip;
+
+let diff = (git diff HEAD)
+
+if ($diff | str length) == 0 {
+    print $"(ansi red)No changes detected.(ansi reset)"
+    exit
+}
+
+let context_window = 30000
+let diff = $diff | str substring 0..$context_window
+
+let system_message = "succinct git commit message, 50 characters or less"
+
+print $"(ansi blue)GPT-4 Commit message:(ansi reset)"
+let message = $diff | run-external --redirect-stdout "llm" "--model" "gpt-4" "--system" $system_message
+
+let message = $message | str trim | str trim -c '"'   
+print $message
+
+$message | clip --silent
+print $"(ansi green)Copied to clipboard.(ansi reset)"

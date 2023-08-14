@@ -39,6 +39,9 @@
       ~/.gitignore: git/personal-gitignore
       ~/.config/starship.toml: starship.toml
       ~/.wezterm.lua: wezterm/wezterm.lua
+      ~/bin/:
+            glob: true
+            path: bin/*
 
 - create:
       - ~/bin
