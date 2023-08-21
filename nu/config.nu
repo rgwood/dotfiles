@@ -2,6 +2,7 @@
 
 alias lg = lazygit
 alias sn = templater snippet
+alias st = systemctl-tui
 
 def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
