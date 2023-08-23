@@ -14,12 +14,13 @@ config.color_scheme = 'Solarized Dark Higher Contrast'
 config.font = wezterm.font 'Consolas NF'
 config.font_size = 16.0
 
--- if on linux use linuxbrew, if on mac use homebrew
-if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
-    config.default_prog = {'/home/reilly/bin/nu'}
-elseif string.find(wezterm.target_triple, 'apple%-darwin') then
-    config.default_prog = {'/opt/homebrew/bin/nu'}
-end
+config.default_prog = { os.getenv("HOME") .. '/bin/nu' }
+
+-- if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
+--     config.default_prog = {'/home/reilly/bin/nu'}
+-- elseif string.find(wezterm.target_triple, 'apple%-darwin') then
+--     config.default_prog = {'/Users/reilly/bin/nu'}
+-- end
 
 config.hide_tab_bar_if_only_one_tab = true
 config.show_tab_index_in_tab_bar = false
