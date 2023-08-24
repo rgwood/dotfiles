@@ -8,4 +8,4 @@ gui:
       - reverse
   showCommandLog: false
 os:
-  editCommand: 'code'
+  Edit: 'code'
