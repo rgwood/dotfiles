@@ -3,6 +3,7 @@
 alias lg = lazygit
 alias sn = templater snippet
 alias st = systemctl-tui
+alias cr = cargo run
 
 def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
