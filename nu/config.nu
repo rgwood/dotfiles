@@ -144,7 +144,7 @@ def wat [...split_name:string] {
 # https://www.nushell.sh/book/coloring_and_theming.html
 let dark_theme = {
     # color for nushell primitives
-    separator: white
+    separator: blue
     leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
     header: green_bold
     empty: blue
