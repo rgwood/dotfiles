@@ -104,6 +104,12 @@ def run-current-project [] {
   }
 }
 
+def-env yz () {
+  yazi --cwd-file=/tmp/yazi_cwd.txt
+  let path = open /tmp/yazi_cwd.txt
+  cd $path
+}
+
 def wat [...split_name:string] {
     tldr $split_name
 
