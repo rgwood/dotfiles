@@ -60,12 +60,12 @@ def upgrade-rpm [] {
     }
 }
 
-def-env presentation-mode [] {
+def --env presentation-mode [] {
   $env.PROMPT_COMMAND = { || "" }
   $env.PROMPT_COMMAND_RIGHT = { || "" }
 }
 
-def-env mkd [dir:string] { mkdir $dir; cd $dir }
+def --env mkd [dir:string] { mkdir $dir; cd $dir }
 def is-not-empty [] { ($in | length) >= 1 }
 
 def is-sqlite-db [$path: path] {(open --raw $path | take 16) == ($"SQLite format 3(char -i 0)" | into binary)}
@@ -104,7 +104,7 @@ def run-current-project [] {
   }
 }
 
-def-env yz () {
+def --env yz () {
   yazi --cwd-file=/tmp/yazi_cwd.txt
   let path = open /tmp/yazi_cwd.txt
   cd $path
@@ -325,9 +325,6 @@ $env.config = {
   rm: {
     always_trash: false # always act as if -t was given. Can be overridden with -p
   }
-  cd: {
-    abbreviations: false # allows `cd s/o/f` to expand to `cd some/other/folder`
-  }
   table: {
     mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
     header_on_separator: true
@@ -344,6 +341,34 @@ $env.config = {
     sync_on_enter: true # Enable to share history between multiple sessions, else you have to close the session to write history to file
     file_format: "sqlite" # "sqlite" or "plaintext"
   }
+  # explore: {
+  #   table: {
+  #       selected_cell: { bg: 'blue'}
+  #       show_cursor: false
+  #       # split_line: 'red',
+  #       line_shift: false
+  #   }
+  # }
+  explore: {
+    status_bar_background: {fg: "#1D1F21", bg: "#C4C9C6"},
+    command_bar_text: {fg: "#C4C9C6"},
+    highlight: {fg: "black", bg: "yellow"},
+    status: {
+        error: {fg: "white", bg: "red"},
+        warn: {}
+        info: {},
+        # success: {fg: "green"},
+    },
+    table: {
+        split_line: {fg: "#404040"},
+        selected_cell: {},
+        selected_row: {},
+        selected_column: {},
+    },
+    try: {
+      reactive: true,
+    }
+}
   completions: {
     case_sensitive: false # set to true to enable case-sensitive completions
     quick: true  # set this to false to prevent auto-selecting completions when only one remains
