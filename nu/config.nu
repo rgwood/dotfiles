@@ -111,7 +111,7 @@ def --env yz () {
 }
 
 def wat [...split_name:string] {
-    tldr $split_name
+    tldr ...$split_name
 
     let name = ($split_name | str join " ");
 
