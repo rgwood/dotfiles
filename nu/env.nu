@@ -105,6 +105,9 @@ $env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
 # useful on macOS
 $env.PATH = ($env.PATH | split row (char esep) | append "/usr/local/bin" )
 
+# for pipx
+$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.local/bin" )
+
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.dotnet" )
 
 # Reilly's private env vars
