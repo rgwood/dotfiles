@@ -14,7 +14,13 @@ config.color_scheme = 'Solarized Dark Higher Contrast'
 config.font = wezterm.font 'Consolas NF'
 config.font_size = 16.0
 
-config.default_prog = { os.getenv("HOME") .. '/bin/nu' }
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+  config.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
+else
+  config.default_prog = { os.getenv("HOME") .. '/bin/nu' }
+end
+
+
 
 -- if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
 --     config.default_prog = {'/home/reilly/bin/nu'}
