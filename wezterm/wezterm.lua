@@ -12,7 +12,7 @@ config.color_scheme = 'Solarized Dark Higher Contrast'
 
 
 config.font = wezterm.font 'Consolas NF'
-config.font_size = 16.0
+config.font_size = 12.0
 
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   config.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
