@@ -10,23 +10,17 @@ local config = wezterm.config_builder()
 config.color_scheme = 'Solarized Dark Higher Contrast'
 -- config.color_scheme = 'Sonokai (Gogh)'
 
-
 config.font = wezterm.font 'Consolas NF'
 config.font_size = 12.0
 
-if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+if wezterm.target_triple:find("windows") then
   config.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
+  -- needed to get the OpenSSH Agent working on Windows
+  -- https://github.com/wez/wezterm/discussions/3772#discussioncomment-7201688
+  config.ssh_backend = "Ssh2"
 else
   config.default_prog = { os.getenv("HOME") .. '/bin/nu' }
 end
-
-
-
--- if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
---     config.default_prog = {'/home/reilly/bin/nu'}
--- elseif string.find(wezterm.target_triple, 'apple%-darwin') then
---     config.default_prog = {'/Users/reilly/bin/nu'}
--- end
 
 config.hide_tab_bar_if_only_one_tab = true
 config.show_tab_index_in_tab_bar = false
