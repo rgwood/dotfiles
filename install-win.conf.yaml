@@ -24,6 +24,7 @@
       ~/.sqliterc: sqliterc
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git\personal-gitignore
+      ~/.wezterm.lua: wezterm/wezterm.lua
 
 - create:
       - ~/bin
