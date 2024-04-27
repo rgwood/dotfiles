@@ -96,8 +96,9 @@ $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 
 # prepend linuxbrew so it takes priority over Windows paths on WSL
 $env.PATH = ($env.PATH | split row (char esep) | prepend /home/linuxbrew/.linuxbrew/bin)
+# ...but ~/bin should take priority over linuxbrew
+$env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/bin" )
 
-$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/bin" )
 # $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/release" )
 # $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/github/nushell/target/debug" )
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
