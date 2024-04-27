@@ -349,6 +349,14 @@ $env.config = {
   #       line_shift: false
   #   }
   # }
+   # datetime_format determines what a datetime rendered in the shell would look like.
+    # Behavior without this configuration point will be to "humanize" the datetime display,
+    # showing something like "a day ago."
+  datetime_format: {
+        normal: '%a, %d %b %Y %H:%M:%S %z'    # shows up in displays of variables or other datetime's outside of tables
+        table: '%m/%d/%y %I:%M:%S%p'          # generally shows up in tabular outputs such as ls. commenting this out will change it to the default human readable datetime format
+    }
+
   explore: {
     status_bar_background: {fg: "#1D1F21", bg: "#C4C9C6"},
     command_bar_text: {fg: "#C4C9C6"},
