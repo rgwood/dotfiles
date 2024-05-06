@@ -24,7 +24,12 @@ cfg.color_scheme = 'Solarized Dark Higher Contrast'
 -- config.color_scheme = 'Sonokai (Gogh)'
 
 cfg.font = wezterm.font 'Consolas NF'
-cfg.font_size = 11.0
+
+if is_darwin() then
+  cfg.font_size = 14.0
+else
+  cfg.font_size = 11.0
+end
 
 if is_windows() then
   -- config.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
