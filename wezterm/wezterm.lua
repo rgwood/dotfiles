@@ -104,15 +104,16 @@ function formatDomain(domain)
   end
 end
 
-wezterm.on('format-tab-title', function(tab)
-  local pane = tab.active_pane
-  local title = pane.title
-  if pane.domain_name then
-    title = formatDomain(pane.domain_name)
-    -- title = pane.domain_name
-  end
-  return title
-end)
+if is_windows() then
+  wezterm.on('format-tab-title', function(tab)
+    local pane = tab.active_pane
+    local title = pane.title
+    if pane.domain_name then
+      title = formatDomain(pane.domain_name)
+    end
+    return title
+  end)
+end
 
 -- and finally, return the configuration to wezterm
 return cfg
