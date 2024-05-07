@@ -25,7 +25,7 @@ cfg.color_scheme = 'Solarized Dark Higher Contrast'
 
 cfg.font = wezterm.font 'Consolas NF'
 
-if is_darwin() then
+if is_darwin() or is_linux() then
   cfg.font_size = 14.0
 else
   cfg.font_size = 11.0
