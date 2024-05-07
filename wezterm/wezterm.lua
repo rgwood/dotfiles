@@ -1,8 +1,5 @@
--- Pull in the wezterm API
 local wezterm = require 'wezterm'
 local act = wezterm.action
-
--- This table will hold the configuration.
 local cfg = wezterm.config_builder()
 
 local is_linux = function()
@@ -19,10 +16,7 @@ end
 
 -- This is where you actually apply your config choices
 
--- config.color_scheme = 'AdventureTime'
 cfg.color_scheme = 'Solarized Dark Higher Contrast'
--- config.color_scheme = 'Sonokai (Gogh)'
-
 cfg.font = wezterm.font 'Consolas NF'
 
 if is_darwin() or is_linux() then
@@ -56,11 +50,8 @@ cfg.skip_close_confirmation_for_processes_named = {
   'wsl.exe',
   'wslhost.exe',
 }
--- config.enable_scroll_bar = true
--- config.hide_tab_bar_if_only_one_tab = true
 
 cfg.show_tab_index_in_tab_bar = false
-
 cfg.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 cfg.win32_system_backdrop = 'Acrylic'
 
