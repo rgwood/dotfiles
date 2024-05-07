@@ -6,11 +6,11 @@ local act = wezterm.action
 local cfg = wezterm.config_builder()
 
 local is_linux = function()
-	return wezterm.target_triple:find("linux") ~= nil
+  return wezterm.target_triple:find("linux") ~= nil
 end
 
 local is_darwin = function()
-	return wezterm.target_triple:find("darwin") ~= nil
+  return wezterm.target_triple:find("darwin") ~= nil
 end
 
 local is_windows = function()
@@ -65,7 +65,7 @@ cfg.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 cfg.win32_system_backdrop = 'Acrylic'
 
 cfg.keys = {
-  {key="v", mods="CTRL", action=wezterm.action{PasteFrom="Clipboard"}},
+  { key = "v", mods = "CTRL", action = wezterm.action { PasteFrom = "Clipboard" } },
   {
     key = "UpArrow",
     mods = "SHIFT",
@@ -73,34 +73,34 @@ cfg.keys = {
       ScrollToPrompt = -1
     }
   }, {
-    key = "DownArrow",
-    mods = "SHIFT",
-    action = wezterm.action {
-      ScrollToPrompt = 1
-    }
+  key = "DownArrow",
+  mods = "SHIFT",
+  action = wezterm.action {
+    ScrollToPrompt = 1
   }
+}
 }
 
 local copy_mode = wezterm.gui.default_key_tables().copy_mode
 -- remove existing ctrl+c keybinding
 for i, v in ipairs(copy_mode) do
-    if v.key == 'c' and v.mods == 'CTRL' then
-        table.remove(copy_mode, i)
-        break
-    end
+  if v.key == 'c' and v.mods == 'CTRL' then
+    table.remove(copy_mode, i)
+    break
+  end
 end
 table.insert(copy_mode, {
-    key = 'c',
-    mods = 'CTRL',
-    action = act.Multiple {{
-        CopyTo = 'ClipboardAndPrimarySelection'
-    }, {
-        CopyMode = 'Close'
-    }}
+  key = 'c',
+  mods = 'CTRL',
+  action = act.Multiple { {
+    CopyTo = 'ClipboardAndPrimarySelection'
+  }, {
+    CopyMode = 'Close'
+  } }
 })
 
 cfg.key_tables = {
-    copy_mode = copy_mode
+  copy_mode = copy_mode
 }
 
 function formatDomain(domain)
@@ -114,15 +114,14 @@ function formatDomain(domain)
 end
 
 wezterm.on('format-tab-title', function(tab)
-local pane = tab.active_pane
-local title = pane.title
-if pane.domain_name then
-  title = formatDomain(pane.domain_name)
-  -- title = pane.domain_name
-end
-return title
+  local pane = tab.active_pane
+  local title = pane.title
+  if pane.domain_name then
+    title = formatDomain(pane.domain_name)
+    -- title = pane.domain_name
+  end
+  return title
 end)
 
 -- and finally, return the configuration to wezterm
 return cfg
-
