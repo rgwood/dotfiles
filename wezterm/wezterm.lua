@@ -26,9 +26,9 @@ else
 end
 
 if is_windows() then
-  -- config.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
+  cfg.default_prog = { os.getenv("USERPROFILE") .. '\\bin\\nu' }
   -- winget location
-  cfg.default_prog = { 'C:\\Program Files\\nu\\bin\\nu.exe' }
+  -- cfg.default_prog = { 'C:\\Program Files\\nu\\bin\\nu.exe' }
   -- needed to get the OpenSSH Agent working on Windows
   -- https://github.com/wez/wezterm/discussions/3772#discussioncomment-7201688
   cfg.ssh_backend = "Ssh2"

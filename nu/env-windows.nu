@@ -3,7 +3,7 @@
 $env.EDITOR = "/usr/bin/micro"
 $env.RUST_BACKTRACE = 1
 
-if (sys | get host.hostname) == "framework-fry" {
+if (sys host | get hostname) == "framework-fry" {
     # $env.DOTNET_ROOT = "/home/linuxbrew/.linuxbrew/opt/dotnet/libexec"
 
     $env.DOTNET_ROOT = "/home/reilly/.dotnet/"
