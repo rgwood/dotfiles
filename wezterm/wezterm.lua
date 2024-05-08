@@ -80,6 +80,12 @@ for i, v in ipairs(copy_mode) do
     break
   end
 end
+
+
+function Trim(s)
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 table.insert(copy_mode, {
   key = 'c',
   mods = 'CTRL',
@@ -89,6 +95,35 @@ table.insert(copy_mode, {
     CopyMode = 'Close'
   } }
 })
+
+-- copy the entire line
+-- wtf why doesn't this work the first time on a new tab? file an issue
+table.insert(copy_mode, {
+  key = 'c',
+  mods = 'CTRL|SHIFT',
+  action = act.Multiple {
+    act.CopyMode { SetSelectionMode = 'Line' },
+    wezterm.action_callback(function(win, pane)
+      local selected_text = win:get_selection_text_for_pane(pane)
+      local trimmed = Trim(selected_text)
+      win:copy_to_clipboard(trimmed)
+      wezterm.log_info('copied: ' .. trimmed)
+      win:perform_action(act.ClearSelection, pane)
+      wezterm.log_info('now selected: ' .. win:get_selection_text_for_pane(pane))
+    end),
+    { CopyMode = 'Close'}
+}
+})
+
+-- TODO get this working right... I want to be able to hold shift and arrow keys for selection
+-- table.insert(copy_mode, {
+--   key = 'RightArrow',
+--   mods = 'SHIFT',
+--   action = act.Multiple {
+--     act.CopyMode { SetSelectionMode = 'Cell' },
+--     act.CopyMode 'MoveRight',
+--   }
+-- })
 
 cfg.key_tables = {
   copy_mode = copy_mode
