@@ -130,22 +130,22 @@ cfg.key_tables = {
   copy_mode = copy_mode
 }
 
-function formatDomain(domain)
+function is_wsl(domain)
   local prefix, name = string.match(domain, "(%w+)(.*)")
-
   if prefix == "WSL" then
-    return prefix
+    return true
   else
-    return domain
+    return false
   end
 end
 
 if is_windows() then
+
   wezterm.on('format-tab-title', function(tab)
     local pane = tab.active_pane
     local title = pane.title
-    if pane.domain_name then
-      title = formatDomain(pane.domain_name)
+    if is_wsl(pane.domain_name) then
+      title = "🐧 " .. title
     end
     return title
   end)
