@@ -406,14 +406,14 @@ $env.config = {
     osc8: true
     # osc9_9 is from ConEmu and is starting to get wider support. It's similar to osc7 in that it communicates the path to the terminal
     osc9_9: false
+    # Reilly: osc133 causes issues in Windows WezTerm (every keypress scrolls up)
     # osc133 is several escapes invented by Final Term which include the supported ones below.
     # 133;A - Mark prompt start
     # 133;B - Mark prompt end
     # 133;C - Mark pre-execution
     # 133;D;exit - Mark execution finished with exit code
     # This is used to enable terminals to know where the prompt is, the command is, where the command finishes, and where the output of the command is
-    osc133: true
-    # Reilly: osc633 causes issues in Windows WezTerm (every keypress scrolls up)
+    osc133: false
     # osc633 is closely related to osc133 but only exists in visual studio code (vscode) and supports their shell integration features
     # 633;A - Mark prompt start
     # 633;B - Mark prompt end
@@ -422,7 +422,7 @@ $env.config = {
     # 633;E - NOT IMPLEMENTED - Explicitly set the command line with an optional nonce
     # 633;P;Cwd=<path> - Mark the current working directory and communicate it to the terminal
     # and also helps with the run recent menu in vscode
-    osc633: false
+    osc633: true
     # reset_application_mode is escape \x1b[?1l and was added to help ssh work better
     reset_application_mode: true
 }
