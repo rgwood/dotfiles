@@ -32,9 +32,25 @@ if is_windows() then
   -- needed to get the OpenSSH Agent working on Windows
   -- https://github.com/wez/wezterm/discussions/3772#discussioncomment-7201688
   cfg.ssh_backend = "Ssh2"
+
+  if wezterm.version > "20240513" then
+    -- needed to get the OpenSSH Agent working on Windows
+    -- https://github.com/wez/wezterm/discussions/988#discussioncomment-9440847
+    cfg.mux_enable_ssh_agent = false
+  end
+
 else
   cfg.default_prog = { os.getenv("HOME") .. '/bin/nu' }
 end
+
+-- launch straight into nu on WSL
+cfg.wsl_domains = {
+  {
+    name = 'WSL:Ubuntu-22.04',
+    distribution = 'Ubuntu-22.04',
+    default_prog = { '/home/reilly/bin/nu' },
+  }
+}
 
 cfg.window_close_confirmation = 'NeverPrompt'
 cfg.skip_close_confirmation_for_processes_named = {
