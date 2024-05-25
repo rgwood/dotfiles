@@ -64,8 +64,10 @@ cfg.skip_close_confirmation_for_processes_named = {
   'cmd.exe',
   'pwsh.exe',
   'powershell.exe',
+  -- WSL stuff
   'wsl.exe',
   'wslhost.exe',
+  'conhost.exe',
 }
 
 cfg.show_tab_index_in_tab_bar = false
