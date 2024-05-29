@@ -117,25 +117,6 @@ def wat [...split_name:string] {
 
     let md = $"($name).md"
 
-    let solarized = {
-        "Black": "0x002b36",
-        "DarkGray": "0x073642",
-        "DarkGreen": "0x586e75",
-        "DarkYellow": "0x657b83",
-        "DarkBlue": "0x839496",
-        "DarkCyan": "0x93a1a1",
-        "Gray": "0xeee8d5",
-        "White": "0xfdf6e3",
-        "Red": "0xdc322f",
-        "DarkRed": "0xcb4b16",
-        "Yellow": "0xb58900",
-        "Green": "0x859900",
-        "Cyan": "0x2aa198",
-        "Blue": "0x268bd2",
-        "Magenta": "0x6c71c4",
-        "DarkMagenta": "0xd33682"
-    }
-
     cd ~/dotfiles/notes
     let notePath = ($nu.home-path | path join $"dotfiles/notes/($name).md");
 
@@ -290,6 +271,9 @@ let light_theme = {
 
 # The default config record. This is where much of your global configuration is setup.
 $env.config = {
+    # true or false to enable or disable the welcome banner at startup
+    show_banner: true
+
   ls: {
     use_ls_colors: true # use the LS_COLORS environment variable to colorize output
     clickable_links: true # enable or disable clickable links. Your terminal has to support links.
@@ -308,32 +292,29 @@ $env.config = {
       truncating_suffix: "..." # A suffix used by the 'truncating' methodology
     }
   }
-  history: {
-    max_size: 10000 # Session has to be reloaded for this to take effect
-    sync_on_enter: true # Enable to share history between multiple sessions, else you have to close the session to write history to file
-    file_format: "sqlite" # "sqlite" or "plaintext"
-  }
-   # datetime_format determines what a datetime rendered in the shell would look like.
-    # Behavior without this configuration point will be to "humanize" the datetime display,
-    # showing something like "a day ago."
+
+  error_style: "fancy" # "fancy" or "plain" for screen reader-friendly error messages
+
+  # datetime_format determines what a datetime rendered in the shell would look like.
+  # Behavior without this configuration point will be to "humanize" the datetime display,
+  # showing something like "a day ago."
   datetime_format: {
-        normal: '%a, %d %b %Y %H:%M:%S %z'    # shows up in displays of variables or other datetime's outside of tables
-        table: '%m/%d/%y %I:%M:%S%p'          # generally shows up in tabular outputs such as ls. commenting this out will change it to the default human readable datetime format
+    normal: '%a, %d %b %Y %H:%M:%S %z'    # shows up in displays of variables or other datetime's outside of tables
+    table: '%m/%d/%y %I:%M:%S%p'          # generally shows up in tabular outputs such as ls. commenting this out will change it to the default human readable datetime format
     }
 
   explore: {
-    status_bar_background: {fg: "#1D1F21", bg: "#C4C9C6"},
-    command_bar_text: {fg: "#C4C9C6"},
-    highlight: {fg: "black", bg: "yellow"},
+    status_bar_background: { fg: "#1D1F21", bg: "#C4C9C6" },
+    command_bar_text: { fg: "#C4C9C6" },
+    highlight: { fg: "black", bg: "yellow" },
     status: {
-        error: {fg: "white", bg: "red"},
+        error: { fg: "white", bg: "red" },
         warn: {}
-        info: {},
-        # success: {fg: "green"},
+        info: {}
     },
     table: {
-        split_line: {fg: "#404040"},
-        selected_cell: {},
+        split_line: { fg: "#404040" },
+        selected_cell: { bg: light_blue },
         selected_row: {},
         selected_column: {},
     },
@@ -341,6 +322,13 @@ $env.config = {
       reactive: true,
     }
 }
+
+history: {
+  max_size: 10000 # Session has to be reloaded for this to take effect
+  sync_on_enter: true # Enable to share history between multiple sessions, else you have to close the session to write history to file
+  file_format: "sqlite" # "sqlite" or "plaintext"
+}
+
   completions: {
     case_sensitive: false # set to true to enable case-sensitive completions
     quick: true  # set this to false to prevent auto-selecting completions when only one remains
@@ -351,6 +339,7 @@ $env.config = {
       max_results: 100 # setting it lower can improve completion performance at the cost of omitting some options
       completer: null # check 'carapace_completer' above as an example
     }
+    use_ls_colors: true # set this to true to enable file/path/directory completions using LS_COLORS
   }
   filesize: {
     metric: true # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows standard)
@@ -398,143 +387,122 @@ $env.config = {
     # reset_application_mode is escape \x1b[?1l and was added to help ssh work better
     reset_application_mode: true
 }
-  # true or false to enable or disable the welcome banner at startup
-  show_banner: true
   render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+    use_kitty_protocol: false # enables keyboard enhancement protocol implemented by kitty console, only if your terminal support this.
+    highlight_resolved_externals: false # true enables highlighting of external commands in the repl resolved by which.
+    recursion_limit: 50 # the maximum number of times nushell allows recursion before stopping it
 
-  hooks: {
-    pre_prompt: [{||
-      null  # replace with source code to run before the prompt is shown
-    }]
-    pre_execution: [{||
-      null  # replace with source code to run before the repl input is run
-    }]
-    env_change: {
-      PWD: [{|before, after|
-        null  # replace with source code to run if the PWD environment is different since the last repl input
-      }]
+    plugins: {} # Per-plugin configuration. See https://www.nushell.sh/contributor-book/plugins.html#configuration.
+
+    plugin_gc: {
+        # Configuration for plugin garbage collection
+        default: {
+            enabled: true # true to enable stopping of inactive plugins
+            stop_after: 10sec # how long to wait after a plugin is inactive to stop it
+        }
+        plugins: {
+            # alternate configuration for specific plugins, by name, for example:
+            #
+            # gstat: {
+            #     enabled: false
+            # }
+        }
     }
-    # display_output: {
-    #   if (term size).columns >= 100 { table -e } else { table }
-    # }
-  }
-  menus: [
+
+    hooks: {
+        pre_prompt: [{ null }] # run before the prompt is shown
+        pre_execution: [{ null }] # run before the repl input is run
+        env_change: {
+            PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
+        }
+        # display_output: "if (term size).columns >= 100 { table -e } else { table }" # run to display the output of a pipeline
+        command_not_found: { null } # return an error message when a command is not found
+    }
+    menus: [
       # Configuration for default nushell menus
       # Note the lack of source parameter
       {
-        name: completion_menu
-        only_buffer_difference: false
-        marker: "| "
-        type: {
-            layout: columnar
-            columns: 4
-            col_width: 20   # Optional value. If missing all the screen width is used to calculate column width
-            col_padding: 2
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
+          name: completion_menu
+          only_buffer_difference: false
+          marker: "| "
+          type: {
+              layout: columnar
+              columns: 4
+              col_width: 20     # Optional value. If missing all the screen width is used to calculate column width
+              col_padding: 2
+          }
+          style: {
+              text: green
+              selected_text: { attr: r }
+              description_text: yellow
+              match_text: { attr: u }
+              selected_match_text: { attr: ur }
+          }
       }
       {
-        name: history_menu
-        only_buffer_difference: true
-        marker: "? "
-        type: {
-            layout: list
-            page_size: 10
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
+          name: ide_completion_menu
+          only_buffer_difference: false
+          marker: "| "
+          type: {
+              layout: ide
+              min_completion_width: 0,
+              max_completion_width: 50,
+              max_completion_height: 10, # will be limited by the available lines in the terminal
+              padding: 0,
+              border: true,
+              cursor_offset: 0,
+              description_mode: "prefer_right"
+              min_description_width: 0
+              max_description_width: 50
+              max_description_height: 10
+              description_offset: 1
+              # If true, the cursor pos will be corrected, so the suggestions match up with the typed text
+              #
+              # C:\> str
+              #      str join
+              #      str trim
+              #      str split
+              correct_cursor_pos: false
+          }
+          style: {
+              text: green
+              selected_text: { attr: r }
+              description_text: yellow
+              match_text: { attr: u }
+              selected_match_text: { attr: ur }
+          }
       }
       {
-        name: help_menu
-        only_buffer_difference: true
-        marker: "? "
-        type: {
-            layout: description
-            columns: 4
-            col_width: 20   # Optional value. If missing all the screen width is used to calculate column width
-            col_padding: 2
-            selection_rows: 4
-            description_rows: 10
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
-      }
-      # Example of extra menus created using a nushell source
-      # Use the source field to create a list of records that populates
-      # the menu
-      {
-        name: commands_menu
-        only_buffer_difference: false
-        marker: "# "
-        type: {
-            layout: columnar
-            columns: 4
-            col_width: 20
-            col_padding: 2
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
-        source: { |buffer, position|
-            $nu.scope.commands
-            | where name =~ $buffer
-            | each { |it| {value: $it.name description: $it.usage} }
-        }
+          name: history_menu
+          only_buffer_difference: true
+          marker: "? "
+          type: {
+              layout: list
+              page_size: 10
+          }
+          style: {
+              text: green
+              selected_text: green_reverse
+              description_text: yellow
+          }
       }
       {
-        name: vars_menu
-        only_buffer_difference: true
-        marker: "# "
-        type: {
-            layout: list
-            page_size: 10
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
-        source: { |buffer, position|
-            $nu.scope.vars
-            | where name =~ $buffer
-            | sort-by name
-            | each { |it| {value: $it.name description: $it.type} }
-        }
-      }
-      {
-        name: commands_with_description
-        only_buffer_difference: true
-        marker: "# "
-        type: {
-            layout: description
-            columns: 4
-            col_width: 20
-            col_padding: 2
-            selection_rows: 4
-            description_rows: 10
-        }
-        style: {
-            text: green
-            selected_text: green_reverse
-            description_text: yellow
-        }
-        source: { |buffer, position|
-            $nu.scope.commands
-            | where name =~ $buffer
-            | each { |it| {value: $it.name description: $it.usage} }
-        }
+          name: help_menu
+          only_buffer_difference: true
+          marker: "? "
+          type: {
+              layout: description
+              columns: 4
+              col_width: 20     # Optional value. If missing all the screen width is used to calculate column width
+              col_padding: 2
+              selection_rows: 4
+              description_rows: 10
+          }
+          style: {
+              text: green
+              selected_text: green_reverse
+              description_text: yellow
+          }
       }
   ]
   keybindings: [
