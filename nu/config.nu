@@ -126,7 +126,14 @@ def wat [...split_name:string] {
     if ( $notePath | path exists ) {
         echo "📘 Local Notes 📘"
         echo ""
-        mdcat $notePath
+
+        if (exists mdcat) {
+            mdcat $notePath
+        } else if (exists glow) {
+            glow $notePath
+        } else {
+            cat $notePath
+        }
     }
 }
 
