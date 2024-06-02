@@ -16,6 +16,13 @@ def clip [] {
     }
 }
 
+
+def ffmpeg-trim (file, from, to) {
+    let parts = $file | path parse
+    let newFileName = $parts.stem + "-trimmed." + $parts.extension
+    ffmpeg -i $file -ss $from -to $to -codec copy $newFileName
+}
+
 # Commands for RPM (Reilly's Package Manager)
 
 def publish-to-rpm [ path:string --help (-h) ] {
