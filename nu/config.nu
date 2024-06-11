@@ -143,7 +143,7 @@ def wat [...split_name:string] {
 # https://github.com/nushell/nu_scripts/tree/main/themes
 let dark_theme = {
     # color for nushell primitives
-    separator: blue
+    separator: dark_gray
     leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
     header: green_bold
     empty: blue
@@ -323,7 +323,6 @@ $env.config = {
         info: {}
     },
     table: {
-        split_line: { fg: "#404040" },
         selected_cell: { bg: light_blue },
         selected_row: {},
         selected_column: {},
