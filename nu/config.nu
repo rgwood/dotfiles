@@ -5,6 +5,7 @@ alias sn = templater snippet
 alias st = systemctl-tui
 alias cr = cargo run
 alias lt = llm -t terse
+alias ltc = llm chat -t terse
 
 def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
