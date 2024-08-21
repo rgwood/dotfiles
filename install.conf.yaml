@@ -42,6 +42,7 @@
       ~/bin/:
             glob: true
             path: bin/*
+      ~/.config/mods/mods.yml: llms/mods.yml
 
 - create:
       - ~/bin
