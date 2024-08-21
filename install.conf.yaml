@@ -42,7 +42,12 @@
       ~/bin/:
             glob: true
             path: bin/*
-      ~/.config/mods/mods.yml: llms/mods.yml
+      ~/.config/mods/mods.yml:
+            path: llms/mods.yml
+            if: '[[ "$(uname)" == "Linux" ]]'
+      ~/Library/Application Support/mods/mods.yml:
+            path: llms/mods.yml
+            if: '[[ "$(uname)" == "Darwin" ]]'
 
 - create:
       - ~/bin
