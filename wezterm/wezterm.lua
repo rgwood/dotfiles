@@ -1,6 +1,7 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
 local cfg = wezterm.config_builder()
+local hostname = wezterm.hostname()
 
 local is_linux = function()
   return wezterm.target_triple:find("linux") ~= nil
@@ -19,7 +20,14 @@ end
 cfg.color_scheme = 'Solarized Dark Higher Contrast'
 cfg.font = wezterm.font 'Consolas NF'
 
-if is_darwin() or is_linux() then
+
+
+if hostname == 'framework-fry' and is_linux() then
+  cfg.font_size = 10.0
+  cfg.window_frame = {
+    font_size = 10.0,
+  }
+elseif is_darwin() or is_linux() then
   cfg.font_size = 14.0
 else
   cfg.font_size = 11.0
