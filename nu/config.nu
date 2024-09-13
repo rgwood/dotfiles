@@ -4,6 +4,7 @@ alias lg = lazygit
 alias sn = templater snippet
 alias st = systemctl-tui
 alias cr = cargo run
+alias cb = cargo build
 alias ltc = llm chat -t terse
 
 def lt [ ...words] {
