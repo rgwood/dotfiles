@@ -1,0 +1,7 @@
+# templater.filename = foo.py
+#!/usr/bin/env -S uv run --quiet
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+# ]
+# ///
