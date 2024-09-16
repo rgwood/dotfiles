@@ -17,3 +17,4 @@ bld/
 [Ll]ogs/
 
 private/
+.aider*
