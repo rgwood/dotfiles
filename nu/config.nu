@@ -368,7 +368,6 @@ history: {
     vi_normal: underscore # block, underscore, line  (underscore is the default)
   }
   color_config: $dark_theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
-  use_grid_icons: true
   # TODO: footer mode should specify number of terminal rows, not number of Nushell rows
   footer_mode: "4" # always, never, number_of_rows, auto
   float_precision: 2
