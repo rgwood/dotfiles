@@ -369,7 +369,7 @@ history: {
   }
   color_config: $dark_theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
   # TODO: footer mode should specify number of terminal rows, not number of Nushell rows
-  footer_mode: "4" # always, never, number_of_rows, auto
+  footer_mode: 4 # always, never, number_of_rows, auto
   float_precision: 2
   buffer_editor: "micro" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
   use_ansi_coloring: true
