@@ -51,7 +51,6 @@
 
 - create:
       - ~/bin
-      - ~/downloads
       - ~/scratch
       - ~/src # shortlist of commonly used projects
       - ~/source # everything under the sun
