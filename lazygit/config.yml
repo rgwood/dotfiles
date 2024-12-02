@@ -14,3 +14,4 @@ os:
   Open: 'code -rg {{filename}}'
 # to skip without creating a new repo
 notARepository: 'skip'
+promptToReturnFromSubprocess: false

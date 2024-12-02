@@ -32,6 +32,9 @@
       ~/.config/micro/settings.json:
           force: true
           path: micro/settings.json
+      ~/Library/Application Support/lazygit/config.yml:
+            path: lazygit/config.yml
+            if: '[[ "$(uname)" == "Darwin" ]]'
       ~/.config/lazygit/config.yml: lazygit/config.yml
       ~/.sqliterc: sqliterc
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions

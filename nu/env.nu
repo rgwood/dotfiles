@@ -33,6 +33,10 @@ if (sys host | get long_os_version) =~ "Linux" {
 # ...but ~/bin should take priority over linuxbrew
 $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/bin" )
 
+# ...and ddcoterm shims should take priority over everything
+$env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm/overrides" )
+$env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm/bin" )
+
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
 
 if (sys host | get name) == "Darwin" {
