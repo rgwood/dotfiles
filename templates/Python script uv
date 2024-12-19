@@ -1,6 +1,6 @@
 # templater.filename = foo.py
 # templater.set_executable = true
-#!/usr/bin/env -S uv run --quiet
+#!/usr/bin/env -S uv run --script --quiet
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
