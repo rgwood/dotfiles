@@ -51,6 +51,7 @@
       ~/Library/Application Support/mods/mods.yml:
             path: llms/mods.yml
             if: '[[ "$(uname)" == "Darwin" ]]'
+      ~/justfile: just/global-justfile
 
 - create:
       - ~/bin

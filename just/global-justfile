@@ -1,0 +1,7 @@
+set shell := ["nu", "-c"]
+
+build-nu:
+    cargo build --release --features=static-link-openssl
+
+publish-nu-to-local-bin: build-nu
+    mv -f target/release/nu ~/bin/
