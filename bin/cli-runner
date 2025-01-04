@@ -2,5 +2,96 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
+#     "rich>=13.7.0"
 # ]
 # ///
+
+import subprocess
+from queue import Queue
+from threading import Thread
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
+
+def execute_command(cmd: str, args: str) -> None:
+    """Execute a command with its arguments and display output."""
+    full_cmd = f"{cmd} {args}"
+    console = Console()
+    
+    try:
+        process = subprocess.Popen(
+            full_cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
+        )
+        
+        console.print(Panel(f"[bold green]Executing:[/] {full_cmd}"))
+        
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                console.print(output.strip())
+                
+        return_code = process.poll()
+        if return_code == 0:
+            console.print(f"[bold green]✓[/] Command completed successfully")
+        else:
+            console.print(f"[bold red]✗[/] Command failed with return code {return_code}")
+            
+    except Exception as e:
+        console.print(f"[bold red]Error:[/] {str(e)}")
+
+def main():
+    console = Console()
+    command_queue = Queue()
+    
+    # Get the executable name
+    cmd = console.input("[bold yellow]Enter the executable name (e.g., yt-dlp):[/] ").strip()
+    
+    if not cmd:
+        console.print("[bold red]No executable specified. Exiting.[/]")
+        return
+    
+    console.print(f"\n[bold green]Queue runner started for:[/] {cmd}")
+    console.print("[dim]Enter arguments for each command (empty line to execute queue, Ctrl+C to exit)[/]\n")
+    
+    # Worker thread to process the queue
+    def queue_worker():
+        while True:
+            args = command_queue.get()
+            if args is None:
+                break
+            execute_command(cmd, args)
+            command_queue.task_done()
+    
+    # Start worker thread
+    worker = Thread(target=queue_worker, daemon=True)
+    worker.start()
+    
+    try:
+        while True:
+            args = console.input(f"[bold blue]{cmd}>[/] ").strip()
+            
+            if not args:
+                if not command_queue.empty():
+                    console.print("[yellow]Executing queued commands...[/]")
+                    command_queue.join()
+                    console.print("[green]All queued commands completed![/]")
+                continue
+                
+            command_queue.put(args)
+            
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Shutting down...[/]")
+        command_queue.put(None)  # Signal worker to stop
+        worker.join()
+        console.print("[green]Queue runner terminated.[/]")
+
+if __name__ == "__main__":
+    main()
