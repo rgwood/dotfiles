@@ -1,7 +1,8 @@
 # Nushell Config File
 
-alias lg = lazygit
+alias t = templater
 alias sn = templater snippet
+alias lg = lazygit
 alias st = systemctl-tui
 alias cr = cargo run
 alias cb = cargo build
@@ -17,13 +18,12 @@ def exists [executable] { not (which $executable | is-empty) }
 def clip [] {
     let input = $in;
 
-    if (exists clip.exe) {
-        $input | clip.exe
-    } else {
-        $input | xclip -sel clip
+    match $nu.os-info.name {
+      "linux" => ($input | xclip -sel clip),
+      "windows" => ($input | clip.exe),
+      "macos" => ($input | pbcopy),
     }
 }
-
 
 def ffmpeg-trim (file, from, to) {
     let parts = $file | path parse
