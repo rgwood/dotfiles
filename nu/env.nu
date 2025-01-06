@@ -1,6 +1,6 @@
 # Nushell Environment Config File
 
-$env.EDITOR = "/usr/bin/micro"
+$env.EDITOR = "micro"
 $env.RUST_BACKTRACE = 1
 
 if (sys host | get hostname) == "framework-fry" {
