@@ -24,6 +24,8 @@ def unzip_file(zip_path):
             print(f"Extracting: {zip_path}")
             
             # Extract all contents to current directory
+            # This already preserves the internal directory structure
+            # without adding the zip filename as a parent directory
             zip_ref.extractall()
             
             # Count files extracted
