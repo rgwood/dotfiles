@@ -2,5 +2,158 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
+#     "aiohttp",
+#     "watchfiles",
 # ]
 # ///
+
+import asyncio
+import os
+import socket
+from pathlib import Path
+from typing import Set
+from aiohttp import web
+from watchfiles import awatch, Change
+
+# HTML reload script to inject
+RELOAD_SCRIPT = """
+<script>
+    (function() {
+        const ws = new WebSocket(`ws://${location.host}/ws`);
+        ws.onmessage = () => location.reload();
+        ws.onclose = () => {
+            console.log('Reload connection lost. Retrying...');
+            setTimeout(() => location.reload(), 1000);
+        };
+    })();
+</script>
+"""
+
+def is_port_available(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind(('localhost', port))
+            return True
+        except OSError:
+            return False
+
+def find_available_port(start_port: int, max_attempts: int = 10) -> int:
+    for port in range(start_port, start_port + max_attempts):
+        if is_port_available(port):
+            return port
+    raise RuntimeError(f"Could not find an available port after {max_attempts} attempts")
+
+def get_watchable_paths():
+    """Return a list of watchable paths in the current directory."""
+    watchable = []
+    watched_extensions = {'.html', '.css', '.js'}
+    
+    for entry in os.scandir('.'):
+        if entry.is_file() and Path(entry.name).suffix in watched_extensions:
+            watchable.append(entry.path)
+        elif entry.is_dir() and not entry.name.startswith('.'):
+            try:
+                # Test if we can list the directory
+                list(Path(entry.path).iterdir())
+                watchable.append(entry.path)
+            except (PermissionError, OSError):
+                continue
+    
+    return watchable
+
+class LiveServer:
+    def __init__(self, port: int):
+        self.port = port
+        self.ws_clients: Set[web.WebSocketResponse] = set()
+        self.app = web.Application()
+        self.app.router.add_get('/ws', self.websocket_handler)
+        self.app.router.add_get('/{path:.*}', self.static_handler)
+
+    async def websocket_handler(self, request: web.Request) -> web.WebSocketResponse:
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+        self.ws_clients.add(ws)
+        
+        try:
+            async for _ in ws:
+                pass
+        finally:
+            self.ws_clients.remove(ws)
+        return ws
+
+    async def notify_clients(self):
+        if self.ws_clients:
+            for ws in self.ws_clients:
+                await ws.send_str('reload')
+
+    async def static_handler(self, request: web.Request) -> web.Response:
+        path = request.match_info['path'] or 'index.html'
+        filepath = Path(path)
+
+        if filepath.is_dir():
+            filepath = filepath / 'index.html'
+
+        try:
+            with open(filepath, 'rb') as f:
+                content = f.read()
+
+            content_type = 'text/html' if filepath.suffix == '.html' else 'application/octet-stream'
+            
+            if content_type == 'text/html':
+                content = content.decode('utf-8')
+                if '</body>' in content:
+                    content = content.replace('</body>', f'{RELOAD_SCRIPT}</body>')
+                else:
+                    content = content + RELOAD_SCRIPT
+                content = content.encode('utf-8')
+
+            return web.Response(body=content, content_type=content_type)
+        except FileNotFoundError:
+            return web.Response(text='Not found', status=404)
+
+    async def watch_files(self):
+        paths = get_watchable_paths()
+        if not paths:
+            print("Warning: No watchable files found in current directory")
+            return
+
+        print("Watching for changes in:")
+        for path in paths:
+            print(f"  {path}")
+
+        def watch_filter(change: Change, path: str) -> bool:
+            return path.endswith(('.html', '.css', '.js'))
+
+        async for changes in awatch(*paths, watch_filter=watch_filter):
+            await self.notify_clients()
+
+    async def start(self):
+        runner = web.AppRunner(self.app)
+        await runner.setup()
+        site = web.TCPSite(runner, 'localhost', self.port)
+        await site.start()
+
+async def main():
+    try:
+        port = find_available_port(5500)
+    except RuntimeError as e:
+        print(f"Error: {e}")
+        return
+
+    server = LiveServer(port)
+    
+    current_dir = os.path.basename(os.getcwd())
+    url = f"http://localhost:{port}"
+    print(f"Serving {current_dir} at {url}")
+    print("Press Ctrl+C to stop")
+
+    await asyncio.gather(
+        server.start(),
+        server.watch_files()
+    )
+
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nServer stopped")
