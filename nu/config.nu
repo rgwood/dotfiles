@@ -146,6 +146,12 @@ def wat [...split_name:string] {
     }
 }
 
+def trim (file, from, to) {
+    let parts = $file | path parse
+    let newFileName = $parts.stem + "-trimmed." + $parts.extension
+    ffmpeg -i $file -ss $from -to $to -codec copy $newFileName
+}
+
 $env.config.table.mode = "rounded"
 $env.config.table.header_on_separator = true
 $env.config.table.padding = {left: 0, right: 0}
