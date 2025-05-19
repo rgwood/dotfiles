@@ -1,0 +1,57 @@
+/* General App Styling */
+Screen {
+    layout: vertical;
+}
+
+Header {
+    dock: top;
+    height: auto;
+}
+
+Footer {
+    dock: bottom;
+    height: auto;
+}
+
+/* Main content area, takes space between header and footer */
+Vertical {
+    layout: vertical;
+    /* Children: OutputPane, QueuePane, Input */
+}
+
+/* Output Pane Styling */
+OutputPane {
+    width: 1fr;
+    height: 1fr; /* Adjust height distribution */
+    border: round green;
+    padding: 0 1;
+    overflow-y: scroll;
+}
+
+/* Bottom Panes Container: Queue and Input - REMOVED, integrated into Vertical */
+/*
+#bottom-panes {
+    layout: horizontal;
+    height: 2fr; 
+    max-height: 20; 
+}
+*/
+
+/* Queue Pane Styling */
+QueuePane {
+    width: 1fr; /* Take full width */
+    /* max-width: 40%; */ /* No longer needed as it's full width */
+    height: auto; /* Adjust height distribution */
+    border: round blue;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+/* Command Input Styling */
+Input {
+    width: 1fr; /* Fill remaining horizontal space */
+    height: auto; /* Adjust to content or a fixed small height */
+    min-height: 3; /* Ensure it's visible */
+    border: round yellow;
+    padding: 0 1;
+} 

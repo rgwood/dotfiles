@@ -2,96 +2,194 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "rich>=13.7.0"
+#     "rich>=13.7.0",
+#     "textual>=3.2.0"
 # ]
 # ///
 
-import subprocess
-from queue import Queue
-from threading import Thread
-from rich.console import Console
-from rich.live import Live
-from rich.panel import Panel
+import asyncio
+import subprocess # Keep for type hints if necessary, but prefer asyncio.create_subprocess_shell
 
-def execute_command(cmd: str, args: str) -> None:
-    """Execute a command with its arguments and display output."""
+from rich.console import Console
+from textual.app import App, ComposeResult
+from textual.binding import Binding
+from textual.containers import Vertical, Horizontal
+from textual.widgets import Header, Footer, Static, Input, ListView, ListItem, Label, RichLog
+from textual.reactive import reactive
+from textual import work # For background tasks
+
+async def execute_command_async(cmd: str, args: str, output_widget: RichLog) -> None:
+    """Execute a command asynchronously and stream output to the widget."""
     full_cmd = f"{cmd} {args}"
-    console = Console()
+    output_widget.write(f"[bold green]Executing:[/] {full_cmd}")
     
     try:
-        process = subprocess.Popen(
+        process = await asyncio.create_subprocess_shell(
             full_cmd,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-            universal_newlines=True
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT
         )
         
-        console.print(Panel(f"[bold green]Executing:[/] {full_cmd}"))
+        if process.stdout:
+            while True:
+                line_bytes = await process.stdout.readline()
+                if not line_bytes:
+                    break
+                line = line_bytes.decode(errors='replace').strip()
+                if line:
+                    output_widget.write(line)
         
-        while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                console.print(output.strip())
-                
-        return_code = process.poll()
+        return_code = await process.wait()
+
         if return_code == 0:
-            console.print(f"[bold green]✓[/] Command completed successfully")
+            output_widget.write(f"[bold green]✓[/] Command completed successfully: {full_cmd}")
         else:
-            console.print(f"[bold red]✗[/] Command failed with return code {return_code}")
+            output_widget.write(f"[bold red]✗[/] Command failed with return code {return_code}: {full_cmd}")
             
     except Exception as e:
-        console.print(f"[bold red]Error:[/] {str(e)}")
+        output_widget.write(f"[bold red]Error executing {full_cmd}:[/] {str(e)}")
 
-def main():
-    console = Console()
-    command_queue = Queue()
+class OutputPane(RichLog):
+    """A widget to display command output."""
+    def __init__(self, **kwargs):
+        # Added highlight and markup for better Rich text rendering in the log.
+        # auto_scroll is True by default in RichLog.
+        super().__init__(highlight=True, markup=True, **kwargs)
+
+    def on_mount(self) -> None:
+        self.write("Command output will appear here...")
+
+class QueuePane(ListView):
+    """A widget to display the command queue."""
+    pass
+
+class CLIRunnerApp(App):
+    """A Textual app to run CLI commands."""
+
+    CSS_PATH = "cli_runner.tcss"
+
+    BINDINGS = [
+        Binding("ctrl+c", "request_quit", "Quit", show=False, priority=True)
+    ]
+
+    executable_name = reactive("")
+    # command_queue stores tuples of (executable_name, args_string)
+    command_queue = reactive([])
+
+    def __init__(self, executable_name_from_cli: str):
+        super().__init__()
+        # Initialize widgets first, as their state might be indirectly affected by
+        # reactive variable assignments below, which trigger watchers.
+        self._output_pane = OutputPane(id="output-pane")
+        self._queue_pane = QueuePane(id="queue-pane")
+
+        # Configure the input widget based on the executable name provided at startup.
+        # Do this before assigning to self.executable_name to ensure the input widget
+        # is correctly set up before any watchers for self.executable_name might run.
+        if executable_name_from_cli:
+            self._input_widget = Input(placeholder=f"{executable_name_from_cli}> Enter arguments...", id="command-input")
+        else:
+            # This case should be unlikely if __main__ ensures an executable is provided.
+            # Write to output pane directly, as reactive property self.executable_name is not set yet.
+            self._output_pane.write("[bold red]CRITICAL: No executable name provided at startup.[/]")
+            self._input_widget = Input(placeholder="No executable configured!", id="command-input", disabled=True)
+
+        # Now, initialize the reactive variable. Its watcher methods can now safely
+        # access the widgets initialized above.
+        self.executable_name = executable_name_from_cli
+        # self.command_queue is initialized by its reactive decorator and its watcher
+        # will be called correctly by watch_executable_name if needed.
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Vertical():
+            yield self._output_pane
+            yield self._queue_pane 
+            yield self._input_widget
+        yield Footer()
+
+    async def on_mount(self) -> None:
+        # Initial UI setup that depends on executable_name
+        if self.executable_name:
+            self._output_pane.write(f"Executable set to: [bold]{self.executable_name}[/bold]. Enter arguments.")
+            # Input placeholder is set in __init__ based on executable_name_from_cli.
+        # else: (This path is unlikely due to __main__ ensuring an executable name)
+            # __init__ handles the placeholder/disabled state if executable_name were empty.
+
+        # Now that _queue_pane is mounted, explicitly populate it based on the current state.
+        # The guard in watch_command_queue makes this safe even if called earlier,
+        # but here we ensure it reflects the initial state on the mounted widget.
+        self.watch_command_queue(self.command_queue)
+
+        self._input_widget.focus()
+        self.process_command_queue() # Start the long-lived worker
+
+    @work
+    async def process_command_queue(self) -> None:
+        """Continuously process commands from the queue."""
+        while True: # Loop indefinitely
+            if self.command_queue: # Check if there are items
+                # Get the command from the head of the queue
+                cmd_to_execute_tuple = self.command_queue[0]
+                executable, args_str = cmd_to_execute_tuple
+
+                # Remove the command from the queue *before* execution.
+                # This triggers watch_command_queue to update the UI.
+                self.command_queue = self.command_queue[1:]
+
+                await execute_command_async(executable, args_str, self._output_pane)
+
+            else:
+                # If queue is empty, pause briefly to prevent busy-waiting and yield control
+                await asyncio.sleep(0.2)
+
+    async def on_input_submitted(self, message: Input.Submitted) -> None:
+        value = message.value.strip()
+
+        if value: # Add to queue
+            self.command_queue = self.command_queue + [(self.executable_name, value)]
+            self._output_pane.write(f"Queued: {self.executable_name} {value}")
+            # The long-lived worker will pick this up automatically.
+        # No special action needed for empty input regarding queue processing,
+        # as the worker is always running.
+
+        self._input_widget.value = ""
+        self._input_widget.focus() # Ensure input regains focus
+
+    def watch_command_queue(self, new_queue: list) -> None:
+        # Guard: Only update the _queue_pane if it exists and is mounted.
+        # This prevents errors if watchers are triggered before the UI is fully composed.
+        if not hasattr(self, '_queue_pane') or not self._queue_pane.is_mounted:
+            return
+
+        self._queue_pane.clear()
+        if not self.executable_name:
+            self._queue_pane.append(ListItem(Label("[dim]Set executable first[/dim]")))
+        else:
+            if not new_queue:
+                self._queue_pane.append(ListItem(Label("[dim]Queue is empty[/dim]")))
+            else:
+                for i, (cmd, args) in enumerate(new_queue):
+                    item = ListItem(Label(f"{i+1}. {cmd} {args}"))
+                    self._queue_pane.append(item)
     
-    # Get the executable name
-    cmd = console.input("[bold yellow]Enter the executable name (e.g., yt-dlp):[/] ").strip()
-    
-    if not cmd:
-        console.print("[bold red]No executable specified. Exiting.[/]")
-        return
-    
-    console.print(f"\n[bold green]Queue runner started for:[/] {cmd}")
-    console.print("[dim]Enter arguments for each command (empty line to execute queue, Ctrl+C to exit)[/]\n")
-    
-    # Worker thread to process the queue
-    def queue_worker():
-        while True:
-            args = command_queue.get()
-            if args is None:
-                break
-            execute_command(cmd, args)
-            command_queue.task_done()
-    
-    # Start worker thread
-    worker = Thread(target=queue_worker, daemon=True)
-    worker.start()
-    
-    try:
-        while True:
-            args = console.input(f"[bold blue]{cmd}>[/] ").strip()
-            
-            if not args:
-                if not command_queue.empty():
-                    console.print("[yellow]Executing queued commands...[/]")
-                    command_queue.join()
-                    console.print("[green]All queued commands completed![/]")
-                continue
-                
-            command_queue.put(args)
-            
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Shutting down...[/]")
-        command_queue.put(None)  # Signal worker to stop
-        worker.join()
-        console.print("[green]Queue runner terminated.[/]")
+    def watch_executable_name(self, new_name: str) -> None:
+        # Update queue pane message if executable is set/unset
+        self.watch_command_queue(self.command_queue)
+
+    async def action_request_quit(self) -> None:
+        """Action to request application quit."""
+        # Debug messages to confirm this action is called
+        self._output_pane.write("[bold magenta]DEBUG: Ctrl+C pressed. action_request_quit called. Attempting exit...[/]")
+        import sys
+        print("DEBUG: action_request_quit called. Attempting exit...", file=sys.stderr)
+        self.exit()
 
 if __name__ == "__main__":
-    main()
+    console = Console()
+    exec_name = console.input("[bold sky_blue1]Enter executable name (default: yt-dlp)[/]: ").strip()
+    if not exec_name:
+        exec_name = "yt-dlp"
+
+    app = CLIRunnerApp(executable_name_from_cli=exec_name)
+    app.run()
