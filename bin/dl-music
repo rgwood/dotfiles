@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Download music script - adds URL to download queue on home server
+# Usage: dl-music <url>
+# Requires: HOME_SERVER environment variable to be set
+
+if [ $# -eq 0 ]; then
+    echo "Usage: dl-music <url>"
+    echo "Adds a music URL to the download queue on home server"
+    exit 1
+fi
+
+url="$1"
+
+# Check if HOME_SERVER environment variable is set
+if [ -z "$HOME_SERVER" ]; then
+    echo "Error: HOME_SERVER environment variable is not set"
+    echo "Please set HOME_SERVER to your home server hostname (e.g., export HOME_SERVER=potato-pi)"
+    exit 1
+fi
+
+# SSH to home server and run the sqlite insert command
+ssh "$HOME_SERVER" "cd /mnt/QNAP1/Downloads/Music && sqlite3 downloadQueue.db \"insert into queue(Url, Type) values('$url', 'Audio');\""
+
+if [ $? -eq 0 ]; then
+    echo "Successfully added '$url' to download queue"
+else
+    echo "Failed to add URL to download queue"
+    exit 1
+fi 

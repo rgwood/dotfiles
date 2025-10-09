@@ -90,10 +90,10 @@ def in-rust-project [] { ls | where name == Cargo.toml | is-not-empty }
 def in-node-project [] { ls | where name == package.json | is-not-empty }
 def in-go-project [] { ls | where name == go.mod | is-not-empty }
 
-def dl-music [ url:string ] {
-    cd /mnt/QNAP1/Downloads/Music;
-    sqlite3 downloadQueue.db $"insert into queue\(Url, Type\) values\('($url)', 'Audio'\);"
-}
+# def dl-music [ url:string ] {
+#     cd /mnt/QNAP1/Downloads/Music;
+#     sqlite3 downloadQueue.db $"insert into queue\(Url, Type\) values\('($url)', 'Audio'\);"
+# }
 
 # TODO: assign these to keybindings
 def build-current-project [] {
