@@ -52,6 +52,9 @@
             path: llms/mods.yml
             if: '[[ "$(uname)" == "Darwin" ]]'
       ~/justfile: just/global-justfile
+      ~/.claude/CLAUDE.md: agents/CLAUDE.md
+      ~/.claude/AGENTS.md: agents/AGENTS.md
+      ~/.codex/AGENTS.md: agents/AGENTS.md
 
 - create:
       - ~/bin
