@@ -55,6 +55,7 @@
       ~/.claude/CLAUDE.md: agents/CLAUDE.md
       ~/.claude/AGENTS.md: agents/AGENTS.md
       ~/.codex/AGENTS.md: agents/AGENTS.md
+      ~/.claude/settings.json: agents/claude.user.settings.json
 
 - create:
       - ~/bin

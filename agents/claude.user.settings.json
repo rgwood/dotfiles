@@ -1,0 +1,13 @@
+{
+    "permissions": {
+        "defaultMode": "plan",
+        "allow": [
+            "Bash(cat:*)",
+            "WebFetch"
+        ]
+    },
+    "enabledPlugins": {
+        "rust-analyzer-lsp@claude-plugins-official": true
+    },
+    "model": "opus"
+}
