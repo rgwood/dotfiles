@@ -130,7 +130,7 @@ def wat [...split_name:string] {
     let md = $"($name).md"
 
     cd ~/dotfiles/notes
-    let notePath = ($nu.home-path | path join $"dotfiles/notes/($name).md");
+    let notePath = ($nu.home-dir | path join $"dotfiles/notes/($name).md");
 
     if ( $notePath | path exists ) {
         echo "📘 Local Notes 📘"
