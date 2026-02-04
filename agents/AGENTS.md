@@ -21,3 +21,11 @@
 ```
 
 You can run the scripts like `uv run foo.py`, but make sure to `chmod +x` any scripts that a user might want to run later.
+
+### Type Checking Python Scripts
+- Always type check Python scripts before asking the user to run them
+- Use `ty` (Astral's type checker) with `--with-requirements` to automatically pick up PEP 723 dependencies:
+
+```bash
+uvx --with-requirements=script.py ty check script.py
+```
