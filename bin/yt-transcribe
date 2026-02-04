@@ -1,0 +1,118 @@
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.12,<3.14"
+# dependencies = [
+#     "deepgram-sdk",
+# ]
+# ///
+
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+from deepgram import DeepgramClient
+from deepgram.types import ListenV1Response
+
+
+def download_audio(url: str, output_dir: Path) -> Path:
+    """Download audio from URL using yt-dlp."""
+    output_template = str(output_dir / "%(title)s.%(ext)s")
+
+    result = subprocess.run(
+        [
+            "yt-dlp",
+            "-x",  # Extract audio
+            "--audio-format", "opus",
+            "-o", output_template,
+            "--print", "after_move:filepath",
+            url,
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        print(f"yt-dlp error: {result.stderr}", file=sys.stderr)
+        sys.exit(1)
+
+    filepath = result.stdout.strip().split("\n")[-1]
+    return Path(filepath)
+
+
+def transcribe(audio_path: Path) -> str:
+    """Transcribe audio file using Deepgram."""
+    api_key = os.environ.get("DEEPGRAM_API_KEY")
+    if not api_key:
+        print("Error: DEEPGRAM_API_KEY environment variable not set", file=sys.stderr)
+        sys.exit(1)
+
+    client = DeepgramClient(api_key=api_key)
+
+    with open(audio_path, "rb") as f:
+        buffer_data = f.read()
+
+    response = client.listen.v1.media.transcribe_file(
+        request=buffer_data,
+        model="nova-3",
+        language="en",
+        diarize=True,
+        paragraphs=True,
+        punctuate=True,
+        smart_format=True,
+        utt_split=0.8,
+        utterances=True,
+    )
+
+    if not isinstance(response, ListenV1Response):
+        print("Error: Unexpected response type from Deepgram", file=sys.stderr)
+        sys.exit(1)
+
+    results = response.results
+    paragraphs: list[str] = []
+
+    # Use paragraphs for better formatting
+    if results.channels:
+        for channel in results.channels:
+            for alt in channel.alternatives or []:
+                if alt.paragraphs and alt.paragraphs.paragraphs:
+                    for para in alt.paragraphs.paragraphs:
+                        sentences = [s.text for s in (para.sentences or []) if s.text]
+                        if sentences:
+                            speaker_label = f"[Speaker {para.speaker}]" if para.speaker is not None else ""
+                            text = " ".join(sentences)
+                            if speaker_label:
+                                paragraphs.append(f"{speaker_label}\n{text}")
+                            else:
+                                paragraphs.append(text)
+                elif alt.transcript:
+                    paragraphs.append(alt.transcript)
+
+    return "\n\n".join(paragraphs)
+
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <url>", file=sys.stderr)
+        sys.exit(1)
+
+    url = sys.argv[1]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        print("Downloading audio...", file=sys.stderr)
+        audio_path = download_audio(url, Path(tmpdir))
+
+        print(f"Transcribing {audio_path.name}...", file=sys.stderr)
+        transcript = transcribe(audio_path)
+
+        # Write to txt file based on audio filename
+        output_path = Path(audio_path.stem + ".txt")
+        output_path.write_text(transcript)
+        print(f"Saved to {output_path}", file=sys.stderr)
+
+        print(transcript)
+
+
+if __name__ == "__main__":
+    main()
