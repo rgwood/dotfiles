@@ -1,0 +1,148 @@
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "atproto>=0.0.55",
+# ]
+# ///
+
+"""
+Blockenheimer: given a Bluesky post URL, add the author and everyone who
+liked it to a block list.
+"""
+
+import os
+import re
+import sys
+import time
+
+from atproto import Client, models
+
+LIST_RKEY = "3lpyuurzovd2s"
+LOGIN_HANDLE = "grids.reillywood.com"
+
+
+def parse_post_url(url: str) -> tuple[str, str]:
+    """Extract (handle_or_did, rkey) from a bsky.app post URL."""
+    m = re.match(r"https?://bsky\.app/profile/([^/]+)/post/([^/?#]+)", url)
+    if not m:
+        print(f"Error: invalid Bluesky post URL: {url}", file=sys.stderr)
+        sys.exit(1)
+    assert m is not None
+    return m.group(1), m.group(2)
+
+
+def get_all_likes(client: Client, post_uri: str) -> list[str]:
+    """Get all DIDs that liked a post, paginating through results."""
+    dids: list[str] = []
+    cursor: str | None = None
+    while True:
+        resp = client.app.bsky.feed.get_likes(
+            models.AppBskyFeedGetLikes.Params(
+                uri=post_uri,
+                limit=100,
+                cursor=cursor,
+            )
+        )
+        for like in resp.likes:
+            dids.append(like.actor.did)
+        if not resp.cursor:
+            break
+        cursor = resp.cursor
+    return dids
+
+
+def get_existing_list_members(client: Client, list_uri: str) -> set[str]:
+    """Get all DIDs already on the list."""
+    members: set[str] = set()
+    cursor: str | None = None
+    while True:
+        resp = client.app.bsky.graph.get_list(
+            models.AppBskyGraphGetList.Params(
+                list=list_uri,
+                limit=100,
+                cursor=cursor,
+            )
+        )
+        for item in resp.items:
+            members.add(item.subject.did)
+        if not resp.cursor:
+            break
+        cursor = resp.cursor
+    return members
+
+
+def add_to_list(client: Client, list_uri: str, did: str) -> None:
+    """Add a single DID to the block list."""
+    assert client.me is not None
+    client.app.bsky.graph.listitem.create(
+        client.me.did,
+        models.AppBskyGraphListitem.Record(
+            subject=did,
+            list=list_uri,
+            created_at=client.get_current_time_iso(),
+        ),
+    )
+
+
+def main() -> None:
+    app_password = os.environ.get("MYBLOCKENHEIMER_API_KEY")
+    if not app_password:
+        print("Error: MYBLOCKENHEIMER_API_KEY environment variable not set", file=sys.stderr)
+        sys.exit(1)
+
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <bsky-post-url>", file=sys.stderr)
+        sys.exit(1)
+
+    post_url = sys.argv[1]
+    post_handle, post_rkey = parse_post_url(post_url)
+
+    print("Logging in...", file=sys.stderr)
+    client = Client()
+    client.login(LOGIN_HANDLE, app_password)
+    assert client.me is not None
+
+    # Resolve post author handle to DID and build AT URI
+    resolved = client.com.atproto.identity.resolve_handle(
+        models.ComAtprotoIdentityResolveHandle.Params(handle=post_handle)
+    )
+    post_did = resolved.did
+    post_uri = f"at://{post_did}/app.bsky.feed.post/{post_rkey}"
+
+    # Fetch all likers
+    print("Fetching likes...", file=sys.stderr)
+    liker_dids = get_all_likes(client, post_uri)
+    print(f"Found {len(liker_dids)} likes", file=sys.stderr)
+
+    # Author + all likers, minus ourselves
+    to_block = set(liker_dids)
+    to_block.add(post_did)
+    to_block.discard(client.me.did)
+
+    # Check who's already on the list
+    list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
+    print("Fetching existing list members...", file=sys.stderr)
+    existing = get_existing_list_members(client, list_uri)
+    print(f"List already has {len(existing)} members", file=sys.stderr)
+
+    new_dids = to_block - existing
+    if not new_dids:
+        print("Everyone is already on the list. Nothing to do.", file=sys.stderr)
+        return
+
+    print(f"Adding {len(new_dids)} new accounts to block list...", file=sys.stderr)
+    for i, did in enumerate(new_dids, 1):
+        add_to_list(client, list_uri, did)
+        print(f"  [{i}/{len(new_dids)}] Added {did}", file=sys.stderr)
+        if i < len(new_dids):
+            time.sleep(0.1)
+
+    already = len(to_block) - len(new_dids)
+    print(f"\nDone! Added {len(new_dids)} accounts to the block list.", file=sys.stderr)
+    if already:
+        print(f"({already} were already on the list)", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
