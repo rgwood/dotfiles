@@ -30,6 +30,11 @@ You can run the scripts like `uv run foo.py`, but make sure to `chmod +x` any sc
 uvx --with-requirements=script.py ty check script.py
 ```
 
+## Git Conventions
+
+### Branch Naming
+- Always prefix new branches with `reilly.wood/`, e.g. `reilly.wood/make-frobnicator-faster`
+
 ## Writing Style
 
 When generating prose — PR descriptions, commit messages, documentation, blog drafts, comments — match this voice.
