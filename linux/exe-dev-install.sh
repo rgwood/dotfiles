@@ -93,12 +93,38 @@ else
     echo "  ✓ nushell already installed ($(nu --version))"
 fi
 
+# Install lazygit from prebuilt binary
+echo ""
+echo "[4.6/5] Installing lazygit..."
+if ! command -v lazygit &> /dev/null; then
+    echo "  Downloading prebuilt lazygit binary..."
+    LAZYGIT_VERSION=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+    LAZYGIT_URL="https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_x86_64.tar.gz"
+    
+    TEMP_DIR=$(mktemp -d)
+    cd "$TEMP_DIR"
+    curl -L -o lazygit.tar.gz "$LAZYGIT_URL"
+    tar xzf lazygit.tar.gz
+    
+    # Install to ~/.local/bin
+    mkdir -p ~/.local/bin
+    cp lazygit ~/.local/bin/
+    chmod +x ~/.local/bin/lazygit
+    
+    cd - > /dev/null
+    rm -rf "$TEMP_DIR"
+    
+    echo "  ✓ lazygit installed ($(~/.local/bin/lazygit --version))"
+else
+    echo "  ✓ lazygit already installed ($(lazygit --version))"
+fi
+
 # Verify installations
 echo ""
 echo "[5/5] Verifying installations..."
 echo ""
 echo "Checking installed tools:"
-for tool in bat fd micro cargo rustc watchexec nu; do
+for tool in bat fd micro cargo rustc watchexec nu lazygit; do
     if command -v $tool &> /dev/null; then
         version=$("$tool" --version 2>/dev/null | head -1 || echo "(version check not supported)")
         echo "  ✓ $tool: $version"
