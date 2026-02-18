@@ -69,3 +69,9 @@
 - shell:
       - [fzf/install --all, Installing fzf]
       - git config --global core.editor micro
+      - command: linux/exe-dev-install.sh
+        description: Installing exe.dev packages (Linux only)
+        stdin: true
+        stdout: true
+        stderr: true
+        if: '[[ "$(uname)" == "Linux" ]]'
