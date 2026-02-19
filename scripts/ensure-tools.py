@@ -254,6 +254,46 @@ def ensure_uv() -> bool:
     return ok
 
 
+def ensure_node() -> bool:
+    if is_installed(["node"]):
+        log("ok", "node already installed")
+        return True
+
+    ram = total_ram_gb()
+    if ram <= 2.0:
+        log("skip", f"node/npm (only {ram:.1f}GB RAM)")
+        return False
+
+    # Install Volta (Node version manager), then use it to install Node
+    if not is_installed(["volta"]):
+        log("install", "installing volta (node version manager)...")
+        # Volta's install script uses curl internally, so we can't pipe it via
+        # stdin like install_via_script does. Download to a temp file instead.
+        with tempfile.NamedTemporaryFile(suffix=".sh", delete=False) as f:
+            try:
+                urllib.request.urlretrieve("https://get.volta.sh", f.name)
+            except Exception as e:
+                log("fail", f"could not fetch volta installer: {e}")
+                return False
+            result = run(["bash", f.name, "--skip-setup"])
+            os.unlink(f.name)
+        if result.returncode != 0:
+            log("fail", "volta installation failed")
+            return False
+        volta_bin = str(HOME / ".volta" / "bin")
+        os.environ["PATH"] = f"{volta_bin}:{os.environ['PATH']}"
+        log("ok", "volta installed")
+
+    log("install", "installing node via volta...")
+    result = run(["volta", "install", "node"])
+    if result.returncode == 0:
+        log("ok", "node/npm installed")
+        return True
+    else:
+        log("fail", "node installation failed")
+        return False
+
+
 # ---------------------------------------------------------------------------
 # Tool definitions
 # ---------------------------------------------------------------------------
@@ -350,6 +390,7 @@ def main() -> None:
 
     ensure_rust()
     ensure_uv()
+    ensure_node()
 
     # Phase 2: tools
     if IS_MAC and has_brew():

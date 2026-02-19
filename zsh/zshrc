@@ -21,6 +21,7 @@ DISABLE_MAGIC_FUNCTIONS=true
 export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 # prepend in case we need to override system-installed cargo
 export PATH=$HOME/.cargo/bin:$PATH
+export PATH=$HOME/.volta/bin:$PATH
 export PATH=$PATH:$HOME/scripts
 export PATH=$PATH:$HOME/dotnet
 export PATH=$PATH:$HOME/.dotnet/tools

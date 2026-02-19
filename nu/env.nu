@@ -38,6 +38,7 @@ $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm
 $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm/bin" )
 
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.cargo/bin" )
+$env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.volta/bin" )
 
 if (sys host | get name) == "Darwin" {
     # useful on macOS (TODO: I don't remember why, is this necessary?)
