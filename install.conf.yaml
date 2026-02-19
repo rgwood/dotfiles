@@ -68,5 +68,8 @@
       - ~/github
 
 - shell:
+      - command: python3 scripts/ensure-tools.py
+        description: Ensuring essential tools are installed
+        stderr: true
       - [fzf/install --all, Installing fzf]
       - git config --global core.editor micro
