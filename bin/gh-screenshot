@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Upload a screenshot to a GitHub release and print a markdown image reference.
+# Usage: gh-screenshot <file> [alt-text]
+# Example: gh-screenshot before.png "Before the fix"
+#   → uploads to the "pr-assets" release on the current repo
+#   → prints: ![Before the fix](https://github.com/owner/repo/releases/download/pr-assets/before-a1b2c3.png)
+
+RELEASE_TAG="pr-assets"
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: gh-screenshot <file> [alt-text]" >&2
+  exit 1
+fi
+
+file="$1"
+alt="${2:-$(basename "$file" | sed 's/\.[^.]*$//')}"
+
+if [[ ! -f "$file" ]]; then
+  echo "Error: file not found: $file" >&2
+  exit 1
+fi
+
+# Get repo info
+repo=$(gh repo view --json nameWithOwner -q '.nameWithOwner')
+
+# Ensure the release exists
+if ! gh release view "$RELEASE_TAG" &>/dev/null; then
+  echo "Creating $RELEASE_TAG release..." >&2
+  gh release create "$RELEASE_TAG" --title "PR Assets" --notes "Screenshots and assets for pull requests. Safe to ignore." --latest=false
+fi
+
+# Generate a unique asset name: original-name-<short-hash>.ext
+ext="${file##*.}"
+base=$(basename "$file" ".$ext")
+hash=$(head -c 8 /dev/urandom | xxd -p | head -c 6)
+asset_name="${base}-${hash}.${ext}"
+
+# Copy to temp file with the unique name (gh release upload uses the filename)
+tmp=$(mktemp -d)
+cp "$file" "$tmp/$asset_name"
+
+# Upload
+gh release upload "$RELEASE_TAG" "$tmp/$asset_name" --clobber >&2
+
+# Clean up temp
+rm -rf "$tmp"
+
+# Print markdown
+url="https://github.com/${repo}/releases/download/${RELEASE_TAG}/${asset_name}"
+echo "![${alt}](${url})"
