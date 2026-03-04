@@ -1,0 +1,311 @@
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.12"
+# dependencies = []
+# ///
+
+"""Transcode video files to more efficient formats with sensible defaults."""
+
+import argparse
+import shlex
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+CODECS = {
+    "h265": {"ffmpeg": "libx265", "ext": ".mp4"},
+    "h264": {"ffmpeg": "libx264", "ext": ".mp4"},
+    "vp9": {"ffmpeg": "libvpx-vp9", "ext": ".webm"},
+    "av1": {"ffmpeg": "libaom-av1", "ext": ".mkv"},
+}
+
+AUDIO_CODECS = {
+    "copy": {"ffmpeg": "copy", "default_bitrate": None},
+    "aac": {"ffmpeg": "aac", "default_bitrate": "128k"},
+    "opus": {"ffmpeg": "libopus", "default_bitrate": "192k"},
+    "mp3": {"ffmpeg": "libmp3lame", "default_bitrate": "128k"},
+}
+
+RESOLUTIONS = {
+    "480p": (854, 480),
+    "720p": (1280, 720),
+    "1080p": (1920, 1080),
+    "4k": (3840, 2160),
+}
+
+PREVIEW_DURATION = 10
+
+
+def err(msg: str) -> None:
+    print(msg, file=sys.stderr)
+
+
+def human_size(nbytes: float) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if abs(nbytes) < 1024:
+            return f"{nbytes:.1f} {unit}"
+        nbytes /= 1024
+    return f"{nbytes:.1f} TB"
+
+
+def ffprobe_field(path: Path, entries: str) -> str:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-show_entries", entries,
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        err(f"ffprobe failed: {result.stderr.strip()}")
+        sys.exit(1)
+    return result.stdout.strip()
+
+
+def get_duration(path: Path) -> float:
+    return float(ffprobe_field(path, "format=duration"))
+
+
+def get_bitrate(path: Path) -> float:
+    """Get total stream bitrate in bytes/sec (sum of all streams)."""
+    raw = ffprobe_field(path, "stream=bit_rate")
+    # ffprobe returns one line per stream; some may be "N/A"
+    total = 0.0
+    for line in raw.splitlines():
+        if line.strip() != "N/A":
+            total += float(line.strip())
+    if total > 0:
+        return total / 8  # bits to bytes
+    # Fallback: derive from file size and duration
+    size = path.stat().st_size
+    duration = get_duration(path)
+    return size / duration if duration > 0 else 0.0
+
+
+def output_path_for(input_path: Path, codec: str) -> Path:
+    ext = CODECS[codec]["ext"]
+    return input_path.with_suffix(f".{codec}{ext}")
+
+
+def parse_resolution(res: str) -> tuple[int, int]:
+    if res in RESOLUTIONS:
+        return RESOLUTIONS[res]
+    if "x" in res:
+        parts = res.split("x", 1)
+        try:
+            return (int(parts[0]), int(parts[1]))
+        except ValueError:
+            pass
+    err(f"Invalid resolution: {res} (use 480p, 720p, 1080p, 4k, or WxH)")
+    sys.exit(1)
+
+
+# Audio codecs known to be compatible with common containers
+CONTAINER_AUDIO_COMPAT: dict[str, set[str]] = {
+    ".mp4": {"aac", "mp3", "flac", "alac", "ac3", "eac3", "opus"},
+    ".mkv": {"aac", "mp3", "flac", "alac", "ac3", "eac3", "opus", "vorbis", "pcm_s16le", "pcm_s24le"},
+    ".webm": {"opus", "vorbis"},
+}
+
+
+def get_audio_codec(path: Path) -> str | None:
+    raw = ffprobe_field(path, "stream=codec_name")
+    for line in raw.splitlines():
+        # ffprobe lists all streams; audio codec is typically not h264/hevc/etc
+        name = line.strip()
+        if name and name not in ("h264", "hevc", "vp9", "av1", "wmv3", "mpeg4", "mjpeg"):
+            return name
+    return None
+
+
+def build_cmd(
+    input_path: Path,
+    output_path: Path,
+    codec: str,
+    crf: int,
+    resolution: str | None,
+    audio: str,
+    audio_bitrate: str | None,
+    preset: str,
+    preview_start: float | None = None,
+) -> list[str]:
+    cmd = ["ffmpeg", "-hide_banner"]
+
+    # Seek before input for fast preview seeking
+    if preview_start is not None:
+        cmd += ["-ss", str(preview_start)]
+
+    cmd += ["-i", str(input_path)]
+
+    if preview_start is not None:
+        cmd += ["-t", str(PREVIEW_DURATION)]
+
+    # Video codec and quality
+    cmd += ["-c:v", CODECS[codec]["ffmpeg"], "-crf", str(crf)]
+
+    # Preset (not applicable to vp9)
+    if codec != "vp9":
+        cmd += ["-preset", preset]
+
+    # VP9 needs -b:v 0 for CRF mode
+    if codec == "vp9":
+        cmd += ["-b:v", "0"]
+
+    # Resolution scaling
+    if resolution:
+        w, h = parse_resolution(resolution)
+        cmd += ["-vf", f"scale={w}:{h}:force_original_aspect_ratio=decrease"]
+
+    # Audio — auto-reencode if copy is incompatible with the output container
+    effective_audio = audio
+    if audio == "copy":
+        out_ext = output_path.suffix.lower()
+        compat = CONTAINER_AUDIO_COMPAT.get(out_ext)
+        if compat is not None:
+            src_codec = get_audio_codec(input_path)
+            if src_codec and src_codec not in compat:
+                effective_audio = "aac"
+                err(f"Audio codec '{src_codec}' not compatible with {out_ext}, re-encoding to AAC")
+
+    audio_info = AUDIO_CODECS[effective_audio]
+    cmd += ["-c:a", audio_info["ffmpeg"]]
+    if audio_info["ffmpeg"] != "copy":
+        bitrate = audio_bitrate or audio_info["default_bitrate"]
+        if bitrate:
+            cmd += ["-b:a", bitrate]
+
+    cmd += [str(output_path)]
+    return cmd
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Transcode video to a more efficient format.",
+    )
+    parser.add_argument("input", type=Path, help="Input video file")
+    parser.add_argument("-o", "--output", type=Path, help="Output filename (default: auto)")
+    parser.add_argument(
+        "-c", "--codec", default="h265", choices=CODECS.keys(), help="Video codec (default: h265)"
+    )
+    parser.add_argument(
+        "-q", "--quality", type=int, default=20, metavar="CRF",
+        help="Quality (CRF 0-51, lower=better, default: 28)",
+    )
+    parser.add_argument(
+        "-r", "--resolution", metavar="RES",
+        help="Target resolution: 480p, 720p, 1080p, 4k, or WxH",
+    )
+    parser.add_argument(
+        "-a", "--audio", default="copy", choices=AUDIO_CODECS.keys(),
+        help="Audio codec (default: copy)",
+    )
+    parser.add_argument("-b", "--audio-bitrate", metavar="RATE", help="Audio bitrate (e.g. 128k)")
+    parser.add_argument(
+        "--preset", default="medium",
+        choices=["ultrafast", "fast", "medium", "slow", "veryslow"],
+        help="Encoder preset (default: medium)",
+    )
+    parser.add_argument(
+        "--preview", action="store_true",
+        help="Generate a ~10s preview clip from the middle of the video",
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Print ffmpeg command without running")
+
+    args = parser.parse_args()
+
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
+        err("ffmpeg and ffprobe must be installed")
+        sys.exit(1)
+
+    if not args.input.exists():
+        err(f"Input file not found: {args.input}")
+        sys.exit(1)
+
+    if not 0 <= args.quality <= 51:
+        err(f"CRF must be 0-51, got {args.quality}")
+        sys.exit(1)
+
+    output = args.output or output_path_for(args.input, args.codec)
+
+    if args.preview:
+        duration = get_duration(args.input)
+        start = max(0.0, duration * 2 / 3 - PREVIEW_DURATION / 2)
+        preview_output = output.with_suffix(f".preview{output.suffix}")
+        original_clip = args.input.with_suffix(f".original{args.input.suffix}")
+
+        # Extract the same segment from the original (re-mux into its own container, no re-encode)
+        clip_cmd = [
+            "ffmpeg", "-hide_banner", "-ss", str(start),
+            "-i", str(args.input), "-t", str(PREVIEW_DURATION),
+            "-c", "copy", str(original_clip),
+        ]
+
+        cmd = build_cmd(
+            args.input, preview_output, args.codec, args.quality,
+            args.resolution, args.audio, args.audio_bitrate, args.preset,
+            preview_start=start,
+        )
+
+        if args.dry_run:
+            print(shlex.join(clip_cmd))
+            print(shlex.join(cmd))
+            return
+
+        err(f"Extracting original clip: {original_clip}")
+        result = subprocess.run(clip_cmd)
+        if result.returncode != 0:
+            sys.exit(result.returncode)
+
+        err(f"Generating preview: {preview_output}")
+        result = subprocess.run(cmd)
+        if result.returncode != 0:
+            sys.exit(result.returncode)
+
+        err(f"\nPreview saved to {preview_output}")
+        err(f"Original clip saved to {original_clip}")
+
+        # Estimate full-file size savings from stream bitrates
+        original_size = args.input.stat().st_size
+        original_bitrate = get_bitrate(args.input)
+        preview_bitrate = get_bitrate(preview_output)
+        if original_bitrate > 0:
+            ratio = preview_bitrate / original_bitrate
+            estimated_size = original_size * ratio
+            savings = original_size - estimated_size
+            pct = (savings / original_size) * 100
+
+            err(f"Estimated full transcode: {human_size(estimated_size)} "
+                f"(original: {human_size(original_size)}, "
+                f"~{pct:.0f}% {'smaller' if savings > 0 else 'larger'})")
+        return
+
+    cmd = build_cmd(
+        args.input, output, args.codec, args.quality,
+        args.resolution, args.audio, args.audio_bitrate, args.preset,
+    )
+
+    if args.dry_run:
+        print(shlex.join(cmd))
+        return
+
+    if output.exists():
+        response = input(f"{output} already exists. Overwrite? [y/N] ")
+        if response.lower() != "y":
+            err("Aborted.")
+            sys.exit(1)
+        cmd.insert(1, "-y")
+
+    err(f"Transcoding: {args.input} → {output}")
+    result = subprocess.run(cmd)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+    err(f"Done: {output}")
+
+
+if __name__ == "__main__":
+    main()
