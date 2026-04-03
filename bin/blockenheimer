@@ -72,6 +72,46 @@ def get_existing_list_members(client: Client, list_uri: str) -> set[str]:
     return members
 
 
+def get_all_follows(client: Client, actor: str) -> dict[str, str]:
+    """Get all DIDs that an account follows, mapped to their handles."""
+    follows: dict[str, str] = {}
+    cursor: str | None = None
+    while True:
+        resp = client.app.bsky.graph.get_follows(
+            models.AppBskyGraphGetFollows.Params(
+                actor=actor,
+                limit=100,
+                cursor=cursor,
+            )
+        )
+        for follow in resp.follows:
+            follows[follow.did] = follow.handle
+        if not resp.cursor:
+            break
+        cursor = resp.cursor
+    return follows
+
+
+def get_all_followers(client: Client, actor: str) -> dict[str, str]:
+    """Get all DIDs that follow an account, mapped to their handles."""
+    followers: dict[str, str] = {}
+    cursor: str | None = None
+    while True:
+        resp = client.app.bsky.graph.get_followers(
+            models.AppBskyGraphGetFollowers.Params(
+                actor=actor,
+                limit=100,
+                cursor=cursor,
+            )
+        )
+        for follower in resp.followers:
+            followers[follower.did] = follower.handle
+        if not resp.cursor:
+            break
+        cursor = resp.cursor
+    return followers
+
+
 def add_to_list(client: Client, list_uri: str, did: str) -> None:
     """Add a single DID to the block list."""
     assert client.me is not None
@@ -119,6 +159,21 @@ def main() -> None:
     to_block = set(liker_dids)
     to_block.add(post_did)
     to_block.discard(client.me.did)
+
+    # Don't block anyone connected to either of my accounts (follows or followers)
+    my_accounts = [LOGIN_HANDLE, "reillywood.com"]
+    protected: dict[str, str] = {}  # did -> handle
+    for acct in my_accounts:
+        print(f"Fetching follows for {acct}...", file=sys.stderr)
+        protected.update(get_all_follows(client, acct))
+        print(f"Fetching followers of {acct}...", file=sys.stderr)
+        protected.update(get_all_followers(client, acct))
+    skipped = to_block & protected.keys()
+    if skipped:
+        print(f"Skipping {len(skipped)} connected accounts:", file=sys.stderr)
+        for did in sorted(skipped, key=lambda d: protected.get(d, d)):
+            print(f"  @{protected.get(did, did)}", file=sys.stderr)
+        to_block -= skipped
 
     # Check who's already on the list
     list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
