@@ -140,22 +140,6 @@ def wat [...split_name:string] {
     }
 }
 
-def parse-timestamp [ts: string] {
-    let parts = ($ts | split row ":" | each { into int })
-    match ($parts | length) {
-        2 => { ($parts.0 * 60) + $parts.1 }
-        3 => { ($parts.0 * 3600) + ($parts.1 * 60) + $parts.2 }
-        _ => { error make { msg: "invalid timestamp format" } }
-    }
-}
-
-def trim [file: string, from: string, to: string] {
-    let parts = $file | path parse
-    let newFileName = $"($parts.stem)-trimmed.($parts.extension)"
-    let duration = (parse-timestamp $to) - (parse-timestamp $from)
-    ffmpeg -ss $from -t $duration -i $file -codec copy $newFileName
-}
-
 $env.config.table.mode = "rounded"
 $env.config.table.header_on_separator = true
 $env.config.table.padding = {left: 0, right: 0}

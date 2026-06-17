@@ -1,0 +1,93 @@
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.12"
+# dependencies = []
+# ///
+
+"""Trim a video to a [from, to] range losslessly, snapping to keyframes.
+
+Uses `-c copy` so there's no re-encode — fast and lossless. The catch is the
+cut snaps to the nearest keyframe at or before `from` (and `to`), so the real
+start can land up to a GOP length (a few seconds) earlier than asked. In
+exchange the clip begins on a real keyframe and plays cleanly from frame one,
+instead of the blocky mid-GOP jank you get from an accurate seek + stream copy.
+
+Usage:
+    trim <file> <from> <to> [-o OUTPUT]
+
+Timestamps accept seconds (90), MM:SS (1:30), or HH:MM:SS (0:01:30).
+"""
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+
+def parse_timestamp(ts: str) -> int:
+    """Parse seconds, MM:SS, or HH:MM:SS into a total number of seconds."""
+    parts = ts.split(":")
+    if not all(p.isdigit() for p in parts):
+        raise ValueError(f"invalid timestamp: {ts!r}")
+    nums = [int(p) for p in parts]
+    match len(nums):
+        case 1:
+            return nums[0]
+        case 2:
+            return nums[0] * 60 + nums[1]
+        case 3:
+            return nums[0] * 3600 + nums[1] * 60 + nums[2]
+        case _:
+            raise ValueError(f"invalid timestamp format: {ts!r}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("file", help="input video file")
+    parser.add_argument("from_", metavar="from", help="start timestamp")
+    parser.add_argument("to", help="end timestamp")
+    parser.add_argument(
+        "-o", "--output", help="output path (default: <stem>-trimmed.<ext>)"
+    )
+    args = parser.parse_args()
+
+    src = Path(args.file)
+    if not src.exists():
+        print(f"file not found: {src}", file=sys.stderr)
+        return 1
+
+    try:
+        start = parse_timestamp(args.from_)
+        end = parse_timestamp(args.to)
+    except ValueError as e:
+        print(e, file=sys.stderr)
+        return 1
+
+    duration = end - start
+    if duration <= 0:
+        print("`to` must be after `from`", file=sys.stderr)
+        return 1
+
+    out = Path(args.output) if args.output else src.with_stem(f"{src.stem}-trimmed")
+
+    cmd = [
+        "ffmpeg",
+        "-ss", str(start),
+        "-noaccurate_seek",
+        "-i", str(src),
+        "-t", str(duration),
+        "-c", "copy",
+        "-avoid_negative_ts", "make_zero",
+        str(out),
+    ]
+
+    proc = subprocess.run(cmd)
+    if proc.returncode != 0:
+        return proc.returncode
+
+    print(out)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
