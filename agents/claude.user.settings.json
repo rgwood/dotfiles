@@ -6,10 +6,24 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline-command.sh"
   },
-  "skipDangerousModePermissionPrompt": true
+  "enabledPlugins": {
+    "learning-opportunities@learning-opportunities": true
+  },
+  "extraKnownMarketplaces": {
+    "learning-opportunities": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/DrCatHicks/learning-opportunities.git"
+      }
+    }
+  },
+  "effortLevel": "low",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "voiceEnabled": true,
+  "model": "claude-fable-5[1m]"
 }
