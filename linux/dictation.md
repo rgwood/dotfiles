@@ -206,13 +206,17 @@ and repeat (value 2) are distinct. That's what
   the pedal's F1 falls through to the GNOME shortcut — tap-to-toggle
   instead of going dead.
 
-- **Keyboard F1** (via keyd): keyd remaps F1 → F13 on its virtual
-  keyboard (`f1 = f13` in `/etc/keyd/default.conf`, written by
-  `gnome-windowing.sh`), so F1 no longer reaches GNOME's strobing
-  shortcut or app help menus. The daemon reads F13 from keyd's virtual
-  keyboard *without grabbing* (grabbing would starve GNOME of all input).
-  Press → SIGUSR2 (start), release → SIGUSR2 (stop + transcribe). If
-  keyd isn't running, F1 falls through to the GNOME shortcut as before.
+- **Keyboard F1** (via keyd): keyd remaps F1 → F24 on its virtual
+  keyboard (`f1 = f24` in `/etc/keyd/default.conf`, written by
+  `gnome-windowing.sh`). F24 maps to NoSymbol in XKB, so GNOME ignores it
+  entirely — no strobing shortcut, no app help menus, no XF86Tools opening
+  Settings. (Framework laptops also need `f13 = f24` because their
+  top-row "F1" sends KEY_F13 at the hardware level; F13 maps to XF86Tools
+  in XKB, which GNOME binds to the Settings app.) The daemon reads F24
+  from keyd's virtual keyboard *without grabbing* (grabbing would starve
+  GNOME of all input). Press → SIGUSR2 (start), release → SIGUSR2 (stop +
+  transcribe). If keyd isn't running, F1 falls through to the GNOME
+  shortcut as before.
 
 Handy stays in *toggle* mode — two toggles = push-to-talk. Both triggers
 send SIGUSR2 to the same Handy process, so simultaneous use can desync
@@ -225,7 +229,7 @@ Setup, after steps 1–7:
 # keyd must not grab the pedal (its [ids] * matches every keyboard).
 # gnome-windowing.sh writes this exclusion; or add to /etc/keyd/default.conf:
 #   -29ea:0100    (under [ids])
-# gnome-windowing.sh also writes the f1 = f13 remap under [main].
+# gnome-windowing.sh also writes the f1 = f24 and f13 = f24 remaps under [main].
 sudo systemctl restart keyd
 
 # Device access: the `input` group from step 2 works, BUT systemd user
@@ -271,7 +275,8 @@ Every row below is a failure mode I actually hit, in order:
 | ydotool works manually but dictation types nothing, log says success | **overlay stealing focus** | disable the overlay (step 6) |
 | Everything worked, then broke after re-running gnome-windowing.sh | keyd config rewritten without the exclusion | re-add `-2333:6666` (step 4) |
 | Pedal PTT dead but keyboard F1 works | daemon not running, or keyd re-grabbed the pedal | `journalctl --user -u handy-ptt` — a "grab … Device or resource busy" warning means keyd; re-add `-29ea:0100` (step 8) |
-| F1 does nothing (no toggle, no PTT) | keyd remapped F1→F13 but daemon isn't watching keyd's virtual keyboard | check `journalctl --user -u handy-ptt` for "warning: open /dev/input/eventN" (needs the udev uaccess rule, step 8); or `sudo systemctl restart keyd` |
+| F1 does nothing (no toggle, no PTT) | keyd remapped F1→F24 but daemon isn't watching keyd's virtual keyboard | check `journalctl --user -u handy-ptt` for "warning: open /dev/input/eventN" (needs the udev uaccess rule, step 8); or `sudo systemctl restart keyd` |
+| F1 opens Settings instead of push-to-talk | F13 (Framework laptop's F1) or F24 leaking to GNOME's XF86Tools binding | ensure keyd config has both `f1 = f24` and `f13 = f24`; `sudo systemctl restart keyd` |
 | Pedal press *stops* a recording instead of starting | recording was already on via F1 toggle | expected — toggle semantics; release starts a new one, tap pedal again |
 
 ## Debugging notes (mostly for future agents)

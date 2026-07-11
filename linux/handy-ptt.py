@@ -16,13 +16,15 @@ Two triggers, same daemon:
    releases and the pedal's F1 falls through to the GNOME "Handy Toggle"
    shortcut (tap-to-toggle).
 
-2. **Keyboard F1** (via keyd): keyd remaps F1 → F13 on its virtual
-   keyboard, so F1 no longer reaches GNOME's strobing shortcut or app
-   help menus. The daemon reads F13 from keyd's virtual keyboard *without
-   grabbing* (grabbing would starve GNOME of all keyboard input). Press →
-   SIGUSR2 (start), release → SIGUSR2 (stop + transcribe). If keyd isn't
-   running, F1 is unaffected — it falls through to the GNOME shortcut as
-   before.
+2. **Keyboard F1** (via keyd): keyd remaps F1 → F24 on its virtual
+   keyboard (and F13 → F24 too, for Framework laptops whose top-row "F1"
+   sends KEY_F13 at the hardware level). F24 maps to NoSymbol in XKB, so
+   GNOME ignores it entirely — no strobing shortcut, no app help menus,
+   no XF86Tools opening Settings. The daemon reads F24 from keyd's virtual
+   keyboard *without grabbing* (grabbing would starve GNOME of all
+   keyboard input). Press → SIGUSR2 (start), release → SIGUSR2 (stop +
+   transcribe). If keyd isn't running, F1 is unaffected — it falls through
+   to the GNOME shortcut as before.
 
 Handy stays in *toggle* mode; press+release = start+stop = push-to-talk.
 Both triggers send SIGUSR2 to the same Handy process, so simultaneous use
@@ -42,7 +44,7 @@ from fcntl import ioctl
 
 PEDAL_NAME_PREFIX = "Kinesis Savant Elite2 Foot Pedal"
 KEYD_VKBD_NAME = "keyd virtual keyboard"
-KEY_F13 = 183  # /usr/include/linux/input-event-codes.h; keyd remaps F1 → F13
+KEY_F24 = 194  # /usr/include/linux/input-event-codes.h; keyd remaps F1 → F24
 # struct input_event on 64-bit: time (sec, usec), type, code, value
 EVENT_FMT = "llHHi"
 EVENT_SIZE = struct.calcsize(EVENT_FMT)
@@ -76,7 +78,7 @@ def find_pedal_nodes() -> list[str]:
 def find_keyd_vkbd_node() -> str | None:
     """The /dev/input/event* node for keyd's virtual keyboard, or None.
 
-    keyd remaps F1→F13 here; we read F13 for push-to-talk without grabbing
+    keyd remaps F1→F24 here; we read F24 for push-to-talk without grabbing
     (grabbing would starve GNOME of all keyboard input). Returns None if
     keyd isn't running.
     """
@@ -148,8 +150,8 @@ def pump_events(pedal_fds: dict[int, str], keyd_fd: int | None) -> None:
                 if etype != EV_KEY or value == 2:  # value 2 = key-repeat, ignore
                     continue
                 if is_keyd:
-                    if code != KEY_F13:
-                        continue  # only F13 (=remapped F1) triggers PTT
+                    if code != KEY_F24:
+                        continue  # only F24 (=remapped F1) triggers PTT
                     if value == 1 and not f1_held:
                         f1_held = True
                         toggle_handy()
