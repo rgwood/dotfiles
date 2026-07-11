@@ -111,10 +111,9 @@ capslock = overload(meta, esc)
 # shortcut as tap-to-toggle. See linux/dictation.md step 8.
 f1 = f24
 f13 = f24
-# Remap right Alt → F24 for push-to-talk. Works directly via keyd.
-# The compose = f24 line is a fallback for when input-remapper is active
-# (it maps right Alt → Compose; keyd then catches Compose → F24).
-# Without input-remapper, rightalt = f24 handles it directly.
+# Remap right Alt → F24 for push-to-talk, directly via keyd.
+# compose = f24 is a harmless no-op unless something maps right Alt →
+# Compose before keyd sees it.
 rightalt = f24
 compose = f24
 '

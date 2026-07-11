@@ -219,10 +219,9 @@ and repeat (value 2) are distinct. That's what
   shortcut as before.
 
 - **Right Alt** (via keyd): keyd remaps right Alt → F24 directly
-  (`rightalt = f24`). A `compose = f24` fallback also covers the case
-  where input-remapper maps right Alt → Compose first (it creates
-  forwarded devices that keyd then processes). Same F24 path through the
-  daemon as F1. Without keyd, right Alt is unaffected.
+  (`rightalt = f24`). A `compose = f24` line is a harmless no-op unless
+  something maps right Alt → Compose before keyd sees it. Same F24 path
+  through the daemon as F1. Without keyd, right Alt is unaffected.
 
 Handy stays in *toggle* mode — two toggles = push-to-talk. All triggers
 send SIGUSR2 to the same Handy process, so simultaneous use can desync
