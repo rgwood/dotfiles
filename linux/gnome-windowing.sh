@@ -22,6 +22,7 @@ setkb() {
 
 setkb move-to-monitor-left     "['<Super><Shift>Left']"
 setkb move-to-monitor-right    "['<Super><Shift>Right']"
+setkb show-desktop             "['<Primary><Super>d', '<Primary><Alt>d']"
 setkb move-to-monitor-up       "['<Super><Shift>Up']"
 setkb move-to-monitor-down     "['<Super><Shift>Down']"
 setkb switch-to-workspace-up   "['<Super>Page_Up']"
@@ -54,6 +55,29 @@ else
 fi
 
 echo "Done. Verify:  gsettings get $SCHEMA move-to-monitor-left"
+
+echo
+echo "==> Installing move-to-next-monitor extension (Super+D cycles monitors)"
+NEXT_MON_UUID="move-to-next-monitor@rgwood"
+EXT_DIR="${HOME}/.local/share/gnome-shell/extensions/${NEXT_MON_UUID}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="${SCRIPT_DIR}/${NEXT_MON_UUID}"
+if [ -d "$SRC_DIR" ]; then
+  mkdir -p "$EXT_DIR"
+  cp -r "$SRC_DIR"/* "$EXT_DIR/"
+  echo "Installed ${NEXT_MON_UUID}"
+  # Pre-enable it (GNOME Shell on Wayland needs a relogin to load new extensions)
+  CURRENT=$(gsettings get org.gnome.shell enabled-extensions)
+  if echo "$CURRENT" | grep -q "$NEXT_MON_UUID"; then
+    echo "  already in enabled-extensions"
+  else
+    NEW=$(echo "$CURRENT" | sed "s/\]/, '${NEXT_MON_UUID}']/")
+    gsettings set org.gnome.shell enabled-extensions "$NEW"
+    echo "  added to enabled-extensions (log out and back in to activate)"
+  fi
+else
+  echo "  source not found at $SRC_DIR — skipping"
+fi
 
 echo
 echo "==> keyd: Caps Lock tap=Esc, hold=Super (drives Tiling Assistant via Caps+arrows)"

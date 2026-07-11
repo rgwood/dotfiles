@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.move-to-next-monitor" path="/org/gnome/shell/extensions/move-to-next-monitor/">
+    <key name="move-to-next-monitor" type="as">
+      <default>['&lt;Super&gt;d']</default>
+      <summary>Move to next monitor</summary>
+      <description>Cycle the focused window to the next monitor, wrapping around.</description>
+    </key>
+  </schema>
+</schemalist>

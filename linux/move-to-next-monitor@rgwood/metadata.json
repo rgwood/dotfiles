@@ -1,0 +1,6 @@
+{
+  "uuid": "move-to-next-monitor@rgwood",
+  "name": "Move to Next Monitor",
+  "description": "Cycle the focused window to the next monitor, wrapping around.",
+  "shell-version": ["46"]
+}

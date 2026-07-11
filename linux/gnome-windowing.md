@@ -27,6 +27,7 @@ Design goals:
 | Switch workspace             | `Super+PgUp` / `Super+PgDn` | GNOME default / script |
 | Move window to workspace     | `Super+Shift+PgUp` / `Super+Shift+PgDn` | GNOME default / script |
 | Move window to monitor       | `Super+Shift+←/→/↑/↓`     | script (added)             |
+| Move window to next monitor  | `Super+D`                 | script (extension)         |
 | Cycle windows                | `Alt+Tab`                 | GNOME default              |
 | Activities / app launcher    | `Super`                   | GNOME default              |
 | Fullscreen                   | `Super+F` (i.e. `Caps+F`) | script (added) + keyd      |
@@ -133,6 +134,25 @@ Other handy keys to explore (GUI: Extension Manager → Tiling Assistant → gea
 - `tilegroups-in-app-switcher` — group tiled windows together in Alt+Tab.
 - `favorite-layouts` / `activate-layout0..19` — save and trigger named layouts
   with a shortcut (advanced; closest thing to a tiling WM's named workspaces).
+
+---
+
+## Move to next monitor (`Super+D`)
+
+GNOME's `move-to-monitor-left/right/up/down` are directional — they move
+toward a compass direction, and do nothing if there's no monitor that way.
+There's no built-in "cycle to next monitor" that wraps around.
+
+This repo includes a tiny GNOME Shell extension
+(`linux/move-to-next-monitor@rgwood/`) that does exactly that: `Super+D`
+moves the focused window to the next monitor, wrapping from the last back
+to the first. The script installs and enables it automatically.
+
+> GNOME Shell on Wayland only discovers new extensions at login. If this is
+> a fresh install, **log out and back in** before `Super+D` will work.
+
+The script also clears `Super+D` from GNOME's `show-desktop` binding (which
+defaults to `Super+D`) to avoid the conflict.
 
 ---
 
