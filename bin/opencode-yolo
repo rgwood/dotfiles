@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run opencode with all permissions pre-approved (yolo mode).
+# Usage: opencode-yolo [args...]
+
+exec env OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
