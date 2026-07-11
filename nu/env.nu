@@ -21,10 +21,7 @@ if (sys host | get name) == "Darwin" {
 }
 
 if (sys host | get long_os_version) =~ "Linux" {
-    # for https://github.com/arquivolta/wsl-use-windows-openssh
-    $env.PATH = ($env.PATH | split row (char esep) | prepend /usr/lib/wsl-ssh )
-
-    # prepend linuxbrew so it takes priority over Windows paths on WSL
+    # linuxbrew
     $env.PATH = ($env.PATH | split row (char esep) | prepend /home/linuxbrew/.linuxbrew/bin)
 
     $env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
