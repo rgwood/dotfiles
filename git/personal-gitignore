@@ -1,2 +1,4 @@
 # this lets me ignore personal files/scripts in shared repos
 reilly/
+
+**/.claude/settings.local.json
