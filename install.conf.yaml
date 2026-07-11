@@ -15,6 +15,8 @@
 
 - link:
       ~/dotfiles: ""
+      # macOS apps look in ~/Library/Application Support instead of XDG;
+      # each Darwin link is paired with its XDG twin
       ~/.config/nushell/config.nu: nu/config.nu
       ~/.config/nushell/env.nu: nu/env.nu
       ~/Library/Application Support/nushell/config.nu:
@@ -42,12 +44,6 @@
       ~/bin/:
             glob: true
             path: bin/*
-      ~/.config/mods/mods.yml:
-            path: llms/mods.yml
-            if: '[[ "$(uname)" == "Linux" ]]'
-      ~/Library/Application Support/mods/mods.yml:
-            path: llms/mods.yml
-            if: '[[ "$(uname)" == "Darwin" ]]'
       ~/justfile: just/global-justfile
       ~/.claude/CLAUDE.md: agents/CLAUDE.md
       ~/.claude/AGENTS.md: agents/AGENTS.md
@@ -56,6 +52,8 @@
       ~/.claude/statusline-command.sh: agents/statusline-command.sh
       ~/.claude/skills/pr-description:
             path: agents/skills/pr-description
+      ~/.claude/skills/explain-diff-html:
+            path: agents/skills/explain-diff-html
 
 - create:
       - ~/bin
