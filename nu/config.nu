@@ -1,8 +1,16 @@
 # Nushell Config File
 
+# ─── BEGIN mirrored block ───
+# Keep in sync with zsh/zshrc and nu/env.nu (manual sync, no codegen)
+
+alias lg = lazygit
+
+def --env mkd [dir:string] { mkdir $dir; cd $dir }
+
+# ─── END mirrored block ───
+
 alias t = templater
 alias sn = templater snippet
-alias lg = lazygit
 alias st = systemctl-tui
 alias cr = cargo run
 alias cb = cargo build
@@ -66,7 +74,6 @@ def --env presentation-mode [] {
   $env.PROMPT_COMMAND_RIGHT = { || "" }
 }
 
-def --env mkd [dir:string] { mkdir $dir; cd $dir }
 def is-not-empty [] { ($in | length) >= 1 }
 
 def is-sqlite-db [$path: path] {(open --raw $path | take 16) == ($"SQLite format 3(char -i 0)" | into binary)}
