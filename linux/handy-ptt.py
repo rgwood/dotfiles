@@ -19,7 +19,7 @@ Three triggers, same daemon:
 2. **Keyboard F1 / right Alt** (via keyd): keyd remaps F1 → F24, F13 →
    F24, right Alt → F24, and Compose → F24 on its virtual keyboard. F13
    covers Framework laptops whose top-row "F1" sends KEY_F13 at the
-   hardware level; Compose is a fallback for when input-remapper maps
+   hardware level; Compose is a harmless no-op unless something maps
    right Alt → Compose before keyd sees it. F24 maps to NoSymbol in XKB,
    so GNOME ignores it entirely — no strobing shortcut, no app help
    menus, no XF86Tools opening Settings. The daemon reads F24 from keyd's

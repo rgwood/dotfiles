@@ -197,9 +197,9 @@ capslock = overload(meta, esc)
 # step 8.
 f1 = f24
 f13 = f24
-# Remap right Alt → F24 for push-to-talk. Works directly via keyd; the
-# compose = f24 fallback covers when input-remapper maps right Alt →
-# Compose first. See ~/.config/input-remapper-2/.
+# Remap right Alt → F24 for push-to-talk, directly via keyd.
+# compose = f24 is a harmless no-op unless something maps right Alt →
+# Compose before keyd sees it.
 rightalt = f24
 compose = f24
 ```
@@ -244,15 +244,6 @@ keyd has a **panic sequence** built in: press `Backspace+Escape+Enter`
 together and it kills the daemon immediately, releasing all keys back to
 normal. Useful if a bad config locks up your keyboard. After that, fix
 `/etc/keyd/default.conf` and `sudo systemctl restart keyd`.
-
-### Coexisting with input-remapper
-
-This machine also runs [`input-remapper`](https://github.com/sezanzeb/input-remapper)
-for other device remaps. The two don't fight: input-remapper grabs the
-physical keyboard devices and creates new virtual "forwarded" devices; keyd
-then attaches to those forwarded devices rather than the physical ones. Both
-run fine side by side — no special config needed, just install both and it
-works.
 
 ### Test it
 
@@ -357,8 +348,7 @@ defaults, so nothing is wasted. On macOS the matching move is **Aerospace** or
 - **Keyboard is completely unresponsive** → panic sequence:
   `Backspace+Escape+Enter` kills keyd and restores normal input.
 - **Caps+arrows don't work but Super+arrows do** → check keyd is running
-  (`systemctl status keyd`) and, if you also run input-remapper, that it's
-  forwarding devices correctly (`sudo keyd monitor` while pressing Caps should
+  (`systemctl status keyd`) (`sudo keyd monitor` while pressing Caps should
   show key events).
 - **Voice dictation stopped typing after re-running this script** → the script
   rewrites `/etc/keyd/default.conf`; make sure the `-2333:6666` exclusion under
