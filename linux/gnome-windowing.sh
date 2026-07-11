@@ -96,6 +96,9 @@ KEYD_WANT='[ids]
 # Ignore ydotool'"'"'s virtual keyboard (always 2333:6666) so dictation keystrokes
 # pass through untouched — see linux/dictation.md. Harmless without ydotool.
 -2333:6666
+# Ignore the Kinesis foot pedal: handy-ptt.py grabs it for push-to-talk
+# dictation (see linux/dictation.md step 8). Harmless without the pedal.
+-29ea:0100
 
 [main]
 # Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)

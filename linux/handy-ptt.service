@@ -1,0 +1,10 @@
+[Unit]
+Description=Handy push-to-talk via Kinesis foot pedal
+
+[Service]
+ExecStart=/usr/bin/python3 %h/dotfiles/linux/handy-ptt.py
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
