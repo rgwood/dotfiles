@@ -159,11 +159,19 @@ Then it writes `/etc/keyd/default.conf`:
 ```
 [ids]
 *
+# Ignore ydotool's virtual keyboard (always 2333:6666) so dictation keystrokes
+# pass through untouched — see linux/dictation.md. Harmless without ydotool.
+-2333:6666
 
 [main]
 # Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
 capslock = overload(meta, esc)
 ```
+
+> The `-2333:6666` line matters if you use voice dictation
+> ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,
+> including ydotool's virtual one, and it can swallow the injected keystrokes.
+> Keep the exclusion even if you don't dictate — it costs nothing.
 
 And enables/starts the service:
 
@@ -314,3 +322,6 @@ defaults, so nothing is wasted. On macOS the matching move is **Aerospace** or
   (`systemctl status keyd`) and, if you also run input-remapper, that it's
   forwarding devices correctly (`sudo keyd monitor` while pressing Caps should
   show key events).
+- **Voice dictation stopped typing after re-running this script** → the script
+  rewrites `/etc/keyd/default.conf`; make sure the `-2333:6666` exclusion under
+  `[ids]` survived (see [dictation.md](dictation.md)).
