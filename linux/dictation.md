@@ -191,13 +191,13 @@ Notes:
 - If dictation ever behaves strangely, remember this shim exists
   (`which ydotool` should remind you).
 
-### 8. Optional: real push-to-talk (foot pedal and/or F1 key)
+### 8. Optional: real push-to-talk (foot pedal, F1 key, and/or right Alt)
 
 GNOME shortcuts can't do push-to-talk (no press-vs-release, key-repeat
 strobe — see step 5). But a **dedicated input device** can: read its raw
 kernel events from `/dev/input`, where press (value 1), release (value 0),
 and repeat (value 2) are distinct. That's what
-[handy-ptt.py](handy-ptt.py) does, with two triggers:
+[handy-ptt.py](handy-ptt.py) does, with three triggers:
 
 - **Foot pedal** (Kinesis Savant Elite2; pedals programmed to F1, though
   the key doesn't matter): grabbed exclusively (`EVIOCGRAB`), so the
@@ -218,7 +218,12 @@ and repeat (value 2) are distinct. That's what
   transcribe). If keyd isn't running, F1 falls through to the GNOME
   shortcut as before.
 
-Handy stays in *toggle* mode — two toggles = push-to-talk. Both triggers
+- **Right Alt** (via input-remapper + keyd): input-remapper maps right
+  Alt → Compose (see `~/.config/input-remapper-2/`), then keyd remaps
+  Compose → F24 (`compose = f24`). Same push-to-talk as F1, same F24
+  path through the daemon. Without input-remapper this line is a no-op.
+
+Handy stays in *toggle* mode — two toggles = push-to-talk. All triggers
 send SIGUSR2 to the same Handy process, so simultaneous use can desync
 toggle state (e.g. press pedal, press F1, release F1, release pedal =
 stop-start-stop instead of start-stop).
@@ -229,7 +234,7 @@ Setup, after steps 1–7:
 # keyd must not grab the pedal (its [ids] * matches every keyboard).
 # gnome-windowing.sh writes this exclusion; or add to /etc/keyd/default.conf:
 #   -29ea:0100    (under [ids])
-# gnome-windowing.sh also writes the f1 = f24 and f13 = f24 remaps under [main].
+# gnome-windowing.sh also writes f1 = f24, f13 = f24, and compose = f24 under [main].
 sudo systemctl restart keyd
 
 # Device access: the `input` group from step 2 works, BUT systemd user

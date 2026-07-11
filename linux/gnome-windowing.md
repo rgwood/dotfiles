@@ -197,13 +197,18 @@ capslock = overload(meta, esc)
 # step 8.
 f1 = f24
 f13 = f24
+# Remap Compose → F24 for push-to-talk. input-remapper maps right Alt to
+# Compose (see ~/.config/input-remapper-2/), so this makes right Alt a
+# second push-to-talk trigger. Harmless without input-remapper.
+compose = f24
 ```
 
 > The `-2333:6666` and `-29ea:0100` lines matter if you use voice dictation
 > ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,
 > including ydotool's virtual one, and it can swallow the injected keystrokes.
-> The `f1 = f24` and `f13 = f24` lines let handy-ptt.py do push-to-talk on
-> F1. Keep all three even if you don't dictate — they cost nothing.
+> The `f1 = f24`, `f13 = f24`, and `compose = f24` lines let handy-ptt.py do
+> push-to-talk on F1 and right Alt. Keep all three even if you don't dictate
+> — they cost nothing.
 
 And enables/starts the service:
 
