@@ -1,8 +1,16 @@
 # Nushell Config File
 
+# ─── BEGIN mirrored block ───
+# Keep in sync with zsh/zshrc and nu/env.nu (manual sync, no codegen)
+
+alias lg = lazygit
+
+def --env mkd [dir:string] { mkdir $dir; cd $dir }
+
+# ─── END mirrored block ───
+
 alias t = templater
 alias sn = templater snippet
-alias lg = lazygit
 alias st = systemctl-tui
 alias cr = cargo run
 alias cb = cargo build
@@ -20,7 +28,6 @@ def clip [] {
 
     match $nu.os-info.name {
       "linux" => ($input | xclip -sel clip),
-      "windows" => ($input | clip.exe),
       "macos" => ($input | pbcopy),
     }
 }
@@ -28,18 +35,12 @@ def clip [] {
 # Commands for RPM (Reilly's Package Manager)
 
 def publish-to-rpm [ path:string --help (-h) ] {
-	if $nu.os-info.name == "windows" {
-		# christ I wish rsync was available on Windows
-		scp $path potato-pi:/mnt/QNAP1/rpm/dropbox/
-	} else {
-		rsync --progress $path potato-pi:/mnt/QNAP1/rpm/dropbox/
-	}
+	rsync --progress $path potato-pi:/mnt/QNAP1/rpm/dropbox/
 }
 
 def os-arch-string [] {
     let os = match $nu.os-info.name {
       "linux" => "linux",
-      "windows" => "win",
       "macos" => "mac",
       _ => (error make {msg: "unsupported os"})
     }
@@ -64,7 +65,6 @@ def upgrade-rpm [] {
 
     match $nu.os-info.name {
       "linux" => (unzip -o $zip_file_name),
-      "windows" => (7z x -aoa $zip_file_name),
       "macos" => (unzip -o $zip_file_name),
     }
 }
@@ -74,7 +74,6 @@ def --env presentation-mode [] {
   $env.PROMPT_COMMAND_RIGHT = { || "" }
 }
 
-def --env mkd [dir:string] { mkdir $dir; cd $dir }
 def is-not-empty [] { ($in | length) >= 1 }
 
 def is-sqlite-db [$path: path] {(open --raw $path | take 16) == ($"SQLite format 3(char -i 0)" | into binary)}
@@ -149,7 +148,6 @@ $env.config.history.file_format = "sqlite"
 
 $env.config.footer_mode = 4
 
-# Reilly: osc133 causes issues in Windows WezTerm (every keypress scrolls up)
-$env.config.shell_integration.osc133 = false
+$env.config.shell_integration.osc133 = true
 
 $env.config.color_config.separator = "dark_gray"

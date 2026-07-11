@@ -155,6 +155,11 @@ def install_from_github(
                             dest.write_bytes(zf.read(name))
                             dest.chmod(0o755)
                             return True
+            else:
+                # Raw binary (no archive)
+                shutil.copy(archive_path, dest)
+                dest.chmod(0o755)
+                return True
         except Exception as e:
             log("fail", f"  extraction failed for {repo}: {e}")
             return False
@@ -367,6 +372,55 @@ TOOLS: list[dict] = [
                 "nushell/nushell",
                 [f"nu-*-{ARCH}-unknown-linux-musl.tar.gz", f"nu-*-{ARCH}-unknown-linux-gnu.tar.gz"],
                 "nu",
+            ),
+        ],
+    },
+    {
+        "name": "fzf",
+        "check": ["fzf"],
+        "brew": "fzf",
+        "linux": [
+            lambda: install_from_github(
+                "junegunn/fzf",
+                [f"fzf-*linux_{'arm64' if ARCH == 'aarch64' else 'amd64'}.tar.gz"],
+                "fzf",
+            ),
+        ],
+    },
+    {
+        "name": "ripgrep",
+        "check": ["rg"],
+        "brew": "ripgrep",
+        "linux": [
+            lambda: install_via_apt(["ripgrep"]),
+            lambda: install_from_github(
+                "BurntSushi/ripgrep",
+                [f"ripgrep-*-{ARCH}-unknown-linux-musl.tar.gz", f"ripgrep-*-{ARCH}-unknown-linux-gnu.tar.gz"],
+                "rg",
+            ),
+        ],
+    },
+    {
+        "name": "just",
+        "check": ["just"],
+        "brew": "just",
+        "linux": [
+            lambda: install_from_github(
+                "casey/just",
+                [f"just-*-{ARCH}-unknown-linux-musl.tar.gz"],
+                "just",
+            ),
+        ],
+    },
+    {
+        "name": "tealdeer",
+        "check": ["tldr"],
+        "brew": "tealdeer",
+        "linux": [
+            lambda: install_from_github(
+                "tealdeer-rs/tealdeer",
+                [f"tealdeer-linux-{ARCH}-musl"],
+                "tldr",
             ),
         ],
     },
