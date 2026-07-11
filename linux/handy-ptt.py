@@ -17,16 +17,16 @@ Three triggers, same daemon:
    shortcut (tap-to-toggle).
 
 2. **Keyboard F1 / right Alt** (via keyd): keyd remaps F1 → F24, F13 →
-   F24, and Compose → F24 on its virtual keyboard. F13 covers Framework
-   laptops whose top-row "F1" sends KEY_F13 at the hardware level;
-   Compose covers right Alt (input-remapper maps right Alt → Compose).
-   F24 maps to NoSymbol in XKB, so GNOME ignores it entirely — no
-   strobing shortcut, no app help menus, no XF86Tools opening Settings.
-   The daemon reads F24 from keyd's virtual keyboard *without grabbing*
-   (grabbing would starve GNOME of all keyboard input). Press → SIGUSR2
-   (start), release → SIGUSR2 (stop + transcribe). If keyd isn't running,
-   these keys are unaffected — they fall through to the GNOME shortcut as
-   before.
+   F24, right Alt → F24, and Compose → F24 on its virtual keyboard. F13
+   covers Framework laptops whose top-row "F1" sends KEY_F13 at the
+   hardware level; Compose is a fallback for when input-remapper maps
+   right Alt → Compose before keyd sees it. F24 maps to NoSymbol in XKB,
+   so GNOME ignores it entirely — no strobing shortcut, no app help
+   menus, no XF86Tools opening Settings. The daemon reads F24 from keyd's
+   virtual keyboard *without grabbing* (grabbing would starve GNOME of
+   all keyboard input). Press → SIGUSR2 (start), release → SIGUSR2 (stop
+   + transcribe). If keyd isn't running, these keys are unaffected — they
+   fall through to the GNOME shortcut as before.
 
 Handy stays in *toggle* mode; press+release = start+stop = push-to-talk.
 All triggers send SIGUSR2 to the same Handy process, so simultaneous use
