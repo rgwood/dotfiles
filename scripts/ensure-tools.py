@@ -370,6 +370,18 @@ TOOLS: list[dict] = [
             ),
         ],
     },
+    {
+        "name": "fzf",
+        "check": ["fzf"],
+        "brew": "fzf",
+        "linux": [
+            lambda: install_from_github(
+                "junegunn/fzf",
+                [f"fzf-*linux_{'arm64' if ARCH == 'aarch64' else 'amd64'}.tar.gz"],
+                "fzf",
+            ),
+        ],
+    },
 ]
 
 

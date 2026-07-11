@@ -2,9 +2,6 @@
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 	ignore = dirty
-[submodule "fzf"]
-	path = fzf
-	url = https://github.com/junegunn/fzf.git
 [submodule "zsh-autosuggestions"]
 	path = zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
