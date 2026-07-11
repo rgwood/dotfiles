@@ -1,5 +1,5 @@
 [Unit]
-Description=Handy push-to-talk via Kinesis foot pedal
+Description=Handy push-to-talk via foot pedal and/or F1 key
 
 [Service]
 ExecStart=/usr/bin/python3 %h/dotfiles/linux/handy-ptt.py

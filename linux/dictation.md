@@ -122,8 +122,8 @@ gsettings set $KB binding 'F1'
 
 **Use toggle mode in Handy, not push-to-talk.** GNOME shortcuts fire on
 key-repeat while held, so PTT becomes a rapid on/off strobe. Tap to start,
-tap to stop. (True push-to-talk *is* possible with a dedicated device — see
-step 8.)
+tap to stop. (True push-to-talk *is* possible — on a dedicated device like
+a foot pedal, or on F1 itself via keyd — see step 8.)
 
 ### 6. Handy settings — turn the overlay OFF
 
@@ -191,24 +191,33 @@ Notes:
 - If dictation ever behaves strangely, remember this shim exists
   (`which ydotool` should remind you).
 
-### 8. Optional: real push-to-talk via a foot pedal
+### 8. Optional: real push-to-talk (foot pedal and/or F1 key)
 
 GNOME shortcuts can't do push-to-talk (no press-vs-release, key-repeat
 strobe — see step 5). But a **dedicated input device** can: read its raw
 kernel events from `/dev/input`, where press (value 1), release (value 0),
 and repeat (value 2) are distinct. That's what
-[handy-ptt.py](handy-ptt.py) does with a Kinesis Savant Elite2 foot pedal
-(pedals programmed to F1, though the key doesn't matter):
+[handy-ptt.py](handy-ptt.py) does, with two triggers:
 
-- On pedal **press** it sends Handy a SIGUSR2 (start recording), on
-  **release** another (stop + transcribe). Handy stays in *toggle* mode —
-  two toggles = push-to-talk.
-- It **grabs the pedal exclusively** (`EVIOCGRAB`), so the pedal's F1 never
-  reaches GNOME and can't double-trigger the step-5 shortcut. Keyboard F1
-  still works as tap-to-toggle alongside it.
-- Graceful degradation: if the daemon dies, the grab releases and the
-  pedal's F1 falls through to the GNOME shortcut — pedal becomes
-  tap-to-toggle instead of going dead.
+- **Foot pedal** (Kinesis Savant Elite2; pedals programmed to F1, though
+  the key doesn't matter): grabbed exclusively (`EVIOCGRAB`), so the
+  pedal's F1 never reaches GNOME. Press → SIGUSR2 (start), release →
+  SIGUSR2 (stop + transcribe). If the daemon dies the grab releases and
+  the pedal's F1 falls through to the GNOME shortcut — tap-to-toggle
+  instead of going dead.
+
+- **Keyboard F1** (via keyd): keyd remaps F1 → F13 on its virtual
+  keyboard (`f1 = f13` in `/etc/keyd/default.conf`, written by
+  `gnome-windowing.sh`), so F1 no longer reaches GNOME's strobing
+  shortcut or app help menus. The daemon reads F13 from keyd's virtual
+  keyboard *without grabbing* (grabbing would starve GNOME of all input).
+  Press → SIGUSR2 (start), release → SIGUSR2 (stop + transcribe). If
+  keyd isn't running, F1 falls through to the GNOME shortcut as before.
+
+Handy stays in *toggle* mode — two toggles = push-to-talk. Both triggers
+send SIGUSR2 to the same Handy process, so simultaneous use can desync
+toggle state (e.g. press pedal, press F1, release F1, release pedal =
+stop-start-stop instead of start-stop).
 
 Setup, after steps 1–7:
 
@@ -216,29 +225,37 @@ Setup, after steps 1–7:
 # keyd must not grab the pedal (its [ids] * matches every keyboard).
 # gnome-windowing.sh writes this exclusion; or add to /etc/keyd/default.conf:
 #   -29ea:0100    (under [ids])
+# gnome-windowing.sh also writes the f1 = f13 remap under [main].
 sudo systemctl restart keyd
 
 # Device access: the `input` group from step 2 works, BUT systemd user
 # services inherit groups from the user manager, which only picks up new
-# groups on reboot. This udev rule sidesteps groups entirely (ACL for the
+# groups on reboot. These udev rules sidestep groups entirely (ACL for the
 # seated user):
+#   - pedal (USB device, matched by vendor/product):
 echo 'SUBSYSTEM=="input", ATTRS{idVendor}=="29ea", ATTRS{idProduct}=="0100", TAG+="uaccess"' \
   | sudo tee /etc/udev/rules.d/61-kinesis-pedal.rules
+#   - keyd virtual keyboard (for F1 push-to-talk; matched by device name
+#     since it has no USB IDs):
+echo 'SUBSYSTEM=="input", ATTRS{name}=="keyd virtual keyboard", TAG+="uaccess"' \
+  | sudo tee /etc/udev/rules.d/62-keyd-vkbd.rules
 sudo udevadm control --reload-rules && sudo udevadm trigger
 systemctl --user daemon-reload
 systemctl --user enable --now handy-ptt   # ~/.config/systemd/user/handy-ptt.service
-journalctl --user -u handy-ptt -f         # watch it log pedal presses
+journalctl --user -u handy-ptt -f         # watch it log pedal/F1 presses
 ```
 
 The service file ([handy-ptt.service](handy-ptt.service), copy it to
 `~/.config/systemd/user/`) just runs `python3 ~/dotfiles/linux/handy-ptt.py`
-with `Restart=always`. The daemon survives pedal unplug/replug (rescans by device
-name), and is ~10MB RSS of idle blocking-read Python.
+with `Restart=always`. The daemon survives pedal unplug/replug and keyd
+restarts (rescans by device name), and is ~10MB RSS of idle blocking-read
+Python. If neither a pedal nor keyd's virtual keyboard is found, it retries
+every 3 seconds.
 
-A very short pedal tap produces a start+stop pair a few ms apart
+A very short pedal tap (or F1 tap) produces a start+stop pair a few ms apart
 (near-empty recording); harmless so far, add a debounce in the daemon if it
-ever isn't. If a recording was already started via keyboard F1, the next
-pedal press *stops* it (toggle semantics invert for one cycle).
+ever isn't. If a recording was already started via the other trigger (pedal
+vs F1), the next press *stops* it (toggle semantics invert for one cycle).
 
 ## Troubleshooting
 
@@ -254,6 +271,7 @@ Every row below is a failure mode I actually hit, in order:
 | ydotool works manually but dictation types nothing, log says success | **overlay stealing focus** | disable the overlay (step 6) |
 | Everything worked, then broke after re-running gnome-windowing.sh | keyd config rewritten without the exclusion | re-add `-2333:6666` (step 4) |
 | Pedal PTT dead but keyboard F1 works | daemon not running, or keyd re-grabbed the pedal | `journalctl --user -u handy-ptt` — a "grab … Device or resource busy" warning means keyd; re-add `-29ea:0100` (step 8) |
+| F1 does nothing (no toggle, no PTT) | keyd remapped F1→F13 but daemon isn't watching keyd's virtual keyboard | check `journalctl --user -u handy-ptt` for "warning: open /dev/input/eventN" (needs the udev uaccess rule, step 8); or `sudo systemctl restart keyd` |
 | Pedal press *stops* a recording instead of starting | recording was already on via F1 toggle | expected — toggle semantics; release starts a new one, tap pedal again |
 
 ## Debugging notes (mostly for future agents)

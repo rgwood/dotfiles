@@ -103,6 +103,11 @@ KEYD_WANT='[ids]
 [main]
 # Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
 capslock = overload(meta, esc)
+# Remap F1 to F13 so handy-ptt.py can do push-to-talk (it reads F13 from
+# this virtual keyboard; GNOME never sees F1 so no key-repeat strobe).
+# Without handy-ptt running, F1 falls through to the GNOME "Handy Toggle"
+# shortcut as tap-to-toggle. See linux/dictation.md step 8.
+f1 = f13
 '
 if [ -f "$KEYD_CONF" ] && [ "$(sudo cat "$KEYD_CONF")" = "$KEYD_WANT" ]; then
   echo "$KEYD_CONF already up to date"
