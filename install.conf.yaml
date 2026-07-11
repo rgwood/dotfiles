@@ -54,6 +54,8 @@
             path: agents/skills/pr-description
       ~/.claude/skills/explain-diff-html:
             path: agents/skills/explain-diff-html
+      ~/.claude/skills/govuk-style:
+            path: agents/skills/govuk-style
 
 - create:
       - ~/bin
