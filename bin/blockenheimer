@@ -11,15 +11,65 @@ Blockenheimer: given a Bluesky post URL, add the author and everyone who
 liked it to a block list.
 """
 
+import json
 import os
 import re
 import sys
 import time
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from atproto import Client, models
 
 LIST_RKEY = "3lpyuurzovd2s"
 LOGIN_HANDLE = "grids.reillywood.com"
+
+CACHE_TTL = timedelta(days=7)
+
+
+def cache_path() -> Path:
+    base = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
+    return Path(base) / "blockenheimer" / "list_members.json"
+
+
+def load_cached_members(list_uri: str) -> set[str] | None:
+    """Return cached list members if fresh and matching list_uri, else None."""
+    path = cache_path()
+    try:
+        data = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+    if data.get("list_uri") != list_uri:
+        return None
+    try:
+        updated_at = datetime.fromisoformat(data["updated_at"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if datetime.now(timezone.utc) - updated_at > CACHE_TTL:
+        return None
+    members = data.get("members")
+    if not isinstance(members, list):
+        return None
+    result: set[str] = set()
+    for m in members:
+        if not isinstance(m, str):
+            return None
+        result.add(m)
+    return result
+
+
+def save_cached_members(list_uri: str, members: set[str]) -> None:
+    """Write list members to the cache file atomically."""
+    path = cache_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "list_uri": list_uri,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "members": sorted(members),
+    }
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload))
+    os.replace(tmp, path)
 
 
 def parse_post_url(url: str) -> tuple[str, str]:
@@ -160,6 +210,15 @@ def main() -> None:
     to_block.add(post_did)
     to_block.discard(client.me.did)
 
+    list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
+
+    # If no likes, just try to block the author without fetching the full list
+    if not liker_dids:
+        print(f"No likes; adding post author {post_did} to block list...", file=sys.stderr)
+        add_to_list(client, list_uri, post_did)
+        print("Done! Added 1 account to the block list.", file=sys.stderr)
+        return
+
     # Don't block anyone connected to either of my accounts (follows or followers)
     my_accounts = [LOGIN_HANDLE, "reillywood.com"]
     protected: dict[str, str] = {}  # did -> handle
@@ -175,15 +234,19 @@ def main() -> None:
             print(f"  @{protected.get(did, did)}", file=sys.stderr)
         to_block -= skipped
 
-    # Check who's already on the list
-    list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
-    print("Fetching existing list members...", file=sys.stderr)
-    existing = get_existing_list_members(client, list_uri)
-    print(f"List already has {len(existing)} members", file=sys.stderr)
+    # Check who's already on the list (cached for up to a week)
+    existing = load_cached_members(list_uri)
+    if existing is None:
+        print("Fetching existing list members...", file=sys.stderr)
+        existing = get_existing_list_members(client, list_uri)
+        print(f"List already has {len(existing)} members", file=sys.stderr)
+    else:
+        print(f"Using cached list ({len(existing)} members)", file=sys.stderr)
 
     new_dids = to_block - existing
     if not new_dids:
         print("Everyone is already on the list. Nothing to do.", file=sys.stderr)
+        save_cached_members(list_uri, existing)
         return
 
     print(f"Adding {len(new_dids)} new accounts to block list...", file=sys.stderr)
@@ -192,6 +255,8 @@ def main() -> None:
         print(f"  [{i}/{len(new_dids)}] Added {did}", file=sys.stderr)
         if i < len(new_dids):
             time.sleep(0.1)
+
+    save_cached_members(list_uri, existing | new_dids)
 
     already = len(to_block) - len(new_dids)
     print(f"\nDone! Added {len(new_dids)} accounts to the block list.", file=sys.stderr)
