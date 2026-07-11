@@ -189,17 +189,21 @@ Then it writes `/etc/keyd/default.conf`:
 [main]
 # Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
 capslock = overload(meta, esc)
-# Remap F1 to F13 so handy-ptt.py can do push-to-talk (it reads F13 from
-# this virtual keyboard). Without handy-ptt, F1 falls through to GNOME's
-# "Handy Toggle" shortcut as tap-to-toggle. See dictation.md step 8.
-f1 = f13
+# Remap F1 → F24 and F13 → F24 so handy-ptt.py can do push-to-talk (it
+# reads F24 from this virtual keyboard). F24 maps to NoSymbol in XKB, so
+# GNOME ignores it. F13 is also remapped because Framework laptops send
+# KEY_F13 for the top-row "F1" key. Without handy-ptt, F1 falls through
+# to GNOME's "Handy Toggle" shortcut as tap-to-toggle. See dictation.md
+# step 8.
+f1 = f24
+f13 = f24
 ```
 
 > The `-2333:6666` and `-29ea:0100` lines matter if you use voice dictation
 > ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,
 > including ydotool's virtual one, and it can swallow the injected keystrokes.
-> The `f1 = f13` line lets handy-ptt.py do push-to-talk on F1. Keep all three
-> even if you don't dictate — they cost nothing.
+> The `f1 = f24` and `f13 = f24` lines let handy-ptt.py do push-to-talk on
+> F1. Keep all three even if you don't dictate — they cost nothing.
 
 And enables/starts the service:
 
