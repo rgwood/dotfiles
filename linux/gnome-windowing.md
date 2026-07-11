@@ -182,16 +182,24 @@ Then it writes `/etc/keyd/default.conf`:
 # Ignore ydotool's virtual keyboard (always 2333:6666) so dictation keystrokes
 # pass through untouched — see linux/dictation.md. Harmless without ydotool.
 -2333:6666
+# Ignore the Kinesis foot pedal: handy-ptt.py grabs it for push-to-talk
+# dictation (see linux/dictation.md step 8). Harmless without the pedal.
+-29ea:0100
 
 [main]
 # Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
 capslock = overload(meta, esc)
+# Remap F1 to F13 so handy-ptt.py can do push-to-talk (it reads F13 from
+# this virtual keyboard). Without handy-ptt, F1 falls through to GNOME's
+# "Handy Toggle" shortcut as tap-to-toggle. See dictation.md step 8.
+f1 = f13
 ```
 
-> The `-2333:6666` line matters if you use voice dictation
+> The `-2333:6666` and `-29ea:0100` lines matter if you use voice dictation
 > ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,
 > including ydotool's virtual one, and it can swallow the injected keystrokes.
-> Keep the exclusion even if you don't dictate — it costs nothing.
+> The `f1 = f13` line lets handy-ptt.py do push-to-talk on F1. Keep all three
+> even if you don't dictate — they cost nothing.
 
 And enables/starts the service:
 
