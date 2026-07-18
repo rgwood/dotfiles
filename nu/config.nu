@@ -3,17 +3,12 @@
 # ─── BEGIN mirrored block ───
 # Keep in sync with zsh/zshrc and nu/env.nu (manual sync, no codegen)
 
-alias lg = lazygit
-
 def --env mkd [dir:string] { mkdir $dir; cd $dir }
 
 # ─── END mirrored block ───
 
 alias t = templater
 alias sn = templater snippet
-alias st = systemctl-tui
-alias cr = cargo run
-alias cb = cargo build
 alias ltc = llm chat -t terse
 
 def lt [ ...words] {
@@ -21,53 +16,6 @@ def lt [ ...words] {
     llm -t terse $prompt
 }
 
-
-def exists [executable] { not (which $executable | is-empty) }
-def clip [] {
-    let input = $in;
-
-    match $nu.os-info.name {
-      "linux" => ($input | xclip -sel clip),
-      "macos" => ($input | pbcopy),
-    }
-}
-
-# Commands for RPM (Reilly's Package Manager)
-
-def publish-to-rpm [ path:string --help (-h) ] {
-	rsync --progress $path potato-pi:/mnt/QNAP1/rpm/dropbox/
-}
-
-def os-arch-string [] {
-    let os = match $nu.os-info.name {
-      "linux" => "linux",
-      "macos" => "mac",
-      _ => (error make {msg: "unsupported os"})
-    }
-
-    let arch = match $nu.os-info.arch {
-      "x86_64" => "x64",
-      "aarch64" => "arm64",
-      _ => (error make {msg: "unsupported arch"})
-    }
-
-    $"($os)-($arch)"
-}
-
-alias rpm-upgrade = upgrade-rpm
-
-def upgrade-rpm [] {
-    cd ~/bin;
-
-    let zip_file_name = $"(os-arch-string).zip"
-
-    curl --location -O $"https://rpm.reillywood.com/($zip_file_name)"
-
-    match $nu.os-info.name {
-      "linux" => (unzip -o $zip_file_name),
-      "macos" => (unzip -o $zip_file_name),
-    }
-}
 
 def --env presentation-mode [] {
   $env.PROMPT_COMMAND = { || "" }
@@ -113,30 +61,6 @@ def run-current-project [] {
   } else {
       'Not sure how to run code in this folder.'
   }
-}
-
-def wat [...split_name:string] {
-    tldr ...$split_name
-
-    let name = ($split_name | str join " ");
-
-    let md = $"($name).md"
-
-    cd ~/dotfiles/notes
-    let notePath = ($nu.home-dir | path join $"dotfiles/notes/($name).md");
-
-    if ( $notePath | path exists ) {
-        echo "📘 Local Notes 📘"
-        echo ""
-
-        if (exists mdcat) {
-            mdcat $notePath
-        } else if (exists glow) {
-            glow $notePath
-        } else {
-            cat $notePath
-        }
-    }
 }
 
 $env.config.table.mode = "rounded"

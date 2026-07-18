@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec rsync --progress "$1" potato-pi:/mnt/QNAP1/rpm/dropbox/

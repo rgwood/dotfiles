@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# tldr + my local notes from ~/dotfiles/notes
+set -uo pipefail
+
+tldr "$@"
+
+note_path="$HOME/dotfiles/notes/$*.md"
+if [[ -f "$note_path" ]]; then
+  echo "📘 Local Notes 📘"
+  echo ""
+
+  if command -v mdcat >/dev/null 2>&1; then
+    mdcat "$note_path"
+  elif command -v glow >/dev/null 2>&1; then
+    glow "$note_path"
+  else
+    cat "$note_path"
+  fi
+fi

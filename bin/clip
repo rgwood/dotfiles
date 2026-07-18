@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Pipe stdin to the system clipboard
+set -euo pipefail
+
+case "$(uname)" in
+  Linux) exec xclip -sel clip ;;
+  Darwin) exec pbcopy ;;
+  *) echo "clip: unsupported OS" >&2; exit 1 ;;
+esac

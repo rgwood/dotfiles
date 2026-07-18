@@ -22,8 +22,6 @@ fi
 export EDITOR=micro
 export VISUAL=micro
 
-alias lg=lazygit
-
 mkd() {
 	mkdir "$1" && cd "$1"
 }
