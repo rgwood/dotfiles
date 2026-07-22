@@ -9,8 +9,17 @@
 """
 Blockenheimer: given a Bluesky post URL, add the author and everyone who
 liked it to a block list.
+
+Usage:
+    blockenheimer <bsky-post-url>
+    blockenheimer --dry-run <bsky-post-url>
+
+To use this yourself, edit the CONFIGURATION section below and set the
+BLOCKENHEIMER_APP_PASSWORD environment variable to an app password
+(create one at Settings -> Privacy and Security -> App Passwords).
 """
 
+import argparse
 import json
 import os
 import re
@@ -21,10 +30,28 @@ from pathlib import Path
 
 from atproto import Client, models
 
-LIST_RKEY = "3lpyuurzovd2s"
+# ----------------------------- CONFIGURATION -----------------------------
+
+# The handle of the account that owns the block list and does the blocking.
 LOGIN_HANDLE = "grids.reillywood.com"
 
+# The record key of the block list, i.e. the last path segment of the list's
+# URL. For example, if your list lives at
+# https://bsky.app/profile/you.bsky.social/lists/3lpyuurzovd2s
+# then the rkey is "3lpyuurzovd2s". The list must be owned by LOGIN_HANDLE.
+LIST_RKEY = "3lpyuurzovd2s"
+
+# Never block anyone followed by or following these accounts. LOGIN_HANDLE is
+# always protected; add any other accounts you care about here.
+PROTECTED_ACCOUNTS = ["reillywood.com"]
+
+# Environment variable holding the app password for LOGIN_HANDLE.
+APP_PASSWORD_ENV_VAR = "BLOCKENHEIMER_APP_PASSWORD"
+
+# List members are cached on disk so repeat runs don't re-fetch a large list.
 CACHE_TTL = timedelta(days=7)
+
+# --------------------------------------------------------------------------
 
 
 def cache_path() -> Path:
@@ -34,28 +61,19 @@ def cache_path() -> Path:
 
 def load_cached_members(list_uri: str) -> set[str] | None:
     """Return cached list members if fresh and matching list_uri, else None."""
-    path = cache_path()
     try:
-        data = json.loads(path.read_text())
-    except (OSError, ValueError):
-        return None
-    if data.get("list_uri") != list_uri:
-        return None
-    try:
-        updated_at = datetime.fromisoformat(data["updated_at"])
-    except (KeyError, TypeError, ValueError):
-        return None
-    if datetime.now(timezone.utc) - updated_at > CACHE_TTL:
-        return None
-    members = data.get("members")
-    if not isinstance(members, list):
-        return None
-    result: set[str] = set()
-    for m in members:
-        if not isinstance(m, str):
+        data = json.loads(cache_path().read_text())
+        if data["list_uri"] != list_uri:
             return None
-        result.add(m)
-    return result
+        updated_at = datetime.fromisoformat(data["updated_at"])
+        if datetime.now(timezone.utc) - updated_at > CACHE_TTL:
+            return None
+        members = data["members"]
+        if not all(isinstance(m, str) for m in members):
+            return None
+        return set(members)
+    except (OSError, ValueError, TypeError, KeyError):
+        return None
 
 
 def save_cached_members(list_uri: str, members: set[str]) -> None:
@@ -76,9 +94,7 @@ def parse_post_url(url: str) -> tuple[str, str]:
     """Extract (handle_or_did, rkey) from a bsky.app post URL."""
     m = re.match(r"https?://bsky\.app/profile/([^/]+)/post/([^/?#]+)", url)
     if not m:
-        print(f"Error: invalid Bluesky post URL: {url}", file=sys.stderr)
-        sys.exit(1)
-    assert m is not None
+        sys.exit(f"Error: invalid Bluesky post URL: {url}")
     return m.group(1), m.group(2)
 
 
@@ -88,18 +104,12 @@ def get_all_likes(client: Client, post_uri: str) -> list[str]:
     cursor: str | None = None
     while True:
         resp = client.app.bsky.feed.get_likes(
-            models.AppBskyFeedGetLikes.Params(
-                uri=post_uri,
-                limit=100,
-                cursor=cursor,
-            )
+            models.AppBskyFeedGetLikes.Params(uri=post_uri, limit=100, cursor=cursor)
         )
-        for like in resp.likes:
-            dids.append(like.actor.did)
+        dids.extend(like.actor.did for like in resp.likes)
         if not resp.cursor:
-            break
+            return dids
         cursor = resp.cursor
-    return dids
 
 
 def get_existing_list_members(client: Client, list_uri: str) -> set[str]:
@@ -108,58 +118,35 @@ def get_existing_list_members(client: Client, list_uri: str) -> set[str]:
     cursor: str | None = None
     while True:
         resp = client.app.bsky.graph.get_list(
-            models.AppBskyGraphGetList.Params(
-                list=list_uri,
-                limit=100,
-                cursor=cursor,
-            )
+            models.AppBskyGraphGetList.Params(list=list_uri, limit=100, cursor=cursor)
         )
-        for item in resp.items:
-            members.add(item.subject.did)
+        members.update(item.subject.did for item in resp.items)
         if not resp.cursor:
-            break
+            return members
         cursor = resp.cursor
-    return members
 
 
-def get_all_follows(client: Client, actor: str) -> dict[str, str]:
-    """Get all DIDs that an account follows, mapped to their handles."""
-    follows: dict[str, str] = {}
+def get_connected_accounts(client: Client, actor: str) -> dict[str, str]:
+    """Get everyone an account follows or is followed by, as {did: handle}."""
+    connected: dict[str, str] = {}
     cursor: str | None = None
     while True:
         resp = client.app.bsky.graph.get_follows(
-            models.AppBskyGraphGetFollows.Params(
-                actor=actor,
-                limit=100,
-                cursor=cursor,
-            )
+            models.AppBskyGraphGetFollows.Params(actor=actor, limit=100, cursor=cursor)
         )
-        for follow in resp.follows:
-            follows[follow.did] = follow.handle
+        connected.update((f.did, f.handle) for f in resp.follows)
         if not resp.cursor:
             break
         cursor = resp.cursor
-    return follows
-
-
-def get_all_followers(client: Client, actor: str) -> dict[str, str]:
-    """Get all DIDs that follow an account, mapped to their handles."""
-    followers: dict[str, str] = {}
-    cursor: str | None = None
+    cursor = None
     while True:
         resp = client.app.bsky.graph.get_followers(
-            models.AppBskyGraphGetFollowers.Params(
-                actor=actor,
-                limit=100,
-                cursor=cursor,
-            )
+            models.AppBskyGraphGetFollowers.Params(actor=actor, limit=100, cursor=cursor)
         )
-        for follower in resp.followers:
-            followers[follower.did] = follower.handle
+        connected.update((f.did, f.handle) for f in resp.followers)
         if not resp.cursor:
-            break
+            return connected
         cursor = resp.cursor
-    return followers
 
 
 def add_to_list(client: Client, list_uri: str, did: str) -> None:
@@ -175,93 +162,101 @@ def add_to_list(client: Client, list_uri: str, did: str) -> None:
     )
 
 
+def log(msg: str) -> None:
+    print(msg, file=sys.stderr)
+
+
 def main() -> None:
-    app_password = os.environ.get("MYBLOCKENHEIMER_API_KEY")
+    parser = argparse.ArgumentParser(
+        description="Add a Bluesky post's author and everyone who liked it to a block list."
+    )
+    parser.add_argument("post_url", help="a bsky.app post URL")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show who would be blocked without changing the list",
+    )
+    args = parser.parse_args()
+
+    app_password = os.environ.get(APP_PASSWORD_ENV_VAR) or os.environ.get(
+        "MYBLOCKENHEIMER_API_KEY"  # old name, kept for backward compatibility
+    )
     if not app_password:
-        print("Error: MYBLOCKENHEIMER_API_KEY environment variable not set", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(f"Error: {APP_PASSWORD_ENV_VAR} environment variable not set")
 
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <bsky-post-url>", file=sys.stderr)
-        sys.exit(1)
+    post_handle, post_rkey = parse_post_url(args.post_url)
 
-    post_url = sys.argv[1]
-    post_handle, post_rkey = parse_post_url(post_url)
-
-    print("Logging in...", file=sys.stderr)
+    log("Logging in...")
     client = Client()
     client.login(LOGIN_HANDLE, app_password)
     assert client.me is not None
 
-    # Resolve post author handle to DID and build AT URI
-    resolved = client.com.atproto.identity.resolve_handle(
-        models.ComAtprotoIdentityResolveHandle.Params(handle=post_handle)
-    )
-    post_did = resolved.did
+    # Resolve the post author to a DID and build the post's AT URI
+    if post_handle.startswith("did:"):
+        post_did = post_handle
+    else:
+        resolved = client.com.atproto.identity.resolve_handle(
+            models.ComAtprotoIdentityResolveHandle.Params(handle=post_handle)
+        )
+        post_did = resolved.did
     post_uri = f"at://{post_did}/app.bsky.feed.post/{post_rkey}"
 
-    # Fetch all likers
-    print("Fetching likes...", file=sys.stderr)
+    log("Fetching likes...")
     liker_dids = get_all_likes(client, post_uri)
-    print(f"Found {len(liker_dids)} likes", file=sys.stderr)
+    log(f"Found {len(liker_dids)} likes")
 
     # Author + all likers, minus ourselves
     to_block = set(liker_dids)
     to_block.add(post_did)
     to_block.discard(client.me.did)
 
-    list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
-
-    # If no likes, just try to block the author without fetching the full list
-    if not liker_dids:
-        print(f"No likes; adding post author {post_did} to block list...", file=sys.stderr)
-        add_to_list(client, list_uri, post_did)
-        print("Done! Added 1 account to the block list.", file=sys.stderr)
-        return
-
-    # Don't block anyone connected to either of my accounts (follows or followers)
-    my_accounts = [LOGIN_HANDLE, "reillywood.com"]
+    # Don't block anyone connected to our accounts (follows or followers)
     protected: dict[str, str] = {}  # did -> handle
-    for acct in my_accounts:
-        print(f"Fetching follows for {acct}...", file=sys.stderr)
-        protected.update(get_all_follows(client, acct))
-        print(f"Fetching followers of {acct}...", file=sys.stderr)
-        protected.update(get_all_followers(client, acct))
+    for acct in [LOGIN_HANDLE, *PROTECTED_ACCOUNTS]:
+        log(f"Fetching follows+followers for {acct}...")
+        protected.update(get_connected_accounts(client, acct))
     skipped = to_block & protected.keys()
     if skipped:
-        print(f"Skipping {len(skipped)} connected accounts:", file=sys.stderr)
-        for did in sorted(skipped, key=lambda d: protected.get(d, d)):
-            print(f"  @{protected.get(did, did)}", file=sys.stderr)
+        log(f"Skipping {len(skipped)} connected accounts:")
+        for did in sorted(skipped, key=lambda d: protected[d]):
+            log(f"  @{protected[did]}")
         to_block -= skipped
 
     # Check who's already on the list (cached for up to a week)
+    list_uri = f"at://{client.me.did}/app.bsky.graph.list/{LIST_RKEY}"
     existing = load_cached_members(list_uri)
     if existing is None:
-        print("Fetching existing list members...", file=sys.stderr)
+        log("Fetching existing list members...")
         existing = get_existing_list_members(client, list_uri)
-        print(f"List already has {len(existing)} members", file=sys.stderr)
+        log(f"List already has {len(existing)} members")
+        save_cached_members(list_uri, existing)
     else:
-        print(f"Using cached list ({len(existing)} members)", file=sys.stderr)
+        log(f"Using cached list ({len(existing)} members)")
 
     new_dids = to_block - existing
     if not new_dids:
-        print("Everyone is already on the list. Nothing to do.", file=sys.stderr)
-        save_cached_members(list_uri, existing)
+        log("Everyone is already on the list. Nothing to do.")
         return
 
-    print(f"Adding {len(new_dids)} new accounts to block list...", file=sys.stderr)
+    if args.dry_run:
+        log(f"Dry run: would add {len(new_dids)} accounts to the block list:")
+        for did in sorted(new_dids):
+            log(f"  {did}")
+        return
+
+    log(f"Adding {len(new_dids)} new accounts to block list...")
     for i, did in enumerate(new_dids, 1):
         add_to_list(client, list_uri, did)
-        print(f"  [{i}/{len(new_dids)}] Added {did}", file=sys.stderr)
+        log(f"  [{i}/{len(new_dids)}] Added {did}")
         if i < len(new_dids):
             time.sleep(0.1)
 
     save_cached_members(list_uri, existing | new_dids)
 
     already = len(to_block) - len(new_dids)
-    print(f"\nDone! Added {len(new_dids)} accounts to the block list.", file=sys.stderr)
+    log(f"\nDone! Added {len(new_dids)} accounts to the block list.")
     if already:
-        print(f"({already} were already on the list)", file=sys.stderr)
+        log(f"({already} were already on the list)")
 
 
 if __name__ == "__main__":
