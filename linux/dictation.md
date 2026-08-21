@@ -142,38 +142,26 @@ Settings live in `~/.local/share/com.pais.handy/settings_store.json`; logs in
 `~/.local/share/com.pais.handy/logs/handy.log` (set log level to debug in the
 app for the useful lines).
 
-### 7. Optional: the shim — 10× faster typing + working auto-submit
+### 7. Optional: the shim — 10× faster typing
 
-Two more Handy shortcomings, one fix. First: Direct paste types
-character-by-character with slow defaults (`--key-hold 20` + `--key-delay 20`
-= ~40ms/char; a 100-char sentence takes 4 seconds), and Handy invokes plain
-`ydotool type -- <text>` with no way to pass flags. Second: Handy's
-auto-submit ("press Enter after transcription") is **structurally broken on
-Wayland** — `send_return_key` in v0.9.0's `clipboard.rs` hardcodes enigo,
-which falls back to X11/XTEST, and native Wayland apps never see the Enter.
-(The text-typing path checks Wayland and uses ydotool; the Enter path just…
-doesn't.)
+Handy's Direct paste types character-by-character with slow defaults
+(`--key-hold 20` + `--key-delay 20` = ~40ms/char; a 100-char sentence takes 4
+seconds), and Handy invokes plain `ydotool type -- <text>` with no way to
+pass flags.
 
-Both fixed by a shim: Handy resolves `ydotool` via `PATH`, and `~/.cargo/bin`
+Fixed by a shim: Handy resolves `ydotool` via `PATH`, and `~/.cargo/bin`
 comes first:
 
 ```sh
 cat > ~/.cargo/bin/ydotool << 'EOF'
 #!/bin/sh
 # Shim for Handy dictation (see dotfiles/linux/dictation.md). Front-runs
-# /usr/local/bin/ydotool in PATH. Two jobs:
-#  1. Faster typing: Handy invokes bare `ydotool type` (40ms/char defaults).
-#  2. Auto-submit: Handy's own auto-submit sends Enter via enigo/XTEST, which
-#     native Wayland apps never receive. So when Handy is the caller, follow
-#     the transcript with an Enter (keycode 28) through ydotool instead.
-#     Delete the marked lines to stop pressing Enter after dictation.
+# /usr/local/bin/ydotool in PATH. One job: faster typing, because Handy
+# invokes bare `ydotool type` with 40ms/char defaults and no way to pass
+# flags.
 if [ "$1" = "type" ]; then
     shift
-    /usr/local/bin/ydotool type --key-delay 2 --key-hold 2 "$@" || exit $?
-    if [ "$(cat /proc/$PPID/comm 2>/dev/null)" = "handy" ]; then   # auto-submit
-        exec /usr/local/bin/ydotool key 28:1 28:0                  # auto-submit
-    fi
-    exit 0
+    exec /usr/local/bin/ydotool type --key-delay 2 --key-hold 2 "$@"
 fi
 exec /usr/local/bin/ydotool "$@"
 EOF
@@ -184,12 +172,34 @@ Notes:
 
 - Typing speed measured at 44 chars in 182ms (~4ms/char). If an app ever
   drops characters, raise the numbers — 5/5 is still 4× faster than stock.
-- The parent-process check means manual `ydotool` use is untouched; only
-  Handy's dictation gets the trailing Enter.
-- **Keep auto-submit OFF in Handy's settings** — the shim replaces it. If
-  it's on, XWayland apps would get a *second* Enter via the XTEST path.
 - If dictation ever behaves strangely, remember this shim exists
   (`which ydotool` should remind you).
+
+#### Auto-submit (pressing Enter after dictation) — removed
+
+The shim used to also press Enter after each transcript, because Handy's own
+auto-submit is **structurally broken on Wayland**: `send_return_key` in
+v0.9.0's `clipboard.rs` hardcodes enigo, which falls back to X11/XTEST, and
+native Wayland apps never see the Enter. (The text-typing path checks Wayland
+and uses ydotool; the Enter path just… doesn't.)
+
+I turned it off — auto-submitting every dictation into whatever field has
+focus is more annoying than useful. If you want it back, re-add the
+parent-process check after the `type` line, before the `exec` becomes the
+last statement:
+
+```sh
+    /usr/local/bin/ydotool type --key-delay 2 --key-hold 2 "$@" || exit $?
+    if [ "$(cat /proc/$PPID/comm 2>/dev/null)" = "handy" ]; then
+        exec /usr/local/bin/ydotool key 28:1 28:0
+    fi
+    exit 0
+```
+
+The parent-process check means manual `ydotool` use is untouched; only
+Handy's dictation gets the trailing Enter. Either way, **keep `auto_submit`
+OFF in Handy's settings** — if it's on, XWayland apps get an Enter via the
+broken XTEST path (and a second one if the shim is also sending it).
 
 ### 8. Optional: real push-to-talk (foot pedal, F1 key, and/or right Alt)
 
