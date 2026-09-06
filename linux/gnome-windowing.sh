@@ -38,17 +38,21 @@ if [ -n "$TA_UUID" ]; then
   gnome-extensions enable "$TA_UUID" && echo "Enabled Tiling Assistant ($TA_UUID)"
   TA_SCHEMA=org.gnome.shell.extensions.tiling-assistant
   if gsettings list-schemas | grep -qx "$TA_SCHEMA"; then
-    gsettings set "$TA_SCHEMA" window-gap 8
-    gsettings set "$TA_SCHEMA" screen-top-gap 8
-    gsettings set "$TA_SCHEMA" screen-bottom-gap 8
-    gsettings set "$TA_SCHEMA" screen-left-gap 8
-    gsettings set "$TA_SCHEMA" screen-right-gap 8
+    # Gaps are in *logical* px and TA multiplies them by the monitor scale
+    # factor (see getScaledGap in src/extension/utility.js). On a HiDPI display
+    # at 2x, 4 here renders as the 8px gap this config used to produce before
+    # TA started scaling them (Ubuntu 26 / GNOME 50 / TA v54).
+    gsettings set "$TA_SCHEMA" window-gap 4
+    gsettings set "$TA_SCHEMA" screen-top-gap 4
+    gsettings set "$TA_SCHEMA" screen-bottom-gap 4
+    gsettings set "$TA_SCHEMA" screen-left-gap 4
+    gsettings set "$TA_SCHEMA" screen-right-gap 4
     gsettings set "$TA_SCHEMA" maximize-with-gap true
     gsettings set "$TA_SCHEMA" enable-tiling-popup false
     gsettings set "$TA_SCHEMA" dynamic-keybinding-behavior 2
     gsettings set "$TA_SCHEMA" tile-bottom-half "['<Super>Down', '<Super>KP_2']"
     gsettings set "$TA_SCHEMA" restore-window "@as []"
-    echo "Configured Tiling Assistant: 8px gaps, dynamic chaining (mode 2), Super+Down on bottom-half"
+    echo "Configured Tiling Assistant: 4px gaps (x monitor scale), dynamic chaining (mode 2), Super+Down on bottom-half"
   fi
 else
   echo "Tiling Assistant not installed - see gnome-windowing.md (Extension Manager: search 'Tiling Assistant')"
@@ -81,10 +85,21 @@ fi
 
 echo
 echo "==> keyd: Caps Lock tap=Esc, hold=Super (drives Tiling Assistant via Caps+arrows)"
-if command -v keyd >/dev/null 2>&1; then
+# Debian/Ubuntu ship the binary as `keyd.rvaiya` (the name `keyd` clashes with
+# an unrelated package), so `command -v keyd` reports "not installed" on a
+# machine that has it — check both, and dpkg as the backstop.
+if command -v keyd >/dev/null 2>&1 || command -v keyd.rvaiya >/dev/null 2>&1 \
+   || dpkg -s keyd >/dev/null 2>&1; then
   echo "keyd already installed, skipping install"
+elif apt-cache policy keyd 2>/dev/null | grep -qE 'Candidate: [0-9]'; then
+  # Ubuntu 25.10+ carries keyd in universe; no PPA needed.
+  echo "Installing keyd from the distro archive (requires sudo)..."
+  sudo apt-get install -y keyd
 else
-  echo "Installing keyd (requires sudo)..."
+  # Older releases need the PPA backport. It doesn't build for every Ubuntu
+  # release — adding it on one it doesn't cover leaves a 404ing source that
+  # breaks *every* later `apt update`, which is why the archive is tried first.
+  echo "keyd not in the distro archive; trying the keyd-team PPA (requires sudo)..."
   sudo add-apt-repository -y ppa:keyd-team/ppa
   sudo apt-get update
   sudo apt-get install -y keyd
@@ -111,11 +126,13 @@ capslock = overload(meta, esc)
 # shortcut as tap-to-toggle. See linux/dictation.md step 8.
 f1 = f24
 f13 = f24
-# Remap right Alt → F24 for push-to-talk, directly via keyd.
-# compose = f24 is a harmless no-op unless something maps right Alt →
-# Compose before keyd sees it.
-rightalt = f24
-compose = f24
+# Right Alt → Menu (the context-menu key). Framework keyboards have no Menu
+# key, and right Alt is otherwise dead weight. `compose` is KEY_COMPOSE,
+# which XKB maps to the Menu keysym — keyd'"'"'s `menu` is KEY_MENU, which maps
+# to XF86MenuKB and does NOT open context menus.
+# This used to be `rightalt = f24` (a third push-to-talk trigger); F1 and the
+# foot pedal still cover that. See linux/dictation.md step 8.
+rightalt = compose
 '
 if [ -f "$KEYD_CONF" ] && [ "$(sudo cat "$KEYD_CONF")" = "$KEYD_WANT" ]; then
   echo "$KEYD_CONF already up to date"

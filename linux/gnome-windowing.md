@@ -118,13 +118,19 @@ The script sets these defaults (all reversible via Extension Manager's GUI or
 
 | Setting                       | Value  | Effect                                   |
 |-------------------------------|--------|------------------------------------------|
-| `window-gap`                  | 8      | 8px gap between tiled windows            |
-| `screen-*-gap` (×4)           | 8      | 8px margin around screen edges           |
+| `window-gap`                  | 4      | gap between tiled windows                |
+| `screen-*-gap` (×4)           | 4      | margin around screen edges               |
 | `maximize-with-gap`           | true   | maximized windows keep the screen margin |
 | `enable-tiling-popup`         | false  | Snap Assist popup disabled (it steals focus from arrow chaining) |
 | `dynamic-keybinding-behavior` | 2      | "Tiling state" mode — arrows chain halves↔quarters↔untile |
 | `tile-bottom-half`            | `Super+↓` | makes Down participate in chaining (default is numpad-only) |
 | `restore-window`              | unbound | frees `Super+↓` for chaining; untile via same/opposite direction |
+
+> **Gaps are multiplied by the monitor scale factor.** Tiling Assistant v54
+> (Ubuntu 26 / GNOME 50) scales every gap by `display.get_monitor_scale()`;
+> older versions used the value raw. On a 2x HiDPI display a setting of `4`
+> renders as 8 actual px. If your gaps suddenly doubled after an Ubuntu
+> upgrade, this is why — halve them.
 
 Other handy keys to explore (GUI: Extension Manager → Tiling Assistant → gear):
 
@@ -170,9 +176,26 @@ which can't do tap-vs-hold). The `gnome-windowing.sh` script above installs
 and configures it; here's what it does, spelled out:
 
 ```sh
-sudo add-apt-repository -y ppa:keyd-team/ppa
-sudo apt-get install -y keyd
+# Ubuntu 25.10+ has keyd in universe; older releases need the PPA backport.
+sudo apt-get install -y keyd || {
+  sudo add-apt-repository -y ppa:keyd-team/ppa
+  sudo apt-get update && sudo apt-get install -y keyd
+}
 ```
+
+> Two traps here, both of which I hit:
+>
+> - **The PPA has no build for every Ubuntu release.** Adding it on one it
+>   doesn't cover (e.g. 26.04 "resolute") leaves a source that 404s, and that
+>   breaks *every* subsequent `apt update` on the machine, not just this
+>   script. Prefer the distro archive; if you already added the dead PPA:
+>   `sudo rm /etc/apt/sources.list.d/keyd-team-ubuntu-ppa-*.sources`
+> - **The binary is installed as `keyd.rvaiya`**, not `keyd` (the plain name
+>   clashes with an unrelated package). So `command -v keyd` says "not
+>   installed" on a machine that has it perfectly working — which is exactly
+>   how the script ended up re-running the install and hitting the trap above.
+>   The systemd unit is still `keyd.service`; only the CLI is renamed. To list
+>   valid key names: `keyd.rvaiya list-keys`.
 
 Then it writes `/etc/keyd/default.conf`:
 
@@ -197,19 +220,22 @@ capslock = overload(meta, esc)
 # step 8.
 f1 = f24
 f13 = f24
-# Remap right Alt → F24 for push-to-talk, directly via keyd.
-# compose = f24 is a harmless no-op unless something maps right Alt →
-# Compose before keyd sees it.
-rightalt = f24
-compose = f24
+# Right Alt → Menu (the context-menu key). Framework keyboards have no
+# Menu key, and right Alt is otherwise dead weight. `compose` is
+# KEY_COMPOSE, which XKB maps to the Menu keysym — keyd's `menu` is
+# KEY_MENU, which maps to XF86MenuKB and does NOT open context menus.
+rightalt = compose
 ```
 
 > The `-2333:6666` and `-29ea:0100` lines matter if you use voice dictation
 > ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,
 > including ydotool's virtual one, and it can swallow the injected keystrokes.
-> The `f1 = f24`, `f13 = f24`, `rightalt = f24`, and `compose = f24` lines let
-> handy-ptt.py do push-to-talk on F1 and right Alt. Keep them even if you
-> don't dictate — they cost nothing.
+> The `f1 = f24` and `f13 = f24` lines let handy-ptt.py do push-to-talk on
+> F1. Keep them even if you don't dictate — they cost nothing.
+>
+> `rightalt = compose` is unrelated to dictation: it turns the otherwise
+> useless right Alt into a Menu key. It used to be `rightalt = f24`, a third
+> push-to-talk trigger, but F1 and the foot pedal cover that fine.
 
 And enables/starts the service:
 
@@ -335,6 +361,10 @@ defaults, so nothing is wasted. On macOS the matching move is **Aerospace** or
 - **Super+Left/Right stopped snapping** → ensure Tiling Assistant is on and the
   GNOME defaults are intact: `gsettings get org.gnome.desktop.wm.keybindings toggle-tiled-left`
   should be `['<Super>left']`.
+- **Maximized windows have a big border** → Tiling Assistant now scales gaps by
+  the monitor scale factor, so a 2x display doubles them. Halve the gap values
+  (the script sets 4), or set `maximize-with-gap false` for edge-to-edge
+  maximize.
 - **Super+Down untiles instead of chaining to a quarter** → the script's
   `restore-window=@as []` + `tile-bottom-half=['<Super>Down']` fix didn't apply.
   Re-run the script, or set them manually (see the Tuning table).

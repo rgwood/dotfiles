@@ -201,13 +201,13 @@ Handy's dictation gets the trailing Enter. Either way, **keep `auto_submit`
 OFF in Handy's settings** — if it's on, XWayland apps get an Enter via the
 broken XTEST path (and a second one if the shim is also sending it).
 
-### 8. Optional: real push-to-talk (foot pedal, F1 key, and/or right Alt)
+### 8. Optional: real push-to-talk (foot pedal and/or F1 key)
 
 GNOME shortcuts can't do push-to-talk (no press-vs-release, key-repeat
 strobe — see step 5). But a **dedicated input device** can: read its raw
 kernel events from `/dev/input`, where press (value 1), release (value 0),
 and repeat (value 2) are distinct. That's what
-[handy-ptt.py](handy-ptt.py) does, with three triggers:
+[handy-ptt.py](handy-ptt.py) does, with two triggers:
 
 - **Foot pedal** (Kinesis Savant Elite2; pedals programmed to F1, though
   the key doesn't matter): grabbed exclusively (`EVIOCGRAB`), so the
@@ -228,11 +228,6 @@ and repeat (value 2) are distinct. That's what
   transcribe). If keyd isn't running, F1 falls through to the GNOME
   shortcut as before.
 
-- **Right Alt** (via keyd): keyd remaps right Alt → F24 directly
-  (`rightalt = f24`). A `compose = f24` line is a harmless no-op unless
-  something maps right Alt → Compose before keyd sees it. Same F24 path
-  through the daemon as F1. Without keyd, right Alt is unaffected.
-
 Handy stays in *toggle* mode — two toggles = push-to-talk. All triggers
 send SIGUSR2 to the same Handy process, so simultaneous use can desync
 toggle state (e.g. press pedal, press F1, release F1, release pedal =
@@ -244,7 +239,8 @@ Setup, after steps 1–7:
 # keyd must not grab the pedal (its [ids] * matches every keyboard).
 # gnome-windowing.sh writes this exclusion; or add to /etc/keyd/default.conf:
 #   -29ea:0100    (under [ids])
-# gnome-windowing.sh also writes f1 = f24, f13 = f24, rightalt = f24, and compose = f24 under [main].
+# gnome-windowing.sh also writes f1 = f24 and f13 = f24 under [main].
+# (It also writes rightalt = compose, which is a Menu key, not dictation.)
 sudo systemctl restart keyd
 
 # Device access: the `input` group from step 2 works, BUT systemd user

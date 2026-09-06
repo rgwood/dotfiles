@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # Plain python3 shebang (not uv) on purpose: stdlib-only, and it runs as a
 # systemd user service where I want zero moving parts at boot.
-"""Push-to-talk for Handy dictation via foot pedal, F1 key, and/or right Alt.
+"""Push-to-talk for Handy dictation via foot pedal and/or F1 key.
 
 Wayland/GNOME can't do push-to-talk: GNOME shortcuts can't tell key press
 from release and re-fire on key-repeat. But dedicated input devices can:
 we read their raw kernel events from /dev/input (where press/release/repeat
 ARE distinct).
 
-Three triggers, same daemon:
+Two triggers, same daemon:
 
 1. **Foot pedal** (Kinesis Savant Elite2): grabbed exclusively
    (EVIOCGRAB) so its F1 never reaches GNOME. Press → SIGUSR2 (start),
@@ -16,11 +16,9 @@ Three triggers, same daemon:
    releases and the pedal's F1 falls through to the GNOME "Handy Toggle"
    shortcut (tap-to-toggle).
 
-2. **Keyboard F1 / right Alt** (via keyd): keyd remaps F1 → F24, F13 →
-   F24, right Alt → F24, and Compose → F24 on its virtual keyboard. F13
-   covers Framework laptops whose top-row "F1" sends KEY_F13 at the
-   hardware level; Compose is a harmless no-op unless something maps
-   right Alt → Compose before keyd sees it. F24 maps to NoSymbol in XKB,
+2. **Keyboard F1** (via keyd): keyd remaps F1 → F24 and F13 → F24 on its
+   virtual keyboard. F13 covers Framework laptops whose top-row "F1"
+   sends KEY_F13 at the hardware level. F24 maps to NoSymbol in XKB,
    so GNOME ignores it entirely — no strobing shortcut, no app help
    menus, no XF86Tools opening Settings. The daemon reads F24 from keyd's
    virtual keyboard *without grabbing* (grabbing would starve GNOME of
@@ -29,7 +27,7 @@ Three triggers, same daemon:
    fall through to the GNOME shortcut as before.
 
 Handy stays in *toggle* mode; press+release = start+stop = push-to-talk.
-All triggers send SIGUSR2 to the same Handy process, so simultaneous use
+Both triggers send SIGUSR2 to the same Handy process, so simultaneous use
 can desync toggle state (same limitation as pedal + keyboard F1 toggle).
 
 Needs the `input` group and keyd must NOT grab the pedal (exclude
