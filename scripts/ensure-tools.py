@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --quiet
+# /// script
+# requires-python = ">=3.12"
+# dependencies = []
+# ///
+# Bootstrap runs with python3 because this script installs uv itself.
 """Ensure essential tools are installed. Runs during dotfiles bootstrap."""
 
 from __future__ import annotations
@@ -15,6 +20,7 @@ import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
+from functools import cache
 
 HOME = Path.home()
 BIN_DIR = HOME / "bin"
@@ -50,7 +56,11 @@ def is_installed(cmds: list[str]) -> str | None:
 
 
 def run(args: list[str], **kwargs) -> subprocess.CompletedProcess:
-    return subprocess.run(args, **kwargs)
+    try:
+        return subprocess.run(args, **kwargs)
+    except OSError as e:
+        log("fail", f"could not run {args[0]}: {e}")
+        return subprocess.CompletedProcess(args, 127)
 
 
 def has_brew() -> bool:
@@ -59,10 +69,6 @@ def has_brew() -> bool:
 
 def has_apt() -> bool:
     return shutil.which("apt-get") is not None
-
-
-def has_cargo() -> bool:
-    return shutil.which("cargo") is not None
 
 
 # ---------------------------------------------------------------------------
@@ -75,15 +81,16 @@ def install_via_brew(packages: list[str]) -> bool:
     return result.returncode == 0
 
 
+@cache
+def update_apt_index() -> bool:
+    """Refresh once per run, only when an APT install is needed."""
+    return run(["sudo", "apt-get", "update", "-qq"]).returncode == 0
+
+
 def install_via_apt(packages: list[str]) -> bool:
-    result = run(["sudo", "apt-get", "install", "-y"] + packages)
-    return result.returncode == 0
-
-
-def install_via_cargo(crate: str) -> bool:
-    if not has_cargo():
+    if not has_apt() or not update_apt_index():
         return False
-    result = run(["cargo", "install", crate])
+    result = run(["sudo", "apt-get", "install", "-y"] + packages)
     return result.returncode == 0
 
 
@@ -124,7 +131,7 @@ def install_from_github(
         if asset_url:
             break
 
-    if not asset_url:
+    if not asset_url or not asset_name:
         log("fail", f"  no matching asset for {repo} (patterns: {asset_patterns})")
         return False
 
@@ -213,7 +220,8 @@ def ensure_brew() -> bool:
     return ok
 
 
-def ensure_rust() -> bool:
+def ensure_rust() -> bool | None:
+    """Return None when deliberately skipped on a low-memory machine."""
     if is_installed(["cargo"]):
         log("ok", "rust/cargo already installed")
         return True
@@ -221,7 +229,7 @@ def ensure_rust() -> bool:
     ram = total_ram_gb()
     if ram <= 2.0:
         log("skip", f"rust/cargo (only {ram:.1f}GB RAM)")
-        return False
+        return None
 
     log("install", "installing rust via rustup...")
     ok = install_via_script("https://sh.rustup.rs", ["-y"])
@@ -259,7 +267,8 @@ def ensure_uv() -> bool:
     return ok
 
 
-def ensure_node() -> bool:
+def ensure_node() -> bool | None:
+    """Return None when deliberately skipped on a low-memory machine."""
     if is_installed(["node"]):
         log("ok", "node already installed")
         return True
@@ -267,7 +276,7 @@ def ensure_node() -> bool:
     ram = total_ram_gb()
     if ram <= 2.0:
         log("skip", f"node/npm (only {ram:.1f}GB RAM)")
-        return False
+        return None
 
     # Install Volta (Node version manager), then use it to install Node
     if not is_installed(["volta"]):
@@ -432,19 +441,24 @@ TOOLS: list[dict] = [
 # ---------------------------------------------------------------------------
 
 
-def main() -> None:
+def main() -> int:
     print("ensuring essential tools are installed...", file=sys.stderr)
 
     BIN_DIR.mkdir(parents=True, exist_ok=True)
     failures: list[str] = []
+    skipped: list[str] = []
+    update_apt_index.cache_clear()
 
     # Phase 1: bootstraps
-    if IS_MAC:
-        ensure_brew()
+    if IS_MAC and not ensure_brew():
+        failures.append("homebrew")
 
-    ensure_rust()
-    ensure_uv()
-    ensure_node()
+    for name, ensure in [("rust/cargo", ensure_rust), ("uv", ensure_uv), ("node/npm", ensure_node)]:
+        result = ensure()
+        if result is False:
+            failures.append(name)
+        elif result is None:
+            skipped.append(name)
 
     # Phase 2: tools
     if IS_MAC and has_brew():
@@ -473,7 +487,6 @@ def main() -> None:
                         log("ok", f"{tool['name']} installed")
 
     elif IS_LINUX:
-        apt_updated = False
         for tool in TOOLS:
             found = is_installed(tool["check"])
             if found:
@@ -484,10 +497,6 @@ def main() -> None:
 
             installed = False
             for method in tool["linux"]:
-                # run apt-get update once before first apt install
-                if not apt_updated and has_apt():
-                    run(["sudo", "apt-get", "update", "-qq"])
-                    apt_updated = True
                 if method():
                     log("ok", f"{tool['name']} installed")
                     installed = True
@@ -498,13 +507,23 @@ def main() -> None:
             if not installed:
                 log("fail", f"{tool['name']} could not be installed")
                 failures.append(tool["name"])
+    else:
+        reason = "homebrew is unavailable" if IS_MAC else f"unsupported platform: {SYSTEM}"
+        log("fail", reason)
+        failures.append("CLI tools")
 
+    if skipped:
+        print(f"\nskipped for low memory: {', '.join(skipped)}", file=sys.stderr)
     if failures:
         print(f"\nfailed to install: {', '.join(failures)}", file=sys.stderr)
-        # don't exit non-zero -- best effort
-    else:
+        # Try everything first, then let Dotbot report the incomplete install.
+        return 1
+    if not skipped:
         print("all tools installed!", file=sys.stderr)
+    else:
+        print("all remaining tools installed", file=sys.stderr)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

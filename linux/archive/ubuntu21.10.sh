@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Historical Ubuntu 21.10 setup. Unmaintained; use ../apt-packages.sh instead.
 
 # essentials
 sudo apt install git zsh rsync micro curl fzf wget unrar -y

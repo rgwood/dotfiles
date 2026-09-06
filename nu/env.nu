@@ -13,6 +13,8 @@ $env.LC_ALL = "en_US.UTF-8"
 
 # ─── BEGIN mirrored block ───
 # Keep in sync with zsh/zshrc and nu/config.nu (manual sync, no codegen)
+# Precedence: terminal shims, Volta, ~/bin, Homebrew, inherited PATH,
+# then Cargo, ~/.local/bin and .NET. Keep the first copy of each entry.
 
 $env.EDITOR = "micro"
 $env.VISUAL = "micro"
@@ -30,20 +32,22 @@ $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.local/bin
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.dotnet" )
 $env.PATH = ($env.PATH | split row (char esep) | append $"($env.HOME)/.dotnet/tools" )
 
-# ─── END mirrored block ───
-
 # ...and ddcoterm shims should take priority over everything
 $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm/overrides" )
 $env.PATH = ($env.PATH | split row (char esep) | prepend $"($env.HOME)/.ddcoterm/bin" )
 
 if (sys host | get name) == "Darwin" {
-    # useful on macOS (TODO: I don't remember why, is this necessary?)
+    # Include Intel Homebrew and other tools installed outside /opt/homebrew.
     $env.PATH = ($env.PATH | split row (char esep) | append "/usr/local/bin" )
 }
 
 if (sys host | get long_os_version) =~ "Linux" {
     $env.PATH = ($env.PATH | split row (char esep) | append "/snap/bin" )
 }
+
+$env.PATH = ($env.PATH | uniq)
+
+# ─── END mirrored block ───
 
 # Reilly's private env vars
 

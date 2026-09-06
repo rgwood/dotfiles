@@ -7,17 +7,24 @@ unsetopt beep;
 
 # ─── BEGIN mirrored block ───
 # Keep in sync with nu/env.nu and nu/config.nu (manual sync, no codegen)
-
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.volta/bin:$PATH"
-export PATH="$PATH:$HOME/.dotnet:$HOME/.dotnet/tools"
+# Precedence: terminal shims, Volta, ~/bin, Homebrew, inherited PATH,
+# then Cargo, ~/.local/bin and .NET. Keep the first copy of each entry.
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  eval $(/opt/homebrew/bin/brew shellenv)
+  export PATH="/opt/homebrew/bin:$PATH"
 else
-  export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 fi
+
+export PATH="$HOME/.volta/bin:$HOME/bin:$PATH:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.dotnet:$HOME/.dotnet/tools"
+export PATH="$HOME/.ddcoterm/bin:$HOME/.ddcoterm/overrides:$PATH"
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  export PATH="$PATH:/usr/local/bin"
+elif [[ "$(uname)" == "Linux" ]]; then
+  export PATH="$PATH:/snap/bin"
+fi
+typeset -U path PATH
 
 export EDITOR=micro
 export VISUAL=micro

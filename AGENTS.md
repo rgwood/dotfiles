@@ -22,11 +22,13 @@ Idempotent — safe to re-run. Links configs, creates directories, and runs
 
 - **nushell** — daily driver (`nu/config.nu`, `nu/env.nu`)
 - **zsh** — login/fallback (`zsh/zshrc`)
-- **starship** — prompt (shared by both shells, `starship.toml`)
+- **starship** — zsh prompt (`starship.toml`)
 
 ## Mirrored block
 
-PATH entries, EDITOR/VISUAL, `alias lg`, and `mkd` are duplicated across
+PATH entries, EDITOR/VISUAL, and `mkd` are duplicated across
 shells inside `# ─── BEGIN/END mirrored block ───` markers. The markers live
 in `zsh/zshrc`, `nu/env.nu`, and `nu/config.nu`. **Keep them in sync manually
 — no codegen.** When changing PATH or a shared alias, update all three files.
+
+`lg` is shared through `bin/lg` rather than separate shell aliases.

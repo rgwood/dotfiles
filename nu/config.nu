@@ -2,6 +2,7 @@
 
 # ─── BEGIN mirrored block ───
 # Keep in sync with zsh/zshrc and nu/env.nu (manual sync, no codegen)
+# PATH and editor settings live in nu/env.nu; lg lives in bin/lg.
 
 def --env mkd [dir:string] { mkdir $dir; cd $dir }
 
