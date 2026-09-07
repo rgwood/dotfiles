@@ -60,10 +60,11 @@ Untile cheatsheet: from a **half**, press the same or opposite direction; from
 **maximized**, press `Super+↓`; from a **quarter**, any arrow first expands to a
 half (then untile from there).
 
-> Note: the script deliberately **unbinds** TA's `restore-window` and puts
-> `Super+Down` on `tile-bottom-half` instead. Without this, `Super+Down` is
-> captured by "restore to floating" and you can never chain downward — the
-> single most common confusion with TA's defaults.
+> The script unbinds TA's `restore-window` and puts `Super+Down` on
+> `tile-bottom-half`. It also removes `Super+Down` from GNOME's `unmaximize`,
+> keeping `Alt+F5`. TA only disables GNOME's conflicting shortcut when its
+> own `restore-window` uses `Super+Down`, so both changes are needed for
+> downward chaining.
 
 ---
 
@@ -365,9 +366,12 @@ defaults, so nothing is wasted. On macOS the matching move is **Aerospace** or
   the monitor scale factor, so a 2x display doubles them. Halve the gap values
   (the script sets 4), or set `maximize-with-gap false` for edge-to-edge
   maximize.
-- **Super+Down untiles instead of chaining to a quarter** → the script's
-  `restore-window=@as []` + `tile-bottom-half=['<Super>Down']` fix didn't apply.
-  Re-run the script, or set them manually (see the Tuning table).
+- Super+Down does not chain to a bottom quarter → check TA's `restore-window`
+  is unbound and `tile-bottom-half` includes `Super+Down`. GNOME's `unmaximize`
+  must also release `Super+Down`, even if the TA settings are correct:
+  ```sh
+  gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Alt>F5']"
+  ```
 - **Restore your old bindings** → each run writes a backup to
   `~/.local/share/gnome-windowing-backup-*.txt`; inspect it and `gsettings set`
   back any value.

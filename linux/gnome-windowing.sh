@@ -52,6 +52,9 @@ if [ -n "$TA_UUID" ]; then
     gsettings set "$TA_SCHEMA" dynamic-keybinding-behavior 2
     gsettings set "$TA_SCHEMA" tile-bottom-half "['<Super>Down', '<Super>KP_2']"
     gsettings set "$TA_SCHEMA" restore-window "@as []"
+    # TA only clears GNOME's Super+Down when restore-window uses it. With
+    # Down on tile-bottom-half, unmaximize otherwise steals the shortcut.
+    setkb unmaximize "['<Alt>F5']"
     echo "Configured Tiling Assistant: 4px gaps (x monitor scale), dynamic chaining (mode 2), Super+Down on bottom-half"
   fi
 else
