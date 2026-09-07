@@ -1,5 +1,9 @@
 ## Scripting Preferences
 
+### Build caches and temporary files
+
+On `framework-fry`, `/tmp` is RAM-backed, so large build outputs and caches there compete with apps for memory.
+
 ### Use Python over Bash
 - For any script more than a few lines, prefer Python over Bash
 - Python provides better error handling, readability, and maintainability
