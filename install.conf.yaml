@@ -36,6 +36,9 @@
             if: '[[ "$(uname)" == "Darwin" ]]'
       ~/.config/lazygit/config.yml: lazygit/config.yml
       ~/.sqliterc: sqliterc
+      ~/.config/systemd/user/taildrop.service:
+            path: linux/taildrop.service
+            if: '[[ "$(uname)" == "Linux" ]]'
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore
