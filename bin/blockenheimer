@@ -28,7 +28,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from atproto import Client, models
+from atproto import Client, Request, models
 
 # ----------------------------- CONFIGURATION -----------------------------
 
@@ -187,7 +187,7 @@ def main() -> None:
     post_handle, post_rkey = parse_post_url(args.post_url)
 
     log("Logging in...")
-    client = Client()
+    client = Client(request=Request(timeout=30.0))
     client.login(LOGIN_HANDLE, app_password)
     assert client.me is not None
 
