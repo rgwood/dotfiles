@@ -43,10 +43,13 @@ if [ -n "$TA_UUID" ]; then
     # at 2x, 4 here renders as the 8px gap this config used to produce before
     # TA started scaling them (Ubuntu 26 / GNOME 50 / TA v54).
     gsettings set "$TA_SCHEMA" window-gap 4
-    gsettings set "$TA_SCHEMA" screen-top-gap 4
-    gsettings set "$TA_SCHEMA" screen-bottom-gap 4
-    gsettings set "$TA_SCHEMA" screen-left-gap 4
-    gsettings set "$TA_SCHEMA" screen-right-gap 4
+    # Left/right halves use vertical maximization, which ignores these gaps
+    # in GNOME 50. Keep quarters flush with the same work-area edges.
+    # https://github.com/ubuntu/Tiling-Assistant/issues/448
+    gsettings set "$TA_SCHEMA" screen-top-gap 0
+    gsettings set "$TA_SCHEMA" screen-bottom-gap 0
+    gsettings set "$TA_SCHEMA" screen-left-gap 0
+    gsettings set "$TA_SCHEMA" screen-right-gap 0
     gsettings set "$TA_SCHEMA" maximize-with-gap true
     gsettings set "$TA_SCHEMA" enable-tiling-popup false
     gsettings set "$TA_SCHEMA" dynamic-keybinding-behavior 2
@@ -55,7 +58,7 @@ if [ -n "$TA_UUID" ]; then
     # TA only clears GNOME's Super+Down when restore-window uses it. With
     # Down on tile-bottom-half, unmaximize otherwise steals the shortcut.
     setkb unmaximize "['<Alt>F5']"
-    echo "Configured Tiling Assistant: 4px gaps (x monitor scale), dynamic chaining (mode 2), Super+Down on bottom-half"
+    echo "Configured Tiling Assistant: 4px gaps between windows (x monitor scale), no screen-edge margins, dynamic chaining (mode 2), Super+Down on bottom-half"
   fi
 else
   echo "Tiling Assistant not installed - see gnome-windowing.md (Extension Manager: search 'Tiling Assistant')"

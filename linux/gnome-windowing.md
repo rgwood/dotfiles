@@ -120,8 +120,9 @@ The script sets these defaults (all reversible via Extension Manager's GUI or
 | Setting                       | Value  | Effect                                   |
 |-------------------------------|--------|------------------------------------------|
 | `window-gap`                  | 4      | gap between tiled windows                |
-| `screen-*-gap` (×4)           | 4      | margin around screen edges               |
-| `maximize-with-gap`           | true   | maximized windows keep the screen margin |
+| `screen-left-gap`, `screen-right-gap` | 0 | no margin at left/right screen edges   |
+| `screen-top-gap`, `screen-bottom-gap` | 0 | quarters align with the top/bottom edges used by left/right halves |
+| `maximize-with-gap`           | true   | maximized windows keep the configured screen margins |
 | `enable-tiling-popup`         | false  | Snap Assist popup disabled (it steals focus from arrow chaining) |
 | `dynamic-keybinding-behavior` | 2      | "Tiling state" mode — arrows chain halves↔quarters↔untile |
 | `tile-bottom-half`            | `Super+↓` | makes Down participate in chaining (default is numpad-only) |
@@ -132,6 +133,14 @@ The script sets these defaults (all reversible via Extension Manager's GUI or
 > older versions used the value raw. On a 2x HiDPI display a setting of `4`
 > renders as 8 actual px. If your gaps suddenly doubled after an Ubuntu
 > upgrade, this is why — halve them.
+
+Top/bottom screen margins are zero because GNOME 50's vertical maximization
+ignores them for left/right halves, while quarters honor them
+([upstream issue](https://github.com/ubuntu/Tiling-Assistant/issues/448)).
+Setting both to zero removes the extra space above top quarters and below
+bottom quarters. Left/right screen margins are also zero so snapped windows
+reach the sides of the display. The gap between tiled windows stays at `4` × monitor scale;
+panels still reserve their normal work-area space.
 
 Other handy keys to explore (GUI: Extension Manager → Tiling Assistant → gear):
 
@@ -362,9 +371,8 @@ defaults, so nothing is wasted. On macOS the matching move is **Aerospace** or
 - **Super+Left/Right stopped snapping** → ensure Tiling Assistant is on and the
   GNOME defaults are intact: `gsettings get org.gnome.desktop.wm.keybindings toggle-tiled-left`
   should be `['<Super>left']`.
-- **Maximized windows have a big border** → Tiling Assistant now scales gaps by
-  the monitor scale factor, so a 2x display doubles them. Halve the gap values
-  (the script sets 4), or set `maximize-with-gap false` for edge-to-edge
+- **Maximized windows have a big border** → re-run the script to reset all
+  screen-edge gaps to zero, or set `maximize-with-gap false` for edge-to-edge
   maximize.
 - Super+Down does not chain to a bottom quarter → check TA's `restore-window`
   is unbound and `tile-bottom-half` includes `Super+Down`. GNOME's `unmaximize`
