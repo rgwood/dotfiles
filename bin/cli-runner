@@ -7,6 +7,7 @@
 # ]
 # ///
 
+import argparse
 import asyncio
 import subprocess # Keep for type hints if necessary, but prefer asyncio.create_subprocess_shell
 
@@ -213,10 +214,23 @@ class CLIRunnerApp(App):
         self.exit()
 
 if __name__ == "__main__":
-    console = Console()
-    exec_name = console.input("[bold sky_blue1]Enter executable name (default: yt-dlp)[/]: ").strip()
+    parser = argparse.ArgumentParser(
+        prog="cli-runner",
+        description="Interactive TUI that queues up arguments and runs them against one executable.",
+    )
+    parser.add_argument(
+        "executable",
+        nargs="?",
+        help="executable to run (skips the prompt). If omitted, you'll be asked; default: yt-dlp",
+    )
+    cli_args = parser.parse_args()
+
+    exec_name = (cli_args.executable or "").strip()
     if not exec_name:
-        exec_name = "yt-dlp"
+        console = Console()
+        exec_name = console.input("[bold sky_blue1]Enter executable name (default: yt-dlp)[/]: ").strip()
+        if not exec_name:
+            exec_name = "yt-dlp"
 
     app = CLIRunnerApp(executable_name_from_cli=exec_name)
     app.run()
