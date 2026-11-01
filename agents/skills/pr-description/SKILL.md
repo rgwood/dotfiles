@@ -70,9 +70,28 @@ For straightforward bug fixes, open with a `Closes #NNNN`:
 
 > Closes #6987. `where` does the same thing as `find --predicate`, so let's remove the `--predicate` flag.
 
+Keep the visible body high-level: what changed, why, and before and after. Put everything else in a collapsed `<details>` block at the end, such as implementation notes, alternatives considered, measurements, limitations and testing. Keep anything that affects whether someone would accept the PR visible.
+
+```markdown
+Closes #135. What's wrong and what this PR does, in a few sentences.
+
+## Before
+
+## After
+
+<details>
+<summary>Details</summary>
+
+### How it works
+
+</details>
+```
+
+Leave a blank line after `<summary>` and before `</details>` so the Markdown inside renders.
+
 ## Detail level
 
-Scale detail to match the change size. Do not over-explain simple things or under-explain complex ones.
+Scale detail to match the change size. Do not over-explain simple things or under-explain complex ones. Skip the `<details>` block when there is nothing more to say.
 
 ### Trivial changes (deps, typos, CI tweaks)
 
@@ -96,7 +115,7 @@ A paragraph of context (the problem or previous state), then what changed:
 
 ### Large or complex changes
 
-Lead with motivation, then use a numbered list for the specifics. Acknowledge trade-offs and future work:
+Lead with motivation, then use a numbered list for the specifics, inside the `<details>` block. Acknowledge trade-offs and future work:
 
 > Configuration in `explore` has always been confusing to me. This PR overhauls (and simplifies, I think) how configuration is done.
 >
