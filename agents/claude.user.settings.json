@@ -9,7 +9,7 @@
       "WebFetch"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline-command.sh"
