@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Signal
+Exec=/opt/Signal/signal-desktop --ozone-platform=x11 --password-store=gnome-libsecret %U
+Terminal=false
+Type=Application
+Icon=signal-desktop
+StartupWMClass=signal
+Comment=Private messaging from your desktop
+MimeType=x-scheme-handler/sgnl;x-scheme-handler/signalcaptcha;
+Categories=Network;InstantMessaging;Chat;
