@@ -128,8 +128,18 @@ a foot pedal, or on F1 itself via keyd — see step 8.)
 ### 6. Handy settings — turn the overlay OFF
 
 In Handy's settings: set the recording **overlay to None**, paste method
-**Direct**, typing tool **ydotool**, and switch the transcribe binding mode
-to **toggle**.
+**Clipboard (Shift+Insert)**, typing tool **ydotool**, and switch the
+transcribe binding mode to **toggle**.
+
+Shift+Insert is the default since Handy v0.10.1. On GNOME Wayland, Handy
+puts the transcript on the clipboard *and* the primary selection with
+`wl-copy` (so `wl-clipboard` must be installed), presses Shift+Insert via
+`ydotool key` (raw keycodes, so the keyboard layout doesn't matter), then
+restores both after `paste_delay_after_ms`. GUI apps paste the clipboard;
+terminals paste primary. It's instant and handles capitals/accents
+correctly. It still needs ydotool + ydotoold (steps 2–4) to press the keys.
+Before v0.10.1 this doc used **Direct** (type each character via
+`ydotool type`), which is slower and depends on the keyboard layout.
 
 The overlay one is critical and was the final boss of the original debugging
 session: Handy's live-transcription overlay (gtk-layer-shell) **steals
@@ -142,7 +152,11 @@ Settings live in `~/.local/share/com.pais.handy/settings_store.json`; logs in
 `~/.local/share/com.pais.handy/logs/handy.log` (set log level to debug in the
 app for the useful lines).
 
-### 7. Optional: the shim — 10× faster typing
+### 7. Legacy: the shim — 10× faster typing (Direct paste only)
+
+> Only matters if you use the **Direct** paste method. With Clipboard
+> (Shift+Insert) Handy calls `ydotool key`, which the shim passes through
+> untouched, so it's harmless but does nothing.
 
 Handy's Direct paste types character-by-character with slow defaults
 (`--key-hold 20` + `--key-delay 20` = ~40ms/char; a 100-char sentence takes 4
