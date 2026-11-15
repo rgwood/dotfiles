@@ -1,0 +1,21 @@
+# Shared keyd bindings, included by default.conf and framework.conf.
+# No .conf extension on purpose: keyd only treats *.conf files as device
+# configs, so this file is only ever used via `include common`.
+
+# Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
+capslock = overload(meta, esc)
+# Remap F1 → F24 and F13 → F24 so handy-ptt.py can do push-to-talk.
+# F24 maps to NoSymbol in XKB, so GNOME ignores it (no key-repeat strobe,
+# no app help menus, no XF86Tools opening Settings). F13 is also remapped
+# because Framework laptops send KEY_F13 for the top-row "F1" key.
+# Without handy-ptt running, F1 falls through to the GNOME "Handy Toggle"
+# shortcut as tap-to-toggle. See linux/dictation.md step 8.
+f1 = f24
+f13 = f24
+# Right Alt → Menu (the context-menu key). Framework keyboards have no Menu
+# key, and right Alt is otherwise dead weight. `compose` is KEY_COMPOSE,
+# which XKB maps to the Menu keysym — keyd's `menu` is KEY_MENU, which maps
+# to XF86MenuKB and does NOT open context menus.
+# This used to be `rightalt = f24` (a third push-to-talk trigger); F1 and the
+# foot pedal still cover that. See linux/dictation.md step 8.
+rightalt = compose

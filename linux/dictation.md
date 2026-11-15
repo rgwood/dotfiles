@@ -217,7 +217,7 @@ and repeat (value 2) are distinct. That's what
   instead of going dead.
 
 - **Keyboard F1** (via keyd): keyd remaps F1 → F24 on its virtual
-  keyboard (`f1 = f24` in `/etc/keyd/default.conf`, written by
+  keyboard (`f1 = f24` in `/etc/keyd/common`, written by
   `gnome-windowing.sh`). F24 maps to NoSymbol in XKB, so GNOME ignores it
   entirely — no strobing shortcut, no app help menus, no XF86Tools opening
   Settings. (Framework laptops also need `f13 = f24` because their

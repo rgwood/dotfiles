@@ -207,35 +207,43 @@ sudo apt-get install -y keyd || {
 >   The systemd unit is still `keyd.service`; only the CLI is renamed. To list
 >   valid key names: `keyd.rvaiya list-keys`.
 
-Then it writes `/etc/keyd/default.conf`:
+Then it copies the three files in [`linux/keyd/`](keyd/) to `/etc/keyd/`:
+
+- **`common`**: the actual bindings (Caps tap/hold, F1/F13 → F24 for
+  push-to-talk, right Alt → Menu). No `.conf` extension, so keyd only uses it
+  through `include common`.
+- **`default.conf`**: `[ids] *` (every keyboard, minus ydotool's virtual one
+  and the foot pedal), then `include common`.
+- **`framework.conf`**: matches only the Framework's built-in keyboard
+  (`0001:0001`, "AT Translated Set 2 keyboard"), includes `common`, and
+  swaps Super and left Alt. An explicit id beats the wildcard, so this
+  keyboard gets this file instead of `default.conf`.
+
+### Why swap Super and Alt on the laptop?
+
+The Framework's bottom row is PC-style: Ctrl, Fn, **Super, Alt**, Space. On a
+Mac, and on the Logitech ERGO K860 in Mac mode (hold Fn+O for 3 seconds), the
+key next to the space bar is Cmd, which Linux sees as Super. On niri, where
+Super is `Mod` for nearly everything, having that key in a different place on
+each keyboard is maddening. So the laptop gets this:
 
 ```
-[ids]
-*
-# Ignore ydotool's virtual keyboard (always 2333:6666) so dictation keystrokes
-# pass through untouched — see linux/dictation.md. Harmless without ydotool.
--2333:6666
-# Ignore the Kinesis foot pedal: handy-ptt.py grabs it for push-to-talk
-# dictation (see linux/dictation.md step 8). Harmless without the pedal.
--29ea:0100
-
 [main]
-# Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
-capslock = overload(meta, esc)
-# Remap F1 → F24 and F13 → F24 so handy-ptt.py can do push-to-talk (it
-# reads F24 from this virtual keyboard). F24 maps to NoSymbol in XKB, so
-# GNOME ignores it. F13 is also remapped because Framework laptops send
-# KEY_F13 for the top-row "F1" key. Without handy-ptt, F1 falls through
-# to GNOME's "Handy Toggle" shortcut as tap-to-toggle. See dictation.md
-# step 8.
-f1 = f24
-f13 = f24
-# Right Alt → Menu (the context-menu key). Framework keyboards have no
-# Menu key, and right Alt is otherwise dead weight. `compose` is
-# KEY_COMPOSE, which XKB maps to the Menu keysym — keyd's `menu` is
-# KEY_MENU, which maps to XF86MenuKB and does NOT open context menus.
-rightalt = compose
+include common
+leftalt = layer(meta)
+leftmeta = layer(alt)
 ```
+
+> **Don't use `[aliases]` for this.** keyd's manual suggests
+> `leftalt = leftmeta` under `[aliases]` for transposed modifiers, and I tried
+> that first. In keyd 2.5 it makes the key *tap* Super the instant it goes
+> down (`leftmeta down/up` before the next key arrives), so a lone tap looks
+> fine in `keyd monitor` but every Super+key combo silently fails.
+> `layer(meta)` holds the modifier for as long as the key is held, the same
+> way keyd's default bindings for the real modifier keys work.
+
+> Doing this with xkb's `altwin:swap_alt_win` instead would swap *every*
+> keyboard at once, including the K860, which is already right in Mac mode.
 
 > The `-2333:6666` and `-29ea:0100` lines matter if you use voice dictation
 > ([dictation.md](dictation.md)): `[ids] *` makes keyd grab *every* keyboard,

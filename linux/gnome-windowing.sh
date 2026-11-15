@@ -111,41 +111,18 @@ else
   sudo apt-get install -y keyd
 fi
 
-KEYD_CONF=/etc/keyd/default.conf
-KEYD_WANT='[ids]
-*
-# Ignore ydotool'"'"'s virtual keyboard (always 2333:6666) so dictation keystrokes
-# pass through untouched — see linux/dictation.md. Harmless without ydotool.
--2333:6666
-# Ignore the Kinesis foot pedal: handy-ptt.py grabs it for push-to-talk
-# dictation (see linux/dictation.md step 8). Harmless without the pedal.
--29ea:0100
-
-[main]
-# Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
-capslock = overload(meta, esc)
-# Remap F1 → F24 and F13 → F24 so handy-ptt.py can do push-to-talk.
-# F24 maps to NoSymbol in XKB, so GNOME ignores it (no key-repeat strobe,
-# no app help menus, no XF86Tools opening Settings). F13 is also remapped
-# because Framework laptops send KEY_F13 for the top-row "F1" key.
-# Without handy-ptt running, F1 falls through to the GNOME "Handy Toggle"
-# shortcut as tap-to-toggle. See linux/dictation.md step 8.
-f1 = f24
-f13 = f24
-# Right Alt → Menu (the context-menu key). Framework keyboards have no Menu
-# key, and right Alt is otherwise dead weight. `compose` is KEY_COMPOSE,
-# which XKB maps to the Menu keysym — keyd'"'"'s `menu` is KEY_MENU, which maps
-# to XF86MenuKB and does NOT open context menus.
-# This used to be `rightalt = f24` (a third push-to-talk trigger); F1 and the
-# foot pedal still cover that. See linux/dictation.md step 8.
-rightalt = compose
-'
-if [ -f "$KEYD_CONF" ] && [ "$(sudo cat "$KEYD_CONF")" = "$KEYD_WANT" ]; then
-  echo "$KEYD_CONF already up to date"
-else
-  echo "Writing $KEYD_CONF"
-  printf '%s' "$KEYD_WANT" | sudo tee "$KEYD_CONF" >/dev/null
-fi
+# The config lives in linux/keyd/: shared bindings in `common`, included by
+# default.conf (every keyboard) and framework.conf (the laptop's built-in
+# keyboard, which also swaps Super and left Alt). See gnome-windowing.md.
+KEYD_SRC="$(cd "$(dirname "$0")" && pwd)/keyd"
+for f in common default.conf framework.conf; do
+  if [ -f "/etc/keyd/$f" ] && sudo cmp -s "$KEYD_SRC/$f" "/etc/keyd/$f"; then
+    echo "/etc/keyd/$f already up to date"
+  else
+    echo "Writing /etc/keyd/$f"
+    sudo install -m 644 "$KEYD_SRC/$f" "/etc/keyd/$f"
+  fi
+done
 
 sudo systemctl enable --now keyd
 # Restart (not just enable) matters: on first install keyd can come up before
