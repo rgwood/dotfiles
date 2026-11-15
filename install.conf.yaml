@@ -39,6 +39,9 @@
       ~/.config/systemd/user/taildrop.service:
             path: linux/taildrop.service
             if: '[[ "$(uname)" == "Linux" ]]'
+      ~/.config/xdg-desktop-portal/niri-portals.conf:
+            path: linux/xdg-desktop-portal/niri-portals.conf
+            if: '[[ "$(uname)" == "Linux" ]]'
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore
