@@ -50,6 +50,9 @@
       ~/.local/share/applications/signal-desktop.desktop:
             path: linux/applications/signal-desktop.desktop
             if: '[[ "$(uname)" == "Linux" ]]'
+      ~/.config/autostart/update-notifier.desktop:
+            path: linux/autostart/update-notifier.desktop
+            if: '[[ "$(uname)" == "Linux" ]]'
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore

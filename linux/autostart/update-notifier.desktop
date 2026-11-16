@@ -1,0 +1,15 @@
+# Overrides /etc/xdg/autostart/update-notifier.desktop.
+# update-notifier always registers its livepatch/upgrade tray icons as
+# "Passive". GNOME's tray hides passive icons but DMS shows them, so under
+# niri they sit there permanently. unattended-upgrades still runs as a system
+# service; this only drops the "updates available" popups under niri.
+[Desktop Entry]
+Name=Update Notifier
+Comment=Check for available updates automatically
+Icon=update-notifier
+Exec=update-notifier
+Terminal=false
+Type=Application
+NotShowIn=KDE;niri;
+NoDisplay=true
+X-GNOME-Autostart-Delay=60
