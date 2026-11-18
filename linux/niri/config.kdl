@@ -273,4 +273,7 @@ binds {
     Mod+Shift+Down { move-window-down-or-to-workspace-down; }
     Mod+Shift+K    { move-window-up-or-to-workspace-up; }
     Mod+Shift+J    { move-window-down-or-to-workspace-down; }
+    // Emoji picker: the DMS launcher pre-filtered by the emojiLauncher plugin's trigger.
+    // Replaces DMS's expel-window-from-column (Mod+BracketLeft/Right still do that).
+    Mod+Period hotkey-overlay-title="Emoji Picker" { spawn "dms" "ipc" "call" "spotlight" "toggleQuery" ":e "; }
 }
