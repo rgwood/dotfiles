@@ -45,6 +45,11 @@
       ~/.config/niri/config.kdl:
             path: linux/niri/config.kdl
             if: '[[ "$(uname)" == "Linux" ]]'
+      # DMS writes the other files in ~/.config/niri/dms/, but binds.kdl is ours
+      # (DMS only edits it from its Keybinds settings page)
+      ~/.config/niri/dms/binds.kdl:
+            path: linux/niri/dms-binds.kdl
+            if: '[[ "$(uname)" == "Linux" ]]'
       # niri sets XDG_CURRENT_DESKTOP=niri, so Electron can't guess the keyring
       # and falls back to basic_text; Signal then refuses to open its DB
       ~/.local/share/applications/signal-desktop.desktop:

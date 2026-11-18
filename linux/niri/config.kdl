@@ -243,11 +243,12 @@ debug {
     honor-xdg-activation-with-invalid-serial
 }
 
-// Override to disable super+tab
+// Recent-window switcher on Mod+Tab; the overview moves to Alt+Tab in the overrides
+// block below. Regular binds beat these, so DMS's Mod+Tab line was deleted from dms/binds.kdl.
 recent-windows {
     binds {
-        Alt+Tab         { next-window scope="output"; }
-        Alt+Shift+Tab   { previous-window scope="output"; }
+        Mod+Tab         { next-window scope="output"; }
+        Mod+Shift+Tab   { previous-window scope="output"; }
         Alt+grave       { next-window filter="app-id"; }
         Alt+Shift+grave { previous-window filter="app-id"; }
     }
@@ -273,6 +274,8 @@ binds {
     Mod+Shift+Down { move-window-down-or-to-workspace-down; }
     Mod+Shift+K    { move-window-up-or-to-workspace-up; }
     Mod+Shift+J    { move-window-down-or-to-workspace-down; }
+    // Overview (zoomed-out view of everything); DMS puts it on Mod+Tab, which the switcher took.
+    Alt+Tab repeat=false { toggle-overview; }
     // Emoji picker: the DMS launcher pre-filtered by the emojiLauncher plugin's trigger.
     // Replaces DMS's expel-window-from-column (Mod+BracketLeft/Right still do that).
     Mod+Period hotkey-overlay-title="Emoji Picker" { spawn "dms" "ipc" "call" "spotlight" "toggleQuery" ":e "; }
