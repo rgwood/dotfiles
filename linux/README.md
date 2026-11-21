@@ -41,6 +41,14 @@ Check it with `systemctl --user status taildrop.service` or
 `journalctl --user -u taildrop.service`. To stop automatic receiving, run
 `systemctl --user disable --now taildrop.service`.
 
+## DMS patches
+
+I run DMS (Dux Shell) with my own patches. The QML comes from the
+`reilly.wood/local` branch of my fork in `~/source/dux-shell`, not from the
+`dms` package. Everything for that, including the deploy script
+(`fork/deploy.py`) and the `dms.service` drop-in it writes, lives in the fork;
+its `FORK.md` explains the branch, deploy and release-sync workflow.
+
 ## niri
 
 `./install` links `niri/config.kdl` to `~/.config/niri/config.kdl`. Only that
