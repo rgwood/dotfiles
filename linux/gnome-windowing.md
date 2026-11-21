@@ -32,9 +32,11 @@ Design goals:
 | Activities / app launcher    | `Super`                   | GNOME default              |
 | Fullscreen                   | `Super+F` (i.e. `Caps+F`) | script (added) + keyd      |
 
-`Caps+arrows` works the same as `Super+arrows` above because of the keyd setup
-below — holding Caps Lock sends Super/Meta. So the whole table works from
-either key.
+Held Caps Lock sends Super/Meta (see the keyd setup below), so most of the
+table works from either key. **Except Caps+arrows, Caps+Z and Caps+D:** those
+now send Ctrl+Alt+Shift+Super ("Hyper") for niri's window-placement binds, so
+under GNOME they don't reach Tiling Assistant. Use the real Super key for
+those, or bind the Hyper chords in GNOME too.
 
 ### How arrow chaining works
 
@@ -211,7 +213,11 @@ Then it copies the three files in [`linux/keyd/`](keyd/) to `/etc/keyd/`:
 
 - **`common`**: the actual bindings (Caps tap/hold, F1/F13 → F24 for
   push-to-talk, right Alt → Menu). No `.conf` extension, so keyd only uses it
-  through `include common`.
+  through `include common`. It ends with a `[hyper:M]` layer: held Caps is
+  Super, except arrows/Z/D send Ctrl+Alt+Shift+Super so niri can give "Caps +
+  key" its own window-placement binds (bottom of `linux/niri/config.kdl`).
+  Because of that trailing section, `include common` must be the last line
+  of `[main]`.
 - **`default.conf`**: `[ids] *` (every keyboard, minus ydotool's virtual one
   and the foot pedal), then `include common`.
 - **`framework.conf`**: matches only the Framework's built-in keyboard
@@ -229,9 +235,9 @@ each keyboard is maddening. So the laptop gets this:
 
 ```
 [main]
-include common
 leftalt = layer(meta)
 leftmeta = layer(alt)
+include common
 ```
 
 > **Don't use `[aliases]` for this.** keyd's manual suggests

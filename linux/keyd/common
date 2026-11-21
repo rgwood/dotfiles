@@ -1,9 +1,10 @@
 # Shared keyd bindings, included by default.conf and framework.conf.
 # No .conf extension on purpose: keyd only treats *.conf files as device
 # configs, so this file is only ever used via `include common`.
+# It ends with a [hyper:M] section, so include it at the end of [main].
 
-# Tap = Escape, hold = Super/Meta (so Caps+Arrow drives Tiling Assistant)
-capslock = overload(meta, esc)
+# Tap = Escape, hold = the `hyper` layer below.
+capslock = overload(hyper, esc)
 # Remap F1 → F24 and F13 → F24 so handy-ptt.py can do push-to-talk.
 # F24 maps to NoSymbol in XKB, so GNOME ignores it (no key-repeat strobe,
 # no app help menus, no XF86Tools opening Settings). F13 is also remapped
@@ -19,3 +20,16 @@ f13 = f24
 # This used to be `rightalt = f24` (a third push-to-talk trigger); F1 and the
 # foot pedal still cover that. See linux/dictation.md step 8.
 rightalt = compose
+
+# Held Caps acts as Super for every key except the ones listed here, which
+# send the full Ctrl+Alt+Shift+Super chord ("Hyper", like Karabiner on the
+# Mac). niri binds those chords to window-placement actions, so Caps+arrow
+# moves the window while thumb-Super+arrow moves focus. Keep this list in
+# sync with the Hyper binds at the bottom of linux/niri/config.kdl.
+[hyper:M]
+left = C-A-S-M-left
+right = C-A-S-M-right
+up = C-A-S-M-up
+down = C-A-S-M-down
+z = C-A-S-M-z
+d = C-A-S-M-d
