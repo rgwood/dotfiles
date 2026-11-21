@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Signal
-Exec=/opt/Signal/signal-desktop --ozone-platform=x11 --password-store=gnome-libsecret %U
+Exec=/opt/Signal/signal-desktop --password-store=gnome-libsecret %U
 Terminal=false
 Type=Application
 Icon=signal-desktop
