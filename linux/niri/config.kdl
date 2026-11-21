@@ -99,14 +99,6 @@ layout {
     }
     // You can change the default width of the new windows.
     default-column-width { proportion 0.5; }
-    // Tab indicator: full-width strip along the top of tabbed columns (Mod+W)
-    tab-indicator {
-        position "top"
-        width 18
-        gap 4
-        length total-proportion=1.0
-        place-within-column
-    }
     // If you leave the brackets empty, the windows themselves will decide their initial width.
     // default-column-width {}
     // By default focus ring and border are rendered as a solid background rectangle
@@ -247,6 +239,11 @@ debug {
 // Recent-window switcher on Mod+Tab; the overview moves to Alt+Tab in the overrides
 // block below. Regular binds beat these, so DMS's Mod+Tab line was deleted from dms/binds.kdl.
 recent-windows {
+    // Small previews so ~8-9 windows fit across the 1440px-wide laptop screen.
+    previews {
+        max-height 110
+        max-scale 0.333
+    }
     binds {
         Mod+Tab         { next-window scope="output"; }
         Mod+Shift+Tab   { previous-window scope="output"; }
@@ -275,6 +272,9 @@ binds {
     Mod+Shift+Down { move-window-down-or-to-workspace-down; }
     Mod+Shift+K    { move-window-up-or-to-workspace-up; }
     Mod+Shift+J    { move-window-down-or-to-workspace-down; }
+    // Ctrl+Tab-ish cycling through a (tabbed) column, wrapping at the ends.
+    Mod+Grave       { focus-window-down-or-top; }
+    Mod+Shift+Grave { focus-window-up-or-bottom; }
     // Overview (zoomed-out view of everything); DMS puts it on Mod+Tab, which the switcher took.
     Alt+Tab repeat=false { toggle-overview; }
     // Emoji picker: the DMS launcher pre-filtered by the emojiLauncher plugin's trigger.
