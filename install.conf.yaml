@@ -58,6 +58,9 @@
       ~/.config/autostart/update-notifier.desktop:
             path: linux/autostart/update-notifier.desktop
             if: '[[ "$(uname)" == "Linux" ]]'
+      ~/.config/systemd/user/dms.service.d/hide-tray.conf:
+            path: linux/systemd/dms-hide-tray.conf
+            if: '[[ "$(uname)" == "Linux" ]]'
       ~/.zsh-plugins/zsh-autosuggestions: zsh-autosuggestions
       ~/.editorconfig: .editorconfig
       ~/.gitignore: git/personal-gitignore
