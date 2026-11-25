@@ -1,6 +1,6 @@
 ---
-name: ship
-description: Finish up the current feature end to end — verify, commit, land it on the default branch, push, deploy if the project deploys, and confirm it works. Use when Reilly says "ship it", "/ship", "finish this up", "wrap this up", or "commit and deploy".
+name: shipit
+description: Finish up the current feature end to end — verify, commit, land it on the default branch, push, deploy if the project deploys, and confirm it works. Use when Reilly says "ship it", "/shipit", "finish this up", "wrap this up", or "commit and deploy".
 user-invokable: true
 args:
   - name: notes
